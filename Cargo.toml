@@ -8,20 +8,28 @@ edition = "2024"
 [dependencies]
 anyhow = "*"
 bevy = { version = "0.16.1", features = ["jpeg", "symphonia-all", "sysinfo_plugin", "webp"] }
+bevy-inspector-egui = { version = "0.32.0", features = ["bevy_render", "highlight_changes", "egui_clipboard", "egui_open_url"], default-features = false, optional = true }
+bevy_egui = "0.35.1"
 bevy_enhanced_input = "0.14.1"
 bevy_framepace = "0.19.1"
 bevy_mod_debugdump = { version = "0.13.0", optional = true }
 crossbeam-channel = "*"
 ctrlc = "*"
 derive_more = { version = "*", features = ["display", "error"] }
+egui = "0.31.0"
+egui_dock = "0.16.0"
+serde = "*"
+serde_json = "*"
+transform-gizmo-egui = "0.6.0"
+uuid = "*"
 xdg = "*"
 
 # from: https://bevyengine.org/learn/quick-start/getting-started/setup/#dynamic-linking
 # then: https://docs.rs/bevy/latest/bevy/dev_tools/struct.DevToolsPlugin.html
 [features]
 default = ["dev_mode", "wayland"] # not a good practice if we were a reusable crate, seems okay for a program
-dev_mode = ["dep:bevy_mod_debugdump", "bevy/dynamic_linking", "bevy/bevy_dev_tools", "bevy/file_watcher"]
-# , "bevy/bevy_debug_stepping", "bevy/detailed_trace", "bevy/trace_tracy", "bevy/trace_tracy_memory"]
+dev_mode = ["dep:bevy-inspector-egui", "dep:bevy_mod_debugdump", "bevy/dynamic_linking", "bevy/bevy_dev_tools", "bevy/file_watcher"]
+# "bevy/bevy_debug_stepping", "bevy/detailed_trace", "bevy/trace_tracy", "bevy/trace_tracy_memory"]
 wayland = ["bevy/wayland"]
 
 # from https://stackoverflow.com/questions/38803760/how-to-get-a-release-build-with-debugging-information-when-using-cargo
