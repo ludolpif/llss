@@ -1,0 +1,13 @@
+# from: https://bevyengine.org/learn/quick-start/getting-started/setup/#alternative-linkers
+
+# for Linux
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+# for Windows
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld.exe"
+
+# For VSCode rust-analyser, this settings are ignored, need to edit settings.json
+# See: https://bevy-cheatbook.github.io/setup/editor/vscode.html#speed-up-rust-analyzer
