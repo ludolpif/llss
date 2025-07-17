@@ -21,6 +21,7 @@
 [renderlayers-to-texture](https://bevy.org/examples/2d-rendering/pixel-grid-snap/)
 [bevy-inspector-egui+dock](https://github.com/jakobhellermann/bevy-inspector-egui/tree/main?tab=readme-ov-file#use-case-2-manual-ui)
 [bevy-inspector-egui examples](https://github.com/jakobhellermann/bevy-inspector-egui/tree/main/crates/bevy-inspector-egui/examples)
+[bevy_webcam](https://github.com/mosure/bevy_webcam/blob/main/src/main.rs)
 [Mesh2d Alpha Mode](https://bevy.org/examples/2d-rendering/mesh2d-alpha-mode/)
 [transform_gizmo_egui - Rust](https://docs.rs/transform-gizmo-egui/latest/transform_gizmo_egui/)
 [States](https://thebevyflock.github.io/bevy-quickstart-book/1-intro/states.html)
