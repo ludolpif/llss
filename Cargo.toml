@@ -7,12 +7,37 @@ edition = "2024"
 # and: https://docs.rs/bevy/latest/bevy/index.html#cargo-features
 [dependencies]
 anyhow = "*"
-bevy = { version = "0.16.1", features = ["jpeg", "symphonia-all", "sysinfo_plugin", "webp"] }
-bevy-inspector-egui = { version = "0.32.0", features = ["bevy_render", "highlight_changes", "egui_clipboard", "egui_open_url"], default-features = false, optional = true }
-bevy_egui = "0.35.1"
+#bevy = { version = "0.16.1", features = ["jpeg", "symphonia-all", "sysinfo_plugin", "webp"] }
+bevy = { version = "0.16.1", default-features = false, features = [
+# from bevy 16.1 defaults minus all 3D and android stuff for now
+  "std", "async_executor",
+# "android-game-activity",
+# "android_shared_stdcxx",
+  "animation",
+  "bevy_asset", "bevy_audio", "bevy_color", "bevy_core_pipeline", "bevy_gilrs", "bevy_gizmos",
+# "bevy_gltf",
+  "bevy_input_focus", "bevy_log",
+# "bevy_mesh_picking_backend",
+# "bevy_pbr",
+  "bevy_picking", "bevy_render", "bevy_scene", "bevy_sprite", "bevy_sprite_picking_backend",
+  "bevy_state", "bevy_text", "bevy_ui", "bevy_ui_picking_backend", "bevy_window", "bevy_winit",
+  "custom_cursor", "default_font", "hdr", "multi_threaded", "png", "smaa_luts", "sysinfo_plugin",
+  "tonemapping_luts", "vorbis", "webgl2", "x11",
+# Extra that we may use
+  "jpeg", "symphonia-all", "webp"
+] }
+bevy-inspector-egui = { version = "0.32.0", optional = true, default-features = false, features = [
+  "bevy_render", "highlight_changes", "egui_clipboard"
+] }
+bevy_egui = { version = "0.35.1", default-features = false, features = [
+# from bevy_egui 0.35 defaults, without open_url to save url+ics stuff for now
+  "manage_clipboard", "default_fonts", "render", "picking"
+# "open_url"
+] }
 bevy_enhanced_input = "0.14.1"
 bevy_framepace = "0.19.1"
 bevy_mod_debugdump = { version = "0.13.0", optional = true }
+bevy_webcam = "0.2.0"
 crossbeam-channel = "*"
 ctrlc = "*"
 derive_more = { version = "*", features = ["display", "error"] }
