@@ -1,0 +1,8 @@
+[submodule "dear_bindings"]
+	path = vendor/static/ui/dear_bindings
+	url = https://github.com/ludolpif/dear_bindings.git
+	branch = for-llss-main
+[submodule "dear_imgui"]
+	path = vendor/static/ui/imgui
+	url = https://github.com/ludolpif/dear_imgui.git
+	branch = for-llss-main
