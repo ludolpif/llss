@@ -2,88 +2,33 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-# You will need SDL3 (http://www.libsdl.org).
+.PHONY: all clean
 
-#CC = gcc
-#CC = clang
+CFLAGS = -g -Wall -Wformat -O0
 
 EXE = llss
-IMGUI_DIR=vendor/static/ui/imgui
-DCIMGUI_DIR=vendor/static/ui/dear_bindings/generated
-
 SOURCES=src/main.c
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
+DCIMGUI_BUILDDIR=third-party/static/ui
 
-DCIMGUI_SOURCES = $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-DCIMGUI_SOURCES += $(IMGUI_DIR)/backends/imgui_impl_sdl3.cpp $(IMGUI_DIR)/backends/imgui_impl_sdlgpu3.cpp
-DCIMGUI_SOURCES += $(DCIMGUI_DIR)/dcimgui.cpp $(DCIMGUI_DIR)/backends/dcimgui_impl_sdl3.cpp $(DCIMGUI_DIR)/backends/dcimgui_impl_sdlgpu3.cpp
-DCIMGUI_OBJS = $(addsuffix .o, $(basename $(notdir $(DCIMGUI_SOURCES))))
-UNAME_S := $(shell uname -s)
-
-CFLAGS = -I$(DCIMGUI_DIR) -I$(IMGUI_DIR) -I$(DCIMGUI_DIR)/backends -I$(IMGUI_DIR)/backends
-CFLAGS += -g -Wall -Wformat -O0
-CXXFLAGS = -std=c++11
-LIBS = -L. -ldcimgui -lm -lstdc++
-
-
-
-##---------------------------------------------------------------------
-## BUILD FLAGS PER PLATFORM
-##---------------------------------------------------------------------
-
-ifeq ($(UNAME_S), Linux) #LINUX
-	ECHO_MESSAGE = "Linux"
-	LIBS += -ldl `pkg-config sdl3 --libs`
-
-	CFLAGS += `pkg-config sdl3 --cflags`
-	CXXFLAGS += $(CFLAGS)
-endif
-
-ifeq ($(UNAME_S), Darwin) #APPLE
-	ECHO_MESSAGE = "Mac OS X"
-	LIBS += -framework Cocoa -framework IOKit -framework CoreVideo `pkg-config --libs sdl3`
-	LIBS += -L/usr/local/lib -L/opt/local/lib
-
-	CFLAGS += `pkg-config sdl3 --cflags`
-	CFLAGS += -I/usr/local/include -I/opt/local/include
-	CXXFLAGS += $(CFLAGS)
-endif
-
-ifeq ($(OS), Windows_NT)
-	ECHO_MESSAGE = "MinGW"
-	LIBS += -lgdi32 -limm32 `pkg-config --static --libs sdl3`
-
-	CFLAGS += `pkg-config --cflags sdl3`
-	CXXFLAGS += $(CFLAGS)
-endif
+CFLAGS += `./pkgc --cflags`
+LIBS = `./pkgc --libs`
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o:%.c
+%.o:src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o:$(IMGUI_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o:$(IMGUI_DIR)/backends/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o:$(DCIMGUI_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o:$(DCIMGUI_DIR)/backends/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
 all: $(EXE)
-	@echo Build complete for $(ECHO_MESSAGE)
 
-$(EXE): $(SOURCES) libdcimgui.a
-	$(CC) -o $@ $(SOURCES) $(CFLAGS) $(LIBS)
+$(EXE): $(OBJS) third-party/static/ui/dcimgui.a
+	$(CC) -o $@ $(OBJS) $(LIBS)
 
-libdcimgui.a: $(DCIMGUI_OBJS)
-	ar rcs libdcimgui.a $(DCIMGUI_OBJS)
+third-party/static/ui/dcimgui.a:
+	$(MAKE) -C third-party/static/ui
 
 clean:
-	rm -f $(EXE) $(OBJS) $(DCIMGUI_OBJS) libdcimgui.a
+	rm -f $(EXE) $(OBJS)
+	$(MAKE) -C third-party/static/ui clean

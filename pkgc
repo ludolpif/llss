@@ -1,0 +1,40 @@
+#!/bin/bash
+declare -a INCLUDE_DIRS=(
+	third-party/static/ui/dear_bindings/generated
+	third-party/static/ui/imgui
+	third-party/static/ui/dear_bindings/generated/backends
+	third-party/static/ui/imgui/backends
+)
+declare -A BUILD_DIRS=(
+	[dcimgui]=third-party/static/ui
+)
+declare -a SHARED_LIBS=(
+	third-party/shared/graphics
+)
+declare -a SYS_LIBS=(
+	m
+	stdc++ 
+)
+usage() {
+	if [ -n "$1" ]; then echo "Error: $1" >&2; fi
+	echo "Usage: $0 (--cflags|--libs)" >&2
+	exit 1
+}
+
+if [ $# -ne 1 ]; then usage; fi
+
+UNAME_S=`uname -s`
+
+case $1 in
+	--cflags)
+		for path in "${INCLUDE_DIRS[@]}"; do echo -n "-I$path "; done
+		for path in "${SHARED_LIBS[@]}"; do echo -n `$path/pkgc --cflags`; done; echo -n " "
+		;;
+	--libs)
+		for lib in "${!BUILD_DIRS[@]}"; do echo -n "-L ${BUILD_DIRS[${lib}]} -l$lib "; done
+		for path in "${SHARED_LIBS[@]}"; do echo -n `$path/pkgc --libs`; done; echo -n " "
+		for lib in "${SYS_LIBS[@]}"; do echo -n "-l$lib "; done
+		;;
+	*) usage "Unknown option ${1@Q}";;
+esac
+echo

@@ -1,0 +1,44 @@
+#!/bin/bash
+usage() {
+	if [ -n "$1" ]; then echo "Error: $1" >&2; fi
+	echo "Usage: $0 (--cflags|--libs)" >&2
+	exit 1
+}
+if [ $# -ne 1 ]; then usage; fi
+
+UNAME_S=`uname -s`
+
+case $1 in
+	--cflags)
+		case $UNAME_S in
+			Linux)
+				echo -n `pkg-config sdl3 --cflags`
+				;;
+			Darwin) # Mac OS X
+				echo -n `pkg-config sdl3 --cflags`
+				echo -n " -I/usr/local/include -I/opt/local/include "
+				;;
+			Windows_NT) # MinGW
+				echo -n `pkg-config sdl3 --cflags`
+				;;
+		esac
+		;;
+	--libs)
+		case $UNAME_S in
+			Linux)
+				echo -n -ldl `pkg-config sdl3 --libs`
+				;;
+			Darwin) # Mac OS X
+				echo -n "-framework Cocoa -framework IOKit -framework CoreVideo "
+				echo -n -ldl `pkg-config sdl3 --libs`
+				echo -n " -L/usr/local/lib -L/opt/local/lib"
+				;;
+			Windows_NT) # MinGW
+				echo -n "-lgdi32 -limm32 "
+				echo -n `pkg-config sdl3 --libs`
+				;;
+		esac
+		;;
+	*) usage "Unknown option ${1@Q}";;
+esac
+echo
