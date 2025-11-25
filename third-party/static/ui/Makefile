@@ -5,14 +5,14 @@
 .PHONY: all clean
 
 CXXFLAGS = -g -Wall -Wformat -O0 -std=c++11
-IMGUI_DIR=imgui
-DCIMGUI_DIR=dear_bindings/generated
 
 EXE = libdcimgui.a
-SOURCES = $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-SOURCES += $(IMGUI_DIR)/backends/imgui_impl_sdl3.cpp $(IMGUI_DIR)/backends/imgui_impl_sdlgpu3.cpp
-SOURCES += $(DCIMGUI_DIR)/dcimgui.cpp $(DCIMGUI_DIR)/backends/dcimgui_impl_sdl3.cpp $(DCIMGUI_DIR)/backends/dcimgui_impl_sdlgpu3.cpp
-OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
+SOURCES = imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
+SOURCES += imgui/backends/imgui_impl_sdl3.cpp imgui/backends/imgui_impl_sdlgpu3.cpp
+SOURCES += dear_bindings/generated/dcimgui.cpp
+SOURCES += dear_bindings/generated/backends/dcimgui_impl_sdl3.cpp
+SOURCES += dear_bindings/generated/backends/dcimgui_impl_sdlgpu3.cpp
+OBJS := $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 
 CXXFLAGS += `./pkgc --cflags`
 LIBS = `./pkgc --libs`
@@ -21,16 +21,16 @@ LIBS = `./pkgc --libs`
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o:$(IMGUI_DIR)/%.cpp
+%.o: imgui/%.cpp dcimgui-headers-generated.timestamp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:$(IMGUI_DIR)/backends/%.cpp
+%.o: imgui/backends/%.cpp dcimgui-headers-generated.timestamp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:$(DCIMGUI_DIR)/%.cpp
+%.o: dear_bindings/generated/%.cpp dcimgui-headers-generated.timestamp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:$(DCIMGUI_DIR)/backends/%.cpp
+%.o: dear_bindings/generated/backends/%.cpp dcimgui-headers-generated.timestamp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 all: $(EXE)
@@ -40,3 +40,17 @@ $(EXE): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(EXE)
+
+# TODO use imconfig_user.h ?
+
+dcimgui-headers-generated.timestamp: dear_bindings/dear_bindings.py
+	mkdir -p dear_bindings/generated/backends
+	cd dear_bindings; python3 dear_bindings.py -o generated/dcimgui ../imgui/imgui.h
+	cd dear_bindings; python3 dear_bindings.py -o generated/dcimgui_internal --include ../imgui/imgui.h ../imgui/imgui_internal.h
+	cd dear_bindings; python3 dear_bindings.py --backend --include ../imgui/imgui.h --imconfig-path ../imgui/imconfig.h -o generated/backends/dcimgui_impl_sdl3 ../imgui/backends/imgui_impl_sdl3.h
+	cd dear_bindings; python3 dear_bindings.py --backend --include ../imgui/imgui.h --imconfig-path ../imgui/imconfig.h -o generated/backends/dcimgui_impl_sdlgpu3 ../imgui/backends/imgui_impl_sdlgpu3.h
+	touch dcimgui-headers-generated.timestamp
+
+dear_bindings/dear_bindings.py:
+	git submodule update --init --recursive
+

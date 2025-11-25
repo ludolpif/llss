@@ -1,15 +1,16 @@
 #!/bin/bash
 declare -a INCLUDE_DIRS=(
-	third-party/static/ui/dear_bindings/generated
-	third-party/static/ui/imgui
-	third-party/static/ui/dear_bindings/generated/backends
-	third-party/static/ui/imgui/backends
+	../third-party/static/ui/dear_bindings/generated
+	../third-party/static/ui/imgui
+	../third-party/static/ui/dear_bindings/generated/backends
+	../third-party/static/ui/imgui/backends
+	../include
 )
 declare -A BUILD_DIRS=(
-	[dcimgui]=third-party/static/ui
+	[dcimgui]=../third-party/static/ui
 )
 declare -a SHARED_LIBS=(
-	third-party/shared/graphics
+	../third-party/shared/graphics
 )
 declare -a SYS_LIBS=(
 	m
