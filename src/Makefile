@@ -2,9 +2,9 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-.PHONY: all clean run
+.PHONY: all clean clean-recursive run
 
-CFLAGS = -g -Wall -Wformat -O0
+CFLAGS = -g -Wall -Wformat -O0 -std=c11
 
 EXE = ./llss
 SOURCES := $(wildcard *.c)
@@ -17,8 +17,8 @@ LIBS = `./pkgc --libs`
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-#XXX ABI problems between modules appears if headers changes and make isn't told to recompile
-%.o: %.c ../third-party/static/ui/dcimgui-headers-generated.timestamp ../include/app.h
+#TODO ABI problems between modules appears if headers changes and make isn't told to recompile
+%.o: %.c ../include/app.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
@@ -26,7 +26,7 @@ all: $(EXE)
 $(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
 	$(CC) -o $@ $(OBJS) $(LIBS)
 
-../third-party/static/ui/dcimgui-headers-generated.timestamp:
+../third-party/static/ui/dear_bindings_generated.timestamp:
 	$(MAKE) -C ../third-party/static/ui
 
 ../third-party/static/ui/dcimgui.a:
@@ -34,6 +34,8 @@ $(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
 
 clean:
 	rm -f $(EXE) $(OBJS)
+
+clean-recursive: clean
 	$(MAKE) -C ../third-party/static/ui clean
 
 run: $(EXE)
