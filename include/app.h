@@ -1,9 +1,6 @@
 #pragma once
 
 #include "dcimgui.h"
-#include "dcimgui_impl_sdl3.h"
-#include "dcimgui_impl_sdlgpu3.h"
-
 #include <SDL3/SDL.h>
 
 #define APP_METADATA_NAME_STRING "llss"

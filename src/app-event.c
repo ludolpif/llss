@@ -1,4 +1,5 @@
 #include "app.h"
+#include "dcimgui_impl_sdl3.h"
 
 SDL_AppResult SDL_AppEvent(void *_appstate, SDL_Event *event) {
 	appstate_t *appstate = (appstate_t *) _appstate;

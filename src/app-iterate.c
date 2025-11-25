@@ -1,4 +1,6 @@
 #include "app.h"
+#include "dcimgui_impl_sdl3.h"
+#include "dcimgui_impl_sdlgpu3.h"
 #include "../internal/ui.h"
 
 SDL_AppResult SDL_AppIterate(void *_appstate) {
