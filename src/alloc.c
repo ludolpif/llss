@@ -1,50 +1,74 @@
 #include "../internal/alloc.h"
 
 // Those are global variables. All the appstate except this is on heap.
-SDL_AtomicInt alloc_count_per_context[APP_CONTEXT_COUNT];
-SDL_AtomicInt *alloc_count_current_context = alloc_count_per_context;
+SDL_AtomicInt alloc_count_per_context[APP_CONTEXT_COUNT][4];
+SDL_AtomicInt *alloc_count_current_context = alloc_count_per_context[0];
 SDL_malloc_func orig_malloc_func;
 SDL_calloc_func orig_calloc_func;
 SDL_realloc_func orig_realloc_func;
 SDL_free_func orig_free_func;
 
 
+const char app_alloc_count_contexts_str[APP_CONTEXT_COUNT][20] = {
+	"STARTUP_SHUTDOWN",
+	"FIRST_FRAMES",
+	"RENDERING"
+};
+
+
 void alloc_count_install_hooks() {
 	SDL_GetOriginalMemoryFunctions(&orig_malloc_func, &orig_calloc_func, &orig_realloc_func, &orig_free_func);
 	SDL_SetMemoryFunctions(alloc_count_malloc, alloc_count_calloc, alloc_count_realloc, alloc_count_free);
+	ImGui_SetAllocatorFunctions(alloc_count_malloc_userptr, alloc_count_free_userptr, NULL);
 }
 
 void alloc_count_dump_counters() {
-	bool skip_debug = false;
-	app_trace("%016lu alloc_count_dump_counters()", SDL_GetTicksNS());
+	app_info("                 ctxt   malloc   calloc  realloc     free");
 	for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
-		int count = SDL_GetAtomicInt(&alloc_count_per_context[contextid]);
-		app_trace("                 alloc_count_per_context[%d]==%d", contextid, count);
+		int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);
+		int calloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][1]);
+		int realloc_count = SDL_GetAtomicInt(&alloc_count_per_context[contextid][2]);
+		int free_count    = SDL_GetAtomicInt(&alloc_count_per_context[contextid][3]);
+
+		app_info("%21s %8d %8d %8d %8d (%+d)", app_alloc_count_contexts_str[contextid],
+				malloc_count, calloc_count, realloc_count, free_count,
+				malloc_count + calloc_count - free_count);
 	}
+	app_info("(this only count calls via SDL_(m|c|re)alloc, SDL_free, and in current program boundary/heap, not other DLL)");
 }
 
 void alloc_count_set_context(app_alloc_count_contexts_t contextid) {
 	if ( contextid >= 0 && contextid < APP_CONTEXT_COUNT ) {
-		SDL_SetAtomicPointer((void **)&alloc_count_current_context, &alloc_count_per_context[contextid]);
+		SDL_SetAtomicPointer((void **)&alloc_count_current_context, alloc_count_per_context[contextid]);
 	}
 }
 
 void * SDLCALL alloc_count_malloc(size_t size) {
-	SDL_AtomicIncRef(alloc_count_current_context);
+	SDL_AtomicIncRef(alloc_count_current_context+0);
+	return orig_malloc_func(size);
+}
+
+void * SDLCALL alloc_count_malloc_userptr(size_t size, void *userptr) {
+	SDL_AtomicIncRef(alloc_count_current_context+0);
 	return orig_malloc_func(size);
 }
 
 void * SDLCALL alloc_count_calloc(size_t nmemb, size_t size) {
-	SDL_AtomicIncRef(alloc_count_current_context);
+	SDL_AtomicIncRef(alloc_count_current_context+1);
 	return orig_calloc_func(nmemb, size);
 }
 
 void * SDLCALL alloc_count_realloc(void *mem, size_t size) {
-	//FIXME make this call useful or skip it
+	SDL_AtomicIncRef(alloc_count_current_context+2);
 	return orig_realloc_func(mem, size);
 }
 
 void   SDLCALL alloc_count_free(void *mem) {
-	SDL_AtomicDecRef(alloc_count_current_context);
+	SDL_AtomicIncRef(alloc_count_current_context+3);
+	orig_free_func(mem);
+}
+
+void   SDLCALL alloc_count_free_userptr(void *mem, void *userptr) {
+	SDL_AtomicIncRef(alloc_count_current_context+3);
 	orig_free_func(mem);
 }

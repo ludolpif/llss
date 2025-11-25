@@ -1,10 +1,9 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
-
 #include "../internal/alloc.h"
-#define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(0)
 
+#define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(0)
 
 SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
@@ -131,12 +130,13 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->io = io;
 	appstate->show_demo_window = true;
 	appstate->show_another_window = false;
+	appstate->frame_count = -1;
 	appstate->clear_color.x = 0.45f;
 	appstate->clear_color.y = 0.55f;
 	appstate->clear_color.z = 0.60f;
 	appstate->clear_color.w = 1.00f;
 
-	app_trace("%016lu heap allocation at end of SDL_AppInit:", SDL_GetTicksNS());
+	app_info("%016lu heap allocation at end of SDL_AppInit:", SDL_GetTicksNS());
 	alloc_count_dump_counters();
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 	return SDL_APP_CONTINUE;
@@ -144,6 +144,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	appstate_t *appstate = (appstate_t *)_appstate;
+	alloc_count_set_context(APP_CONTEXT_STARTUP_SHUTDOWN);
 
 	SDL_WaitForGPUIdle(appstate->gpu_device);
 	cImGui_ImplSDL3_Shutdown();
@@ -153,4 +154,9 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	SDL_ReleaseWindowFromGPUDevice(appstate->gpu_device, appstate->window);
 	SDL_DestroyGPUDevice(appstate->gpu_device);
 	SDL_DestroyWindow(appstate->window);
+
+	SDL_free(appstate);
+
+	app_info("%016lu heap allocation at end of SDL_AppQuit:", SDL_GetTicksNS());
+	alloc_count_dump_counters();
 }

@@ -31,6 +31,7 @@ typedef struct appstate {
 	SDL_Window *window;
 	SDL_GPUDevice *gpu_device;
 	ImGuiIO *io;
+	Sint32 frame_count;
 	bool show_demo_window;
 	bool show_another_window;
 	ImVec4 clear_color;
