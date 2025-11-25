@@ -1,11 +1,16 @@
 #include "app.h"
-#include <stdlib.h> // calloc()
+#include "../internal/alloc.h"
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(0)
 
+
 SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
-	*_appstate = calloc(1,sizeof(appstate_t));
+	// Configure memory functions before the first dynamic allocation
+	alloc_count_install_hooks();
+
+	// Allocate on heap the main appstate
+	*_appstate = SDL_calloc(1,sizeof(appstate_t));
 	if (!*_appstate)
-		app_failure("calloc(1,sizeof(appstate_t))");
+		app_failure("SDL_calloc(1,sizeof(appstate_t))");
 	appstate_t *appstate = *_appstate;
 
 	// Configure logging
@@ -17,6 +22,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN,     "WARN  ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR,    "ERROR ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRIT  ");
+	bool skip_debug = ( pri > SDL_LOG_PRIORITY_DEBUG );
 
 	// Set metadata before SDL_Init because it will print it if loglevel is high enough
 	// We don't check return value, we don't want to abort the app startup if this fails anyway.
@@ -116,7 +122,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 
 	appstate->tick0_wallclock = tick0_wallclock;
-	appstate->skip_debug = ( pri > SDL_LOG_PRIORITY_DEBUG );
+	appstate->skip_debug = skip_debug;
 	appstate->window = window;
 	appstate->gpu_device = gpu_device;
 	appstate->io = io;
@@ -127,6 +133,9 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->clear_color.z = 0.60f;
 	appstate->clear_color.w = 1.00f;
 
+	app_trace("%016lu heap allocation at end of SDL_AppInit:", SDL_GetTicksNS());
+	alloc_count_dump_counters();
+	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 	return SDL_APP_CONTINUE;
 }
 
@@ -142,4 +151,3 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	SDL_DestroyGPUDevice(appstate->gpu_device);
 	SDL_DestroyWindow(appstate->window);
 }
-
