@@ -4,6 +4,7 @@ declare -a INCLUDE_DIRS=(
 	../third-party/static/ui/imgui
 	../third-party/static/ui/dear_bindings_generated/backends
 	../third-party/static/ui/imgui/backends
+	../third-party/static/ecs/flecs
 	../include
 )
 declare -A BUILD_DIRS=(

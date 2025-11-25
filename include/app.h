@@ -1,7 +1,8 @@
 #pragma once
 
-#include "dcimgui.h"
 #include <SDL3/SDL.h>
+#include "dcimgui.h"
+#include "flecs.h"
 
 #define APP_METADATA_NAME_STRING "llss"
 #define APP_METADATA_VERSION_STRING "0.1.0"
