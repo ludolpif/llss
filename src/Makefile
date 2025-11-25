@@ -28,7 +28,6 @@ $(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
 	$(CC) -o $@ $(OBJS) $(LIBS)
 
 ../third-party/static/ui/dcimgui.a:
-	git submodule update --init --recursive ../third-party/static/ui/imgui
 	$(MAKE) -C ../third-party/static/ui
 
 ../third-party/static/ecs/flecs.o:
@@ -37,8 +36,8 @@ $(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
 clean:
 	rm -f $(EXE) $(OBJS)
 
-clean-recursive: clean
-	$(MAKE) -C ../third-party/static/ui clean
+clean-recursive:
+	$(MAKE) -C .. clean-recursive
 
 run: $(EXE)
 	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" $(EXE)
