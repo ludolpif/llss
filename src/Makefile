@@ -4,7 +4,7 @@
 #
 .PHONY: all clean clean-recursive run
 
-CFLAGS = -g -Wall -Wformat -O0 -std=c11
+CFLAGS = -g -Wall -Wformat -O0 -std=gnu99
 
 EXE = ./llss
 SOURCES := $(wildcard *.c)
@@ -33,7 +33,7 @@ $(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
 ../third-party/static/ui/dcimgui.a:
 	$(MAKE) -C ../third-party/static/ui
 
-../third-party/static/ecs/flecs/flecs.o:
+../third-party/static/ecs/flecs.o:
 	$(MAKE) -C ../third-party/static/ecs
 
 clean:

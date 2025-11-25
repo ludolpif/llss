@@ -4,7 +4,7 @@
 #
 .PHONY: all clean
 
-CXXFLAGS = -g -Wall -Wformat -O0 -std=c++11
+CXXFLAGS = -g -O0 -std=c++11
 
 EXE = libdcimgui.a
 SOURCES = imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
@@ -21,7 +21,7 @@ LIBS = `./pkgc --libs`
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o: imgui/%.cpp dear_bindings_generated.timestamp
+%.o: imgui/%.cpp imgui/imgui.h dear_bindings_generated.timestamp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 %.o: imgui/backends/%.cpp dear_bindings_generated.timestamp
@@ -43,7 +43,7 @@ clean:
 
 # TODO use imconfig_user.h ?
 
-dear_bindings_generated.timestamp: dear_bindings/dear_bindings.py
+dear_bindings_generated.timestamp: imgui/imgui.h dear_bindings/dear_bindings.py
 	mkdir -p dear_bindings_generated/backends
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui ../imgui/imgui.h
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui_internal --include ../imgui/imgui.h ../imgui/imgui_internal.h
@@ -52,5 +52,7 @@ dear_bindings_generated.timestamp: dear_bindings/dear_bindings.py
 	touch dear_bindings_generated.timestamp
 
 dear_bindings/dear_bindings.py:
-	git submodule update --init --recursive
+	git submodule update --init --recursive dear_bindings
 
+imgui/imgui.h:
+	git submodule update --init --recursive imgui

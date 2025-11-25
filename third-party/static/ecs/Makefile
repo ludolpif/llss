@@ -4,7 +4,7 @@
 #
 .PHONY: all clean
 
-CFLAGS = -g -Wall -Wformat -std=gnu99
+CFLAGS = -g -O0 -std=gnu99
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
