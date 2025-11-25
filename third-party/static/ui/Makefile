@@ -21,16 +21,16 @@ LIBS = `./pkgc --libs`
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o: imgui/%.cpp imgui/imgui.h
+%.o: imgui/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: imgui/backends/%.cpp imgui/imgui.h
+%.o: imgui/backends/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: dear_bindings_generated/%.cpp imgui/imgui.h
+%.o: dear_bindings_generated/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: dear_bindings_generated/backends/%.cpp imgui/imgui.h
+%.o: dear_bindings_generated/backends/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 all: $(EXE)
@@ -43,7 +43,7 @@ clean:
 
 # TODO use imconfig_user.h ?
 
-bindings: imgui/imgui.h dear_bindings/dear_bindings.py
+bindings: dear_bindings/dear_bindings.py
 	mkdir -p dear_bindings_generated/backends
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui ../imgui/imgui.h
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui_internal --include ../imgui/imgui.h ../imgui/imgui_internal.h
@@ -52,6 +52,3 @@ bindings: imgui/imgui.h dear_bindings/dear_bindings.py
 
 dear_bindings/dear_bindings.py:
 	git submodule update --init --recursive dear_bindings
-
-imgui/imgui.h:
-	git submodule update --init --recursive imgui
