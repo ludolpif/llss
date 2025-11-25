@@ -24,13 +24,13 @@ LIBS = `./pkgc --libs`
 %.o: imgui/%.cpp imgui/imgui.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: imgui/backends/%.cpp
+%.o: imgui/backends/%.cpp imgui/imgui.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: dear_bindings_generated/%.cpp
+%.o: dear_bindings_generated/%.cpp imgui/imgui.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: dear_bindings_generated/backends/%.cpp
+%.o: dear_bindings_generated/backends/%.cpp imgui/imgui.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 all: $(EXE)
