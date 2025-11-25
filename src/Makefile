@@ -19,7 +19,7 @@ LIBS = `./pkgc --libs`
 ##---------------------------------------------------------------------
 
 #TODO ABI problems between modules appears if headers changes and make isn't told to recompile
-%.o: %.c ../include/app.h
+%.o: %.c ../include/app.h ../third-party/static/ui/imgui/imgui.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
