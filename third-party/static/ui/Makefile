@@ -2,7 +2,7 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-.PHONY: all clean
+.PHONY: all bindings clean
 
 CXXFLAGS = -g -O0 -std=c++11
 
@@ -21,16 +21,16 @@ LIBS = `./pkgc --libs`
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o: imgui/%.cpp imgui/imgui.h dear_bindings_generated.timestamp
+%.o: imgui/%.cpp imgui/imgui.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: imgui/backends/%.cpp dear_bindings_generated.timestamp
+%.o: imgui/backends/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: dear_bindings_generated/%.cpp dear_bindings_generated.timestamp
+%.o: dear_bindings_generated/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o: dear_bindings_generated/backends/%.cpp dear_bindings_generated.timestamp
+%.o: dear_bindings_generated/backends/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 all: $(EXE)
@@ -43,13 +43,12 @@ clean:
 
 # TODO use imconfig_user.h ?
 
-dear_bindings_generated.timestamp: imgui/imgui.h dear_bindings/dear_bindings.py
+bindings: imgui/imgui.h dear_bindings/dear_bindings.py
 	mkdir -p dear_bindings_generated/backends
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui ../imgui/imgui.h
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui_internal --include ../imgui/imgui.h ../imgui/imgui_internal.h
 	cd dear_bindings; python3 dear_bindings.py --backend --include ../imgui/imgui.h --imconfig-path ../imgui/imconfig.h -o ../dear_bindings_generated/backends/dcimgui_impl_sdl3 ../imgui/backends/imgui_impl_sdl3.h
 	cd dear_bindings; python3 dear_bindings.py --backend --include ../imgui/imgui.h --imconfig-path ../imgui/imconfig.h -o ../dear_bindings_generated/backends/dcimgui_impl_sdlgpu3 ../imgui/backends/imgui_impl_sdlgpu3.h
-	touch dear_bindings_generated.timestamp
 
 dear_bindings/dear_bindings.py:
 	git submodule update --init --recursive dear_bindings
