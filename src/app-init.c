@@ -123,7 +123,12 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	//ImFont* font = io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
 	//IM_ASSERT(font != NULL);
 
+	ecs_world_t *world = ecs_init();
+	ecs_entity_t e = ecs_entity(world, { .name = "Bob" });
+	app_info("%016lu ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
+	//TODO this is dummy code for first sanity checks
 
+	appstate->world = world;
 	appstate->tick0_wallclock = tick0_wallclock;
 	appstate->skip_debug = skip_debug;
 	appstate->window = window;
@@ -160,6 +165,7 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	SDL_DestroyGPUDevice(appstate->gpu_device);
 	SDL_DestroyWindow(appstate->window);
 
+	ecs_fini(appstate->world);
 	SDL_free(appstate);
 
 	app_info("%016lu heap allocation at end of SDL_AppQuit:", SDL_GetTicksNS());

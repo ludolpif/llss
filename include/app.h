@@ -27,6 +27,7 @@ typedef enum APP_LogCategory {
 #define app_critical(args...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, args)
 
 typedef struct appstate {
+	ecs_world_t *world;
 	SDL_Time tick0_wallclock;
 	bool skip_debug;
 	SDL_Window *window;

@@ -9,6 +9,7 @@ CFLAGS = -g -Wall -Wformat -O0 -std=c11
 EXE = ./llss
 SOURCES := $(wildcard *.c)
 OBJS := $(addsuffix .o, $(basename $(notdir $(SOURCES))))
+OBJS += ../third-party/static/ecs/flecs.o
 
 CFLAGS += `./pkgc --cflags`
 LIBS = `./pkgc --libs`
@@ -31,6 +32,9 @@ $(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
 
 ../third-party/static/ui/dcimgui.a:
 	$(MAKE) -C ../third-party/static/ui
+
+../third-party/static/ecs/flecs/flecs.o:
+	$(MAKE) -C ../third-party/static/ecs
 
 clean:
 	rm -f $(EXE) $(OBJS)
