@@ -1,8 +1,11 @@
-plugin system (SDL have LoadLibrary)
-try UI from plugin
-FLECS
+# TODO list
 
+- plugin system (SDL have LoadLibrary)
+- try UI from plugin
+- FLECS
+- https://media.bernat.ch/files/debian-debug-packages.pdf
 
+```c
 https://github.com/ocornut/imgui/blob/master/imgui.cpp
 // DLL users:
 // - Heaps and globals are not shared across DLL boundaries!
@@ -39,4 +42,4 @@ void ImGui::SetAllocatorFunctions(ImGuiMemAllocFunc alloc_func, ImGuiMemFreeFunc
     GImAllocatorFreeFunc = free_func;
     GImAllocatorUserData = user_data;
 }
-
+```

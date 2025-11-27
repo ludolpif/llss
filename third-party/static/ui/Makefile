@@ -16,6 +16,7 @@ OBJS := $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 
 CXXFLAGS += `./pkgc --cflags`
 LIBS = `./pkgc --libs`
+ARFLAGS = rcs
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
@@ -36,7 +37,7 @@ LIBS = `./pkgc --libs`
 all: $(EXE)
 
 $(EXE): $(OBJS)
-	ar rcs $(EXE) $(OBJS)
+	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(EXE)

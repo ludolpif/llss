@@ -1,21 +1,17 @@
 #!/bin/bash
 declare -a INCLUDE_DIRS=(
-	../third-party/static/ui/dear_bindings_generated
-	../third-party/static/ui/imgui
-	../third-party/static/ui/dear_bindings_generated/backends
-	../third-party/static/ui/imgui/backends
-	../third-party/static/ecs/flecs
-	../include
+	../../../third-party/static/ui/dear_bindings_generated
+	../../../third-party/static/ui/imgui
+	../../../third-party/static/ui/dear_bindings_generated/backends
+	../../../third-party/static/ui/imgui/backends
+	../../../third-party/static/ecs/flecs
+	../../../include
 )
 declare -A BUILD_DIRS=(
-	[dcimgui]=../third-party/static/ui
 )
 declare -a SHARED_LIBS=(
-	../third-party/shared/graphics
 )
 declare -a SYS_LIBS=(
-	m
-	stdc++ 
 )
 usage() {
 	if [ -n "$1" ]; then echo "Error: $1" >&2; fi
@@ -28,6 +24,8 @@ if [ $# -ne 1 ]; then usage; fi
 UNAME_S=`uname -s`
 
 case $1 in
+	--soname)
+		echo -n $(basename $(realpath ..)).so.1 ;;
 	--cflags)
 		for path in "${INCLUDE_DIRS[@]}"; do echo -n "-I$path "; done
 		for path in "${SHARED_LIBS[@]}"; do echo -n `$path/pkgc --cflags`; done; echo -n " "

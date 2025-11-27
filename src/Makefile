@@ -1,49 +1,39 @@
 #
 # Cross Platform Makefile
-# Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
+# Compatible with MSYS2/MINGW, GNU/Linux and Mac OS X
 #
 .PHONY: all clean clean-recursive run
 
-CFLAGS = -g -Wall -Wformat -O0 -std=gnu99
+CC := gcc
+#CPPFLAGS +=
+CFLAGS += -g -Wall -Wformat -O0 
+CFLAGS += -std=gnu99 `./cflags`
+LDFLAGS += $(shell ./ldflags)
+LDLIBS += $(shell ./ldlibs)
 
-EXE = ./llss
-SOURCES := $(wildcard *.c)
-OBJS := $(addsuffix .o, $(basename $(notdir $(SOURCES))))
-OBJS += ../third-party/static/ecs/flecs.o
+# ../Makefile.autodeps needs $(SRCS)
+# Don't list llss.c as we use Make implicit rule "binary: obj1.o obj2.o" which auto-build binary.o
+SRCS := alloc.c app-event.c app-init.c app-iterate.c mod-host.c ui-main.c
+OBJS := $(SRCS:.c=.o)
 
-CFLAGS += `./pkgc --cflags`
-LIBS = `./pkgc --libs`
-
-##---------------------------------------------------------------------
-## BUILD RULES
-##---------------------------------------------------------------------
-
-#TODO ABI problems between modules appears if headers changes and make isn't told to recompile
-%.o: %.c ../include/app.h ../third-party/static/ui/imgui/imgui.h
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-all: $(EXE)
-
-$(EXE): $(OBJS) ../third-party/static/ui/dcimgui.a
-	$(CC) -o $@ $(OBJS) $(LIBS)
-
-../third-party/static/ui/dcimgui.a:
-	$(MAKE) -C ../third-party/static/ui
+all: llss
+	
+# targets : normal-prerequisites | order-only-prerequisites
+llss: $(OBJS) ../third-party/static/ecs/flecs.o | ../third-party/static/ui/libdcimgui.a ../third-party/static/ui/imgui/imgui.h
 
 ../third-party/static/ecs/flecs.o:
 	$(MAKE) -C ../third-party/static/ecs
 
+../third-party/static/ui/libdcimgui.a:
+	$(MAKE) -C ../third-party/static/ui
+
+../third-party/static/ui/imgui/imgui.h:
+	git submodule update --init --recursive ../third-party/static/ui/imgui
+
 clean:
-	rm -f $(EXE) $(OBJS)
+	rm -f llss $(OBJS)
 
 clean-recursive:
-	$(MAKE) -C .. clean-recursive
+	$(MAKE) -C ../clean-recursive
 
-run: $(EXE)
-	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" $(EXE)
-
-run-app-trace: $(EXE)
-	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" $(EXE)
-
-run-all-trace: $(EXE)
-	SDL_LOGGING="*=trace" $(EXE)
+ include ../Makefile.autodeps

@@ -1,4 +1,6 @@
 *.a
 *.o
 *.ini
+*.so.*
+.deps
 llss

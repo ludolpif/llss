@@ -1,11 +1,19 @@
 #pragma once
-
 #include <SDL3/SDL.h>
 #include "dcimgui.h"
 #include "flecs.h"
 
+#define APP_VERSION_TO_DOT(a, b, c) a ##.## b ##.## c
+#define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
+#define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
+#define	APP_VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
+#define	APP_VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
+
+#define APP_VERSION_INT APP_VERSION_TO_INT(0,2,1)
+#define APP_VERSION_STR "0.2.1" //TODO broken APP_VERSION_TO_DOT(0,2,1)
+
 #define APP_METADATA_NAME_STRING "llss"
-#define APP_METADATA_VERSION_STRING "0.1.0"
+#define APP_METADATA_VERSION_STRING APP_VERSION_STR
 #define APP_METADATA_IDENTIFIER_STRING "todo"
 #define APP_METADATA_CREATOR_STRING "ludolpif"
 #define APP_METADATA_COPYRIGHT_STRING "Copyright 2025-now ludolpif <ludolpif@gmail.com>"

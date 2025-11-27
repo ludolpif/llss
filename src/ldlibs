@@ -1,0 +1,9 @@
+#!/bin/bash
+declare -a LDLIBS=(
+-ldcimgui
+-ldl
+`pkg-config sdl3 --libs`
+-lm
+-lstdc++
+)
+echo ${LDLIBS[*]}

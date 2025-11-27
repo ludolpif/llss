@@ -1,9 +1,9 @@
-#include "../internal/plugin-host.h"
+#include "../internal/mod-host.h"
 
 SDL_SharedObject *plugin1;
 unsigned (*avformat_version)();
 
-bool plugin_host_init() {
+bool mod_host_init() {
 	//TODO this is dummy code for first sanity checks
 	plugin1 = SDL_LoadObject("/usr/lib/x86_64-linux-gnu/libavformat.so.61");
 	if (!plugin1) return false;

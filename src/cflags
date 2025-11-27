@@ -1,0 +1,11 @@
+#!/bin/bash
+declare -a CFLAGS=(
+-I../third-party/static/ui/dear_bindings_generated
+-I../third-party/static/ui/imgui
+-I../third-party/static/ui/dear_bindings_generated/backends
+-I../third-party/static/ui/imgui/backends
+-I../third-party/static/ecs/flecs
+-I../include
+`pkg-config sdl3 --cflags`
+)
+echo ${CFLAGS[*]}

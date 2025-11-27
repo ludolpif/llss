@@ -1,4 +1,4 @@
 #pragma once
 #include "app.h"
 
-bool plugin_host_init();
+bool mod_host_init();
