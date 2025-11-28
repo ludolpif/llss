@@ -1,0 +1,11 @@
+#!/bin/sh
+sdl=`pkg-config --cflags sdl3`
+lib='
+-DIMGUI_USER_CONFIG="imgui_config.h"
+-I../../../include
+-Idear_bindings_generated
+-Iimgui
+-Idear_bindings_generated/backends
+-Iimgui/backends
+'
+echo $lib $sdl

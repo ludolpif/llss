@@ -4,47 +4,34 @@
 #
 .PHONY: all bindings clean
 
-CXXFLAGS = -g -O0 -std=c++11
+CC := gcc
+#CPPFLAGS +=
+CXXFLAGS += -g -O0
+CXXFLAGS += -std=c++11 `./cflags`
+ARFLAGS = rcs
 
 EXE = libdcimgui.a
-SOURCES = imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
-SOURCES += imgui/backends/imgui_impl_sdl3.cpp imgui/backends/imgui_impl_sdlgpu3.cpp
-SOURCES += dear_bindings_generated/dcimgui.cpp
-SOURCES += dear_bindings_generated/backends/dcimgui_impl_sdl3.cpp
-SOURCES += dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
-OBJS := $(addsuffix .o, $(basename $(notdir $(SOURCES))))
-
-CXXFLAGS += `./pkgc --cflags`
-LIBS = `./pkgc --libs`
-ARFLAGS = rcs
+SRCS := imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
+SRCS += imgui/backends/imgui_impl_sdl3.cpp imgui/backends/imgui_impl_sdlgpu3.cpp
+SRCS += dear_bindings_generated/dcimgui.cpp
+SRCS += dear_bindings_generated/backends/dcimgui_impl_sdl3.cpp
+SRCS += dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
+OBJS := $(SRCS:.cpp=.o)
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o: imgui/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o: imgui/backends/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o: dear_bindings_generated/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o: dear_bindings_generated/backends/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
 all: $(EXE)
 
-$(EXE): $(OBJS)
+$(EXE): $(OBJS) ../../../include/imgui_config.h
 	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(EXE)
 
-# TODO use imconfig_user.h ?
-
-bindings: dear_bindings/dear_bindings.py
+# targets : normal-prerequisites | order-only-prerequisites
+bindings: | dear_bindings/dear_bindings.py
 	mkdir -p dear_bindings_generated/backends
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui ../imgui/imgui.h
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui_internal --include ../imgui/imgui.h ../imgui/imgui_internal.h
