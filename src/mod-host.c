@@ -1,4 +1,4 @@
-#include "../internal/mod-host.h"
+#include "mod-host.h"
 
 SDL_SharedObject *plugin1;
 unsigned (*avformat_version)();

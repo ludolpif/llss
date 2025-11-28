@@ -1,4 +1,4 @@
-#include "../internal/ui.h"
+#include "ui.h"
 
 SDL_AppResult UI_Main(appstate_t *appstate) {
 	SDL_AppResult then = SDL_APP_CONTINUE;

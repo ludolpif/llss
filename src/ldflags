@@ -1,8 +1,7 @@
-#!/bin/bash
-#TODO Both GNU ld and LLVM lld take --export-dynamic flag
-#TODO ld that ships with OS X takes -export_dynamic flag
-declare -a LDFLAGS=(
--Wl,--export-dynamic
--L ../third-party/static/ui
-)
-echo ${LDFLAGS[*]}
+#!/bin/sh
+case $(uname -s) in
+	Linux)      echo "-L../third-party/static/ui" ;;
+	Darwin)     echo "-L../third-party/static/ui -L/usr/local/lib -L/opt/local/lib" ;;
+	Windows_NT) echo "-L../third-party/static/ui" ;;
+	*)          echo "Unknown platform" >&2
+esac

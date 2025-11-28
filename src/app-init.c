@@ -1,10 +1,10 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
-#include "../internal/alloc.h"
-#include "../internal/mod-host.h"
+#include "alloc.h"
+#include "mod-host.h"
 
-#define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(0)
+#define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
 SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation

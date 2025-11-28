@@ -1,9 +1,8 @@
-#!/bin/bash
-declare -a LDLIBS=(
--ldcimgui
--ldl
-`pkg-config sdl3 --libs`
--lm
--lstdc++
-)
-echo ${LDLIBS[*]}
+#!/bin/sh
+sdl=`pkg-config --libs sdl3`
+case $(uname -s) in
+	Linux)      echo "-Wl,-Bstatic -ldcimgui -Wl,-Bdynamic -ldl $sdl -lstdc++" ;;
+	Darwin)     echo "-framework ApplicationServices -framework Cocoa -framework IOKit -framework CoreVideo -ldcimgui -ldl $sdl" ;;
+	Windows_NT) echo "-lgdi32 -limm32 -ldcimgui $sdl" ;;
+	*)          echo "Unknown platform" >&2
+esac

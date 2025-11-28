@@ -1,4 +1,4 @@
-#include "../internal/alloc.h"
+#include "alloc.h"
 
 // Those are global variables. All the appstate except this is on heap.
 SDL_AtomicInt alloc_count_per_context[APP_CONTEXT_COUNT][4];
