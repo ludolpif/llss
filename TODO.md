@@ -1,6 +1,10 @@
 # TODO list
 
 - plugin system (SDL have LoadLibrary)
+  - https://www.akkadia.org/drepper/dsohowto.pdf from https://gcc.gnu.org/wiki/Visibility
+  - https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryw
+  - https://github.com/libsdl-org/SDL/blob/main/src/loadso/windows/SDL_sysloadso.c
+  - https://github.com/libsdl-org/SDL/blob/main/src/loadso/dlopen/SDL_sysloadso.c
 - try UI from plugin
 - FLECS
 - https://media.bernat.ch/files/debian-debug-packages.pdf

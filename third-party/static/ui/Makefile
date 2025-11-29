@@ -4,10 +4,10 @@
 #
 .PHONY: all bindings clean
 
-CC := gcc
+CXX := g++
 #CPPFLAGS +=
-CXXFLAGS += -g -O0
-CXXFLAGS += -std=c++11 `./cflags`
+CXXFLAGS += -g -O3
+CXXFLAGS += `./cflags`
 ARFLAGS = rcs
 
 EXE = libdcimgui.a
@@ -26,9 +26,10 @@ all: $(EXE)
 
 $(EXE): $(OBJS) ../../../include/imgui_config.h
 	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
+	rm -f $(OBJS)
 
 clean:
-	rm -f $(OBJS) $(EXE)
+	rm -f $(EXE)
 
 # targets : normal-prerequisites | order-only-prerequisites
 bindings: | dear_bindings/dear_bindings.py

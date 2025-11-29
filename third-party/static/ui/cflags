@@ -8,4 +8,4 @@ lib='
 -Idear_bindings_generated/backends
 -Iimgui/backends
 '
-echo $lib $sdl
+echo -std=c++11 $lib $sdl

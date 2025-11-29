@@ -1,35 +1,36 @@
 #
 # Cross Platform Makefile
-# Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
+# Compatible with MSYS2/MINGW, GNU/Linux and Mac OS X
 #
 .PHONY: all clean symdump
 
-CFLAGS = -g -Wall -Wformat -O0 -std=gnu99
+CC := gcc
+#CPPFLAGS +=
+CFLAGS += -g -Wall -Wformat -O0
+CFLAGS += `./cflags`
+LDFLAGS += $(shell ./ldflags)
+LDLIBS += $(shell ./ldlibs)
 
-EXE := $(shell ./pkgc --soname)
-
-SOURCES := $(wildcard *.c)
-OBJS := $(addsuffix .o, $(basename $(notdir $(SOURCES))))
-
-CFLAGS += -fpic
-CFLAGS += `./pkgc --cflags`
-LIBS = `./pkgc --libs`
+EXE := $(shell ./soname)
+# ../../../Makefile.autodeps needs $(SRCS)
+SRCS := plugin.c hello.c
+OBJS := $(SRCS:.c=.o)
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
-
-#TODO ABI problems between modules appears if headers changes and make isn't told to recompile
-%.o: %.c ../../../include/app.h
-	$(CC) $(CFLAGS) -c -o $@ $< -fvisibility=hidden
+# targets: normal-prerequisites | order-only-prerequisites
 
 all: $(EXE)
 
 $(EXE): $(OBJS)
-	$(CC) -o $@ $(OBJS) $(LIBS) -Wl,--default-symver -Wl,-soname,$(EXE) -shared
+	$(LINK.c) $^ $(LDLIBS) -o $@
+# LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 clean:
 	rm -f $(EXE) $(OBJS)
 
 symdump: $(EXE)
 	objdump -T $(EXE)
+
+include ../../../Makefile.autodeps

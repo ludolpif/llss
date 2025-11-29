@@ -7,6 +7,8 @@
 #include "dcimgui.h"
 #include "flecs.h"
 
+#include "mod-host.h"
+
 #define APP_VERSION_TO_DOT(a, b, c) a ##.## b ##.## c
 #define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
 #define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
@@ -49,4 +51,5 @@ typedef struct appstate {
 	bool show_demo_window;
 	bool show_another_window;
 	ImVec4 clear_color;
+	appmods_t *mods;
 } appstate_t;

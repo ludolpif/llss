@@ -1,0 +1,9 @@
+#!/bin/sh
+soname=`./soname`
+flags="-Wl,--default-symver -Wl,-soname,$soname -shared"
+case $(uname -s) in
+	Linux)      echo "$flags -L../../../third-party/static/ui" ;;
+	Darwin)     echo "$flags -L../../../third-party/static/ui -L/usr/local/lib -L/opt/local/lib" ;;
+	Windows_NT) echo "$flags -L../../../third-party/static/ui" ;;
+	*)          echo "Unknown platform" >&2
+esac

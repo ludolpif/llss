@@ -1,0 +1,11 @@
+#!/bin/sh
+sdl=`pkg-config --libs sdl3`
+app="
+-I../../../third-party/static/ui/dear_bindings_generated
+-I../../../third-party/static/ui/imgui
+-I../../../third-party/static/ui/dear_bindings_generated/backends
+-I../../../third-party/static/ui/imgui/backends
+-I../../../third-party/static/ecs/flecs
+-I../../../include
+"
+echo -std=gnu99 -fpic -fvisibility=hidden $app $sdl

@@ -25,6 +25,17 @@ SDL_DECLSPEC Sint32 SDLCALL app_mod_fini(void *userptr) {
 // No app_mod_hook_purpose1 for this plugins (doesn't need it)
 
 SDL_DECLSPEC Sint32 SDLCALL app_mod_hook_purpose2(void *userptr) {
+
+	// 3. Show another simple window.
+	//if (appstate->show_another_window)
+	{
+		ImGui_Begin("Another Window", /*&appstate->show_another_window*/ NULL, 0);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui_Text("Hello from another window!");
+//		if (ImGui_Button("Close Me"))
+//			appstate->show_another_window = false;
+		ImGui_End();
+	}
+
 	return 42;
 }
 

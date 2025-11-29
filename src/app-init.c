@@ -15,6 +15,9 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	if (!*_appstate)
 		app_failure("SDL_calloc(1,sizeof(appstate_t))");
 	appstate_t *appstate = *_appstate;
+	appstate->mods = SDL_calloc(1,sizeof(appmods_t));
+	if (!appstate->mods)
+		app_failure("SDL_calloc(1,sizeof(appmods_t))");
 
 	// Configure logging
 	SDL_LogPriority pri = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
@@ -146,10 +149,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	alloc_count_dump_counters();
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
-	if (!mod_host_init())
-		app_failure("mod_host_init(): %s", SDL_GetError());
-
-	return SDL_APP_CONTINUE;
+	return mod_host_init(appstate);
 }
 
 void SDL_AppQuit(void *_appstate, SDL_AppResult result) {

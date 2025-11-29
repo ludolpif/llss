@@ -30,15 +30,9 @@ SDL_AppResult UI_Main(appstate_t *appstate) {
 		ImGui_End();
 	}
 
-	// 3. Show another simple window.
-	if (appstate->show_another_window)
-	{
-		ImGui_Begin("Another Window", &appstate->show_another_window, 0);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui_Text("Hello from another window!");
-		if (ImGui_Button("Close Me"))
-			appstate->show_another_window = false;
-		ImGui_End();
-	}
+	appmods_t *mods = appstate->mods;
+	for (int j=0; j<mods->hook_purpose2_count; j++)
+		mods->app_mod_hook_purpose2[j]();
 
 	return then;
 }
