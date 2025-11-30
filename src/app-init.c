@@ -1,4 +1,5 @@
 #include "app.h"
+#include "app-internal.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 #include "alloc.h"
@@ -13,14 +14,15 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
 	alloc_count_install_hooks();
 
-	// Allocate on heap the main appstate
+	// Allocate on heap applications state structures
 	*_appstate = SDL_calloc(1,sizeof(appstate_t));
 	if (!*_appstate)
 		app_failure("SDL_calloc(1,sizeof(appstate_t))");
 	appstate_t *appstate = *_appstate;
-	appstate->mods = SDL_calloc(1,sizeof(appmods_t));
-	if (!appstate->mods)
-		app_failure("SDL_calloc(1,sizeof(appmods_t))");
+
+	appinternal_t *internal = SDL_calloc(1,sizeof(appinternal_t));
+	if (!internal)
+		app_failure("SDL_calloc(1,sizeof(appinternal_t))");
 
 	// Configure logging
 	SDL_LogPriority pri = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
@@ -79,11 +81,12 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Setup Dear ImGui context
 	CIMGUI_CHECKVERSION(); // This macro calls ImGui::DebugCheckVersionAndDataLayout() and try to detect ABI problems
 	ImGui_CreateContext(NULL);
-	ImGuiIO *io = ImGui_GetIO();
-	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	ImGuiContext* imgui_context = ImGui_GetCurrentContext();
+	ImGuiIO *imgui_io = ImGui_GetIO();
+	imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	imgui_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
 	// Setup Dear ImGui style
 	ImGui_StyleColorsDark(NULL);
@@ -93,15 +96,15 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	ImGuiStyle* style = ImGui_GetStyle();
 	// Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
 	ImGuiStyle_ScaleAllSizes(style, main_scale);
-	// Set initial font scale. (using io->ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+	// Set initial font scale. (using imgui_io->ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 	style->FontScaleDpi = main_scale;
 	// [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
-	io->ConfigDpiScaleFonts = true;
+	imgui_io->ConfigDpiScaleFonts = true;
 	// [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
-	io->ConfigDpiScaleViewports = true;
+	imgui_io->ConfigDpiScaleViewports = true;
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	if (imgui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style->WindowRounding = 0.0f;
 		style->Colors[ImGuiCol_WindowBg].w = 1.0f;
@@ -125,28 +128,43 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// - Read 'docs/FONTS.md' for more instructions and details. If you like the default font but want it to scale better, consider using the 'ProggyVector' from the same author!
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
 	//style.FontSizeBase = 20.0f;
-	//io->Fonts->AddFontDefault();
-	//io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf");
-	//io->Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
-	//io->Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
-	//io->Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
-	//ImFont* font = io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
+	//imgui_io->Fonts->AddFontDefault();
+	//imgui_io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf");
+	//imgui_io->Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
+	//imgui_io->Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
+	//imgui_io->Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
+	//ImFont* font = imgui_io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
 	//IM_ASSERT(font != NULL);
 
+	//TODO this is dummy code for first sanity checks
 	ecs_world_t *world = ecs_init();
 	ecs_entity_t e = ecs_entity(world, { .name = "Bob" });
 	app_info("%016lu ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
-	//TODO this is dummy code for first sanity checks
+
+	appstate->running_app_version = APP_VERSION_INT;
+	appstate->internal = internal;
+	appstate->skip_debug = skip_debug;
+
+	appstate->sdl_malloc_func = alloc_count_malloc;
+	appstate->sdl_calloc_func = alloc_count_calloc;
+	appstate->sdl_realloc_func = alloc_count_realloc;
+	appstate->sdl_free_func = alloc_count_free;
+
+	appstate->imgui_malloc_func = alloc_count_malloc_userptr;
+	appstate->imgui_free_func = alloc_count_free_userptr;
+
+	appstate->tick0_wallclock = tick0_wallclock;
+	appstate->frameid = 0;
 
 	appstate->world = world;
-	appstate->tick0_wallclock = tick0_wallclock;
-	appstate->skip_debug = skip_debug;
 	appstate->window = window;
 	appstate->gpu_device = gpu_device;
-	appstate->io = io;
+	appstate->imgui_context = imgui_context;
+	appstate->imgui_io = imgui_io;
+	
+	//TODO this is temporary, move in appinternal
 	appstate->show_demo_window = true;
 	appstate->show_another_window = false;
-	appstate->frame_count = 0;
 	appstate->clear_color.x = 0.45f;
 	appstate->clear_color.y = 0.55f;
 	appstate->clear_color.z = 0.60f;

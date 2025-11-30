@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "app-internal.h"
 
 SDL_AppResult UI_Main(appstate_t *appstate) {
 	SDL_AppResult then = SDL_APP_CONTINUE;
@@ -26,13 +27,22 @@ SDL_AppResult UI_Main(appstate_t *appstate) {
 		ImGui_SameLine();
 		ImGui_Text("counter = %d", counter);
 
-		ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / appstate->io->Framerate, appstate->io->Framerate);
+		ImGui_Text("Application average %.3f ms/frame (%.1f FPS)",
+				1000.0f / appstate->imgui_io->Framerate, appstate->imgui_io->Framerate);
 		ImGui_End();
 	}
 
-	appmods_t *mods = appstate->mods;
-	for (int j=0; j<mods->hook_purpose2_count; j++)
-		mods->app_mod_hook_purpose2[j]();
+	//TODO hooks that return always a non SDL_APP_CONTINUE will flood the logs, prevent it
+	// (replace with counters + last frameid failure instead)
+	appmods_t *mods = &appstate->internal->mods;
+	Sint32 count = mods->hook_purpose2_count;
+	SDL_AppResult result;
+	for (int j=0; j<count; j++) {
+		void *userptr = mods->userptr[j];
+		result = mods->app_mod_hook_purpose2[j](userptr);
+		if (result != SDL_APP_CONTINUE)
+			app_info("%016lu UI-main(): app_mod_hook_purpose2 failed for %s", SDL_GetTicksNS(), mods->mod_dirname[j]);
+	}
 
 	return then;
 }

@@ -11,32 +11,42 @@ SDL_DECLSPEC Sint32 SDLCALL app_mod_handshake(Sint32 running_app_version) {
 	return hello(APP_VERSION_INT);
 }
 
-SDL_DECLSPEC Sint32 SDLCALL app_mod_init(void **userptr) {
-	*userptr = SDL_malloc(42);
-	if (!*userptr) return -1;
-	return 0;
+SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_init(appstate_t *appstate, void **userptr) {
+	if (!appstate || !appstate->imgui_context) {
+		return SDL_APP_FAILURE;
+	}
+	ImGui_SetCurrentContext(appstate->imgui_context);
+	if (!appstate->imgui_malloc_func || !appstate->imgui_free_func) {
+		return SDL_APP_FAILURE;
+	}
+	ImGui_SetAllocatorFunctions(appstate->imgui_malloc_func, appstate->imgui_free_func, NULL);
+
+	*userptr = appstate; // This plugin don't need an additionnal internal state
+
+	return SDL_APP_CONTINUE;
 }
 
-SDL_DECLSPEC Sint32 SDLCALL app_mod_fini(void *userptr) {
-	SDL_free(userptr);
-	return true;
+SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_fini(void *userptr) {
+	return SDL_APP_CONTINUE;
 }
 
 // No app_mod_hook_purpose1 for this plugins (doesn't need it)
 
-SDL_DECLSPEC Sint32 SDLCALL app_mod_hook_purpose2(void *userptr) {
+SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_hook_purpose2(void *userptr) {
+	appstate_t *appstate = (appstate_t *) userptr;
 
 	// 3. Show another simple window.
-	//if (appstate->show_another_window)
+	if (appstate->show_another_window)
 	{
-		ImGui_Begin("Another Window", /*&appstate->show_another_window*/ NULL, 0);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui_Begin("Another Window", &appstate->show_another_window, 0);
 		ImGui_Text("Hello from another window!");
-//		if (ImGui_Button("Close Me"))
-//			appstate->show_another_window = false;
+		if (ImGui_Button("Close Me"))
+			appstate->show_another_window = false;
 		ImGui_End();
 	}
 
-	return 42;
+	return SDL_APP_CONTINUE;
 }
 
 Sint32 some_private_func(Sint32 a) {

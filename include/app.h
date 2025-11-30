@@ -4,8 +4,6 @@
 #include "dcimgui.h"
 #include "flecs.h"
 
-#include "mod-host.h"
-
 #define APP_VERSION_TO_DOT(a, b, c) a ##.## b ##.## c
 #define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
 #define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
@@ -37,16 +35,36 @@ typedef enum APP_LogCategory {
 #define app_error(args...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, args)
 #define app_critical(args...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, args)
 
+// Opaque type for app internal states that are subject to change without breaking mods ABI
+struct appinternal;
+
+// App state, used by the app and exposed to mods, should only extended by adding fields at the end
+// Don't use bitfields members as binary layout isn't specification defined (can vary between compilers)
 typedef struct appstate {
-	ecs_world_t *world;
-	SDL_Time tick0_wallclock;
+	Sint32 running_app_version;
+	struct appinternal *internal;
 	bool skip_debug;
+
+	//TODO Check if this necessary (may SDL do it by himself after dlopen ?
+	SDL_malloc_func sdl_malloc_func;
+	SDL_calloc_func sdl_calloc_func;
+	SDL_realloc_func sdl_realloc_func;
+	SDL_free_func sdl_free_func;
+
+	ImGuiMemAllocFunc imgui_malloc_func;
+	ImGuiMemFreeFunc imgui_free_func;
+
+	SDL_Time tick0_wallclock;
+	Sint32 frameid;
+
+	ecs_world_t *world;
 	SDL_Window *window;
 	SDL_GPUDevice *gpu_device;
-	ImGuiIO *io;
-	Sint32 frame_count;
+	ImGuiContext* imgui_context;
+	ImGuiIO *imgui_io;
+
+	//TODO this is temporary, move in appinternal
 	bool show_demo_window;
 	bool show_another_window;
 	ImVec4 clear_color;
-	appmods_t *mods;
 } appstate_t;

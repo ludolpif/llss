@@ -11,13 +11,13 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	bool skip_debug = appstate->skip_debug;
 	SDL_Window *window = appstate->window;
 	SDL_GPUDevice* gpu_device = appstate->gpu_device;
-	ImGuiIO *io = appstate->io;
-	Sint32 frame_count = appstate->frame_count;
+	ImGuiIO *imgui_io = appstate->imgui_io;
+	Sint32 frameid = appstate->frameid;
 	ImVec4 clear_color = appstate->clear_color;
 
-	app_trace("%016lu SDL_AppIterate(%d)", SDL_GetTicksNS(), frame_count);
+	app_trace("%016lu SDL_AppIterate(%d)", SDL_GetTicksNS(), frameid);
 
-	if ( frame_count == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
+	if ( frameid == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
 
 	if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)
 	{
@@ -67,7 +67,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	}
 
 	// Update and Render additional Platform Windows
-	if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	if (imgui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui_UpdatePlatformWindows();
 		ImGui_RenderPlatformWindowsDefault();
@@ -76,7 +76,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	// Submit the command buffer
 	SDL_SubmitGPUCommandBuffer(command_buffer);
 
-	appstate->frame_count++;
+	appstate->frameid++;
 
 	return then;
 }

@@ -1,4 +1,5 @@
 #include "app.h"
+#include "app-internal.h"
 #include "mod-host.h"
 
 // Forward declarations
@@ -6,7 +7,7 @@ void mod_tryload_optionnal_hooks(appmods_t *mods, int i);
 
 SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, const char *mod_dirname) {
 	appstate_t *appstate = (appstate_t *) _appstate;
-	appmods_t *mods = appstate->mods;
+	appmods_t *mods = &appstate->internal->mods;
 
 	app_warn("%016lu mod_tryload(appstate, \"%s\", \"%s\"): starting now",
 			SDL_GetTicksNS(), mods_basepath, mod_dirname);
@@ -60,6 +61,12 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 	}
 
 	mod_tryload_optionnal_hooks(mods, i);
+
+	SDL_AppResult init_res = mods->app_mod_init[i](appstate, &mods->userptr[i]);
+	if (init_res != SDL_APP_CONTINUE) {
+		app_warn("%016lu mod_tryload(): app_mod_init(): error %d", SDL_GetTicksNS(), init_res);
+		goto bad;
+	}
 
 	mods->mods_count++;
 
