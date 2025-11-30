@@ -22,8 +22,8 @@ void alloc_count_install_hooks() {
 	ImGui_SetAllocatorFunctions(alloc_count_malloc_userptr, alloc_count_free_userptr, NULL);
 }
 
-void alloc_count_dump_counters() {
-	app_info("                 ctxt   malloc   calloc  realloc     free");
+void alloc_count_dump_counters(Sint32 frames) {
+	app_info("[%12d frames]     ctxt   malloc   calloc  realloc     free", frames);
 	for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
 		int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);
 		int calloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][1]);
@@ -34,7 +34,7 @@ void alloc_count_dump_counters() {
 				malloc_count, calloc_count, realloc_count, free_count,
 				malloc_count + calloc_count - free_count);
 	}
-	app_info("(this only count calls via SDL_(m|c|re)alloc, SDL_free, and in current program boundary/heap, not other DLL)");
+	app_info("This only count calls via SDL_(*alloc|free)");
 }
 
 void alloc_count_set_context(app_alloc_count_contexts_t contextid) {

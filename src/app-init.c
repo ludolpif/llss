@@ -85,8 +85,12 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	ImGuiIO *imgui_io = ImGui_GetIO();
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+#ifdef IMGUI_HAS_DOCK
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+#endif
+#ifdef IMGUI_HAS_VIEWPORT
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+#endif
 
 	// Setup Dear ImGui style
 	ImGui_StyleColorsDark(NULL);
@@ -98,17 +102,20 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	ImGuiStyle_ScaleAllSizes(style, main_scale);
 	// Set initial font scale. (using imgui_io->ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 	style->FontScaleDpi = main_scale;
+#ifdef IMGUI_HAS_VIEWPORT
 	// [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
 	imgui_io->ConfigDpiScaleFonts = true;
 	// [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
 	imgui_io->ConfigDpiScaleViewports = true;
-
+#endif
+#ifdef IMGUI_HAS_VIEWPORT
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	if (imgui_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style->WindowRounding = 0.0f;
 		style->Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
+#endif
 
 	// Setup Platform/Renderer backends
 	cImGui_ImplSDL3_InitForSDLGPU(window);
@@ -173,7 +180,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	app_load_mods(appstate);
 
 	app_info("%016lu heap allocation at end of SDL_AppInit:", SDL_GetTicksNS());
-	alloc_count_dump_counters();
+	alloc_count_dump_counters(appstate->frameid);
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
 	return SDL_APP_CONTINUE;
@@ -209,5 +216,5 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	SDL_free(appstate);
 
 	app_info("%016lu heap allocation at end of SDL_AppQuit:", SDL_GetTicksNS());
-	alloc_count_dump_counters();
+	alloc_count_dump_counters(appstate->frameid);
 }
