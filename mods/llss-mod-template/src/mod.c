@@ -1,4 +1,4 @@
-#include "app.h"
+#include "mod.h"
 #include "hello.h"
 
 // SDL_DECLSPEC: A macro to tag a symbol as a public API.
@@ -21,7 +21,7 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_init(appstate_t *appstate, void **use
 	}
 	ImGui_SetAllocatorFunctions(appstate->imgui_malloc_func, appstate->imgui_free_func, NULL);
 
-	*userptr = appstate; // This plugin don't need an additionnal internal state
+	*userptr = appstate; // This mod don't need an additionnal internal state
 
 	return SDL_APP_CONTINUE;
 }
@@ -30,7 +30,7 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_fini(void *userptr) {
 	return SDL_APP_CONTINUE;
 }
 
-// No app_mod_hook_purpose1 for this plugins (doesn't need it)
+// No app_mod_hook_purpose1 for this mod (doesn't need it)
 
 SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_hook_purpose2(void *userptr) {
 	appstate_t *appstate = (appstate_t *) userptr;
