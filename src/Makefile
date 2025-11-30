@@ -11,7 +11,7 @@ CFLAGS += `./cflags`
 LDFLAGS += $(shell ./ldflags)
 LDLIBS += $(shell ./ldlibs)
 
-EXE = llss
+EXE = ../llss
 # ../Makefile.autodeps needs $(SRCS)
 # Don't list $(EXE).c as we use Make implicit rule "binary: obj1.o obj2.o" which auto-build binary.o
 SRCS := alloc.c app-event.c app-init.c app-iterate.c main.c mod-host.c ui-main.c

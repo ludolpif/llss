@@ -2,14 +2,14 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-.PHONY: all clean clean-recursive run
+.PHONY: all clean clean-recursive llss run
 
 
 # TODO https://media.bernat.ch/files/debian-debug-packages.pdf
 
-all: src/llss
+all: llss
 
-src/llss:
+llss:
 	$(MAKE) -C src
 
 clean:
@@ -20,12 +20,12 @@ clean-recursive:
 	$(MAKE) -C third-party/static/ecs clean
 	$(MAKE) -C third-party/static/ui clean
 
-run: src/llss
-	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" src/llss
+run: llss
+	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" ./llss
 
-run-app-trace: src/llss
-	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" src/llss
+run-app-trace: llss
+	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" ./llss
 
 run-all-trace: llss
-	SDL_LOGGING="*=trace" src/llss
+	SDL_LOGGING="*=trace" ./llss
 

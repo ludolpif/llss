@@ -12,12 +12,12 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	SDL_Window *window = appstate->window;
 	SDL_GPUDevice* gpu_device = appstate->gpu_device;
 	ImGuiIO *io = appstate->io;
-	Sint32 frame_count = appstate->frame_count++;
+	Sint32 frame_count = appstate->frame_count;
 	ImVec4 clear_color = appstate->clear_color;
 
-	if ( frame_count == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
-
 	app_trace("%016lu SDL_AppIterate(%d)", SDL_GetTicksNS(), frame_count);
+
+	if ( frame_count == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
 
 	if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)
 	{
@@ -75,6 +75,8 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 
 	// Submit the command buffer
 	SDL_SubmitGPUCommandBuffer(command_buffer);
+
+	appstate->frame_count++;
 
 	return then;
 }

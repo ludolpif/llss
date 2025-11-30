@@ -11,7 +11,7 @@ CFLAGS += `./cflags`
 LDFLAGS += $(shell ./ldflags)
 LDLIBS += $(shell ./ldlibs)
 
-EXE := $(shell ./soname)
+EXE := ../$(shell ./soname)
 # ../../../Makefile.autodeps needs $(SRCS)
 SRCS := plugin.c hello.c
 OBJS := $(SRCS:.c=.o)

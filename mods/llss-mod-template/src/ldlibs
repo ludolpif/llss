@@ -1,7 +1,8 @@
 #!/bin/sh
 case $(uname -s) in
-	Linux)      echo "" ;;
-	Darwin)     echo "" ;;
-	Windows_NT) echo "" ;;
+	Linux)      imgui="-ldcimgui -lm -lstdc++";;
+	Darwin)     imgui="-framework ApplicationServices -framework Cocoa -framework IOKit -framework CoreVideo -ldcimgui" ;;
+	Windows_NT) imgui="-lgdi32 -limm32 -ldcimgui" ;;
 	*)          echo "Unknown platform" >&2
 esac
+echo $imgui

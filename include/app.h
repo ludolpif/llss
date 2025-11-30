@@ -1,8 +1,5 @@
 #pragma once
 #include <SDL3/SDL.h>
-// Disable obsolete functions for main app and for current mods builds, but not when compiling dcimgui.
-//  This should help aging mods to be loadable with current main app version.
-#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 #define IMGUI_USER_CONFIG "imgui_config.h"
 #include "dcimgui.h"
 #include "flecs.h"

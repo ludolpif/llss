@@ -6,6 +6,9 @@
 
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
+// Forward declarations
+void app_load_mods(appstate_t *appstate);
+
 SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
 	alloc_count_install_hooks();
@@ -74,7 +77,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	SDL_SetGPUSwapchainParameters(gpu_device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_VSYNC);
 
 	// Setup Dear ImGui context
-	CIMGUI_CHECKVERSION();
+	CIMGUI_CHECKVERSION(); // This macro calls ImGui::DebugCheckVersionAndDataLayout() and try to detect ABI problems
 	ImGui_CreateContext(NULL);
 	ImGuiIO *io = ImGui_GetIO();
 	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -88,10 +91,14 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// Setup scaling
 	ImGuiStyle* style = ImGui_GetStyle();
-	ImGuiStyle_ScaleAllSizes(style, main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
-	style->FontScaleDpi = main_scale;        // Set initial font scale. (using io->ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
-	io->ConfigDpiScaleFonts = true;          // [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
-	io->ConfigDpiScaleViewports = true;      // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
+	// Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+	ImGuiStyle_ScaleAllSizes(style, main_scale);
+	// Set initial font scale. (using io->ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+	style->FontScaleDpi = main_scale;
+	// [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
+	io->ConfigDpiScaleFonts = true;
+	// [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
+	io->ConfigDpiScaleViewports = true;
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -139,17 +146,32 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->io = io;
 	appstate->show_demo_window = true;
 	appstate->show_another_window = false;
-	appstate->frame_count = -1;
+	appstate->frame_count = 0;
 	appstate->clear_color.x = 0.45f;
 	appstate->clear_color.y = 0.55f;
 	appstate->clear_color.z = 0.60f;
 	appstate->clear_color.w = 1.00f;
 
+	app_load_mods(appstate);
+
 	app_info("%016lu heap allocation at end of SDL_AppInit:", SDL_GetTicksNS());
 	alloc_count_dump_counters();
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
-	return mod_host_init(appstate);
+	return SDL_APP_CONTINUE;
+}
+
+void app_load_mods(appstate_t *appstate) {
+	char *mods_basepath;
+	if (!SDL_asprintf(&mods_basepath, "%smods", SDL_GetBasePath())) {
+		app_error("%016lu app_load_mods(): SDL_asprintf(&mods_basepath, ...) failed", SDL_GetTicksNS());
+		return;
+	}
+
+	if (!SDL_EnumerateDirectory(mods_basepath, mod_tryload, appstate)) {
+		app_error("%016lu app_load_mods(): SDL_EnumerateDirectory(%s) failed", SDL_GetTicksNS(), mods_basepath);
+	}
+	// The module loading effectively happens in mods_tryload(void *_appstate) function/callback. See mod-host.c
 }
 
 void SDL_AppQuit(void *_appstate, SDL_AppResult result) {

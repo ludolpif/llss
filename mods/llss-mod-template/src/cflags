@@ -8,4 +8,4 @@ app="
 -I../../../third-party/static/ecs/flecs
 -I../../../include
 "
-echo -std=gnu99 -fpic -fvisibility=hidden $app $sdl
+echo -std=gnu99 -fPIC -fvisibility=hidden $app $sdl
