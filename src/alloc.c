@@ -23,7 +23,7 @@ void alloc_count_install_hooks() {
 }
 
 void alloc_count_dump_counters(Sint32 frames) {
-	app_info("[%12d frames]     ctxt   malloc   calloc  realloc     free", frames);
+	app_info("[%7d frames] ctxt   malloc   calloc  realloc     free", frames);
 	for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
 		int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);
 		int calloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][1]);
