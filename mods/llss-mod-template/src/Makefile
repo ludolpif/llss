@@ -13,7 +13,7 @@ LDLIBS += $(shell ./ldlibs)
 
 EXE := ../$(shell ./soname)
 # ../../../Makefile.autodeps needs $(SRCS)
-SRCS := plugin.c hello.c
+SRCS := mod.c hello.c
 OBJS := $(SRCS:.c=.o)
 
 ##---------------------------------------------------------------------
