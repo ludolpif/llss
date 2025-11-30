@@ -27,13 +27,13 @@ typedef enum APP_LogCategory {
 	APP_CATEGORY_PLUGIN,
 } APP_LogCategory;
 */
-#define app_trace(args...)    if (!skip_debug) SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, args)
-#define app_verbose(args...)  if (!skip_debug) SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, args)
-#define app_debug(args...)    if (!skip_debug) SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, args)
-#define app_info(args...)     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, args)
-#define app_warn(args...)     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, args)
-#define app_error(args...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, args)
-#define app_critical(args...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, args)
+#define app_trace(...)    if (!skip_debug) SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_verbose(...)  if (!skip_debug) SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_debug(...)    if (!skip_debug) SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_info(...)     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_warn(...)     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_error(...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_critical(...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 
 // Opaque type for app internal states that are subject to change without breaking mods ABI
 struct appinternal;

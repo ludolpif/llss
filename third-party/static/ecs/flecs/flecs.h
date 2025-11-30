@@ -647,6 +647,19 @@ extern "C" {
 #define ECS_TARGET_POSIX
 #endif
 
+// Windows workaround : if <windows.h> included before <winsock2.h>, everything goes wrong (many C4005, C2011).
+#if defined(ECS_TARGET_WINDOWS)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+#endif
+
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #define ECS_TARGET_MINGW
 #endif

@@ -4,3 +4,6 @@
 *.so.*
 .deps
 llss
+.vs
+x64
+x86
