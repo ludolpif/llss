@@ -24,11 +24,12 @@ OBJS := $(SRCS:.cpp=.o)
 
 all: $(EXE)
 
-$(EXE): $(OBJS) imgui/imgui.h
+$(EXE): $(OBJS)
 	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
 	rm -f $(OBJS)
 
-$(OBJS): ../../../include/imgui_config.h
+# Prevent rule '%.o : %.c' to start before imgui submodule is available
+$(OBJS): imgui/imgui.h ../../../include/imgui_config.h
 
 imgui/imgui.h:
 	git submodule update --init --recursive imgui
