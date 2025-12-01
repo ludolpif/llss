@@ -119,7 +119,8 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// Setup Platform/Renderer backends
 	cImGui_ImplSDL3_InitForSDLGPU(window);
-	ImGui_ImplSDLGPU3_InitInfo init_info = {};
+	ImGui_ImplSDLGPU3_InitInfo init_info;
+	SDL_memset(&init_info, 0, sizeof(init_info));
 	init_info.Device = gpu_device;
 	init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(gpu_device, window);
 	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;                      // Only used in multi-viewports mode.

@@ -2,6 +2,14 @@
 #include "mods-api.h"
 
 #define APP_MAX_MODS_COUNT 64
+#if defined(SDL_PLATFORM_WINDOWS)
+#define APP_MOD_FILEEXT ".dll"
+#elif defined(SDL_PLATFORM_APPLE)
+#define APP_MOD_FILEEXT ".dylib"
+#else
+#define APP_MOD_FILEEXT ".so"
+#endif
+
 typedef struct appmods {
 	Sint32 mods_count;
 

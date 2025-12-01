@@ -107,6 +107,9 @@
     <ClInclude Include="$(SolutionDir)third-party\static\ui\imgui\backends\imgui_impl_sdl3.h" />
     <ClInclude Include="$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
     <ClInclude Include="$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
+    <ClInclude Include="app-internal.h" />
+    <ClInclude Include="mod-host.h" />
+    <ClInclude Include="ui.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)third-party\static\ecs\flecs.vcxproj">

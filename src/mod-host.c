@@ -9,9 +9,6 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 	appstate_t *appstate = (appstate_t *) _appstate;
 	appmods_t *mods = &appstate->internal->mods;
 
-	app_warn("%016lu mod_tryload(appstate, \"%s\", \"%s\"): starting now",
-			SDL_GetTicksNS(), mods_basepath, mod_dirname);
-
 	int i = mods->mods_count;
 	if ( i == APP_MAX_MODS_COUNT ) {
 		app_error("%016lu mod_tryload(): APP_MAX_MODS_COUNT reached", SDL_GetTicksNS());
@@ -20,13 +17,13 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	mods->mod_dirname[i] = SDL_strdup(mod_dirname);
 
-	//TODO make it properly, for all platforms
-	if (!SDL_asprintf(&mods->mod_sopath[i], "%s%s/%s.so.1", mods_basepath, mod_dirname, mod_dirname)) {
+	// Note: SDL invite us to use "/" as path separator even on Windows, see https://github.com/libsdl-org/SDL/issues/11370
+	if (!SDL_asprintf(&mods->mod_sopath[i], "%s%s/%s%s", mods_basepath, mod_dirname, mod_dirname, APP_MOD_FILEEXT)) {
 		app_error("%016lu mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf: %s",
 				SDL_GetTicksNS(), mods_basepath, mod_dirname, SDL_GetError());
 		goto bad3;
 	}
-
+	app_warn("%016lu mod_tryload(): will load %s", SDL_GetTicksNS(), mods->mod_sopath[i]);
 	mods->shared_object[i] = SDL_LoadObject(mods->mod_sopath[i]);
 	if (!mods->shared_object[i]) {
 		app_warn("%016lu mod_tryload(): SDL_LoadObject(): %s", SDL_GetTicksNS(), SDL_GetError());
