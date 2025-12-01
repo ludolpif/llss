@@ -78,6 +78,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -93,9 +94,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.c" />
     <ClCompile Include="hello.c" />
     <ClCompile Include="mod.c" />
+    <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SDL3_DIR)\include\SDL\SDL.h" />
@@ -106,6 +107,7 @@
     <ClInclude Include="$(SolutionDir)include\app.h" />
     <ClInclude Include="$(SolutionDir)include\imgui_config.h" />
     <ClInclude Include="$(SolutionDir)include\mods-api.h" />
+    <ClInclude Include="hello.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)third-party\static\ecs\flecs.vcxproj">

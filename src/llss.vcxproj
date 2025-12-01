@@ -77,6 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+	  <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -99,10 +100,10 @@
     <ClCompile Include="ui-main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(SDL3_DIR)include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)include\app.h" />
     <ClInclude Include="$(SolutionDir)include\imgui_config.h" />
     <ClInclude Include="$(SolutionDir)include\mods-api.h" />
-    <ClInclude Include="$(SDL3_DIR)include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)third-party\static\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
     <ClInclude Include="$(SolutionDir)third-party\static\ui\imgui\backends\imgui_impl_sdl3.h" />
     <ClInclude Include="$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />

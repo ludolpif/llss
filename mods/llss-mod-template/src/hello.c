@@ -1,5 +1,6 @@
-#include "mod.h"
+#include "app.h"
 
 Sint32 hello(Sint32 b) {
-	return some_private_func(b);
+	// Remove me, illustration purposes only
+	return b;
 }

@@ -13,7 +13,7 @@ LDLIBS += $(shell ./ldlibs)
 
 EXE = ../llss
 # ../Makefile.autodeps needs $(SRCS)
-SRCS := alloc.c app-event.c app-init.c app-iterate.c main.c mod-host.c ui-main.c
+SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 
 ##---------------------------------------------------------------------

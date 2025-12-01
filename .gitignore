@@ -1,11 +1,19 @@
+# Linux things
 /llss
 *.a
 *.o
-*.ini
-*.so.*
+*.so
+# Apple things
+*.dylib
+# Windows things
 *.exe
 *.dll
 *.pdb
-.deps
+*.exp
+*.lib
 .vs
 x64
+# Makefile things
+.deps
+# App things
+*.ini

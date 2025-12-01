@@ -1,7 +1,9 @@
-#include "mod.h"
+#define DLL_EXPORT
+#include "app.h"
 #include "hello.h"
 
 // SDL_DECLSPEC: A macro to tag a symbol as a public API.
+// Windows : DLL_EXPORT must be defined before inclusion of SDL.h (here through app.h) to have a non empty SDL_DECLSPEC
 // SDLCALL: A macro to set a function's calling conventions.
 
 SDL_DECLSPEC Sint32 SDLCALL app_mod_handshake(Sint32 running_app_version) {
