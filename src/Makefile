@@ -28,16 +28,13 @@ $(EXE): $(OBJS) ../third-party/static/ecs/flecs.o ../third-party/static/ui/libdc
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 # Prevent rule '%.o : %.c' to start before imgui submodule is available
-$(OBJS): ../third-party/static/ui/imgui/imgui.h
+$(OBJS): ../third-party/static/ui/libdcimgui.a
 
 ../third-party/static/ecs/flecs.o:
 	$(MAKE) -C ../third-party/static/ecs
 
 ../third-party/static/ui/libdcimgui.a:
 	$(MAKE) -C ../third-party/static/ui
-
-../third-party/static/ui/imgui/imgui.h:
-	git submodule update --init --recursive ../third-party/static/ui/imgui
 
 clean:
 	rm -f $(EXE) $(OBJS)

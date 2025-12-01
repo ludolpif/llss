@@ -24,9 +24,14 @@ OBJS := $(SRCS:.cpp=.o)
 
 all: $(EXE)
 
-$(EXE): $(OBJS) ../../../include/imgui_config.h
+$(EXE): $(OBJS) imgui/imgui.h
 	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
 	rm -f $(OBJS)
+
+$(OBJS): ../../../include/imgui_config.h
+
+imgui/imgui.h:
+	git submodule update --init --recursive imgui
 
 clean:
 	rm -f $(EXE)
