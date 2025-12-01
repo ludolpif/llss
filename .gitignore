@@ -1,9 +1,11 @@
+/llss
 *.a
 *.o
 *.ini
 *.so.*
+*.exe
+*.dll
+*.pdb
 .deps
-llss
 .vs
 x64
-x86
