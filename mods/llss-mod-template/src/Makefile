@@ -27,6 +27,15 @@ $(EXE): $(OBJS)
 	$(LINK.c) $^ $(LDLIBS) -o $@
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
+# Prevent rule '%.o : %.c' to start before imgui submodule is available
+$(OBJS): ../../../third-party/static/ui/libdcimgui.a ../../../third-party/static/ecs/flecs.o
+
+../../../third-party/static/ecs/flecs.o:
+	$(MAKE) -C ../../../third-party/static/ecs
+
+../../../third-party/static/ui/libdcimgui.a:
+	$(MAKE) -C ../../../third-party/static/ui
+
 clean:
 	rm -f $(EXE) $(OBJS)
 

@@ -1,0 +1,12 @@
+#!/bin/sh
+check() {
+	cmd="$1"; shift
+	$cmd $* > /dev/null || echo "You need $cmd in PATH" >&2
+}
+check make --version
+check gcc --version
+check ar --version
+check pkg-config --version
+pkg-config sdl3 --cflags > /dev/null
+
+# So far this ./configure output nothing, it just make sanity checks for static Makefiles

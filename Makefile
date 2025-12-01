@@ -13,14 +13,14 @@ llss:
 	$(MAKE) -C src
 
 mods/llss-mod-template/llss-mod-template.so:
-	$(MAKE) -C mods/llss-mod-template
+	$(MAKE) -C mods/llss-mod-template/src
 
 clean:
 	$(MAKE) -C src clean
 
 clean-recursive:
 	$(MAKE) -C src clean
-	$(MAKE) -C mods/llss-mod-template clean
+	$(MAKE) -C mods/llss-mod-template/src clean
 	$(MAKE) -C third-party/static/ecs clean
 	$(MAKE) -C third-party/static/ui clean
 
