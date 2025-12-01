@@ -28,11 +28,12 @@ $(EXE): $(OBJS)
 	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
 	rm -f $(OBJS)
 
-# Prevent rule '%.o : %.c' to start before imgui submodule is available
-$(OBJS): imgui/imgui.h ../../../include/imgui_config.h
+# Prevent rule '%.o : %.c' to start before imgui submodule is available, trigger full rebuild on imgui_config.h change
+$(OBJS): imgui.timestamp ../../../include/imgui_config.h
 
-imgui/imgui.h:
+imgui.timestamp:
 	git submodule update --init --recursive imgui
+	touch imgui.timestamp
 
 clean:
 	rm -f $(EXE)

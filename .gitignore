@@ -15,5 +15,6 @@
 x64
 # Makefile things
 .deps
+/third-party/static/ui/imgui.timestamp
 # App things
 *.ini
