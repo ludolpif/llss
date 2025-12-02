@@ -29,7 +29,10 @@ $(EXE): $(OBJS)
 	rm -f $(OBJS)
 
 # Trigger full rebuild on imgui_config.h change
-$(OBJS): ../../../include/imgui_config.h
+# by undefining implicit rule and redefine with additinonal prerequisites
+%.o : %.cpp
+%.o : %.cpp ../../../include/imgui_config.h
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 
 clean:
 	rm -f $(EXE)
