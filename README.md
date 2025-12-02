@@ -1,0 +1,167 @@
+# Purpose and status
+Libre Live Streaming Software (LLSS) is my attempt to mockup a Streaming software, to make live brodcasts on platforms like Twitch.tv.
+
+This software will never be production-ready while I am the (sole) developer.
+
+# Building
+## Mac OS X
+I have no hardware, Makefile are meant to be usable but MacOS specificities is not really written yet.
+## Windows
+I made Solution and Project files with a default install of VisualStudio 2022 on a Windows 10.
+### Prerequisites
+For now, I didn't choose to automate SDL3 download or detection (no vcpkg nor CMake).
+
+You need to manually install a released developement package of SDL3
+- Available there https://github.com/libsdl-org/SDL/releases
+- Don't take SDL3-3.2.26-win32-x86.zip as it does not contains need headers files to compile this project against.
+- The right one is named like SDL3-devel-3.2.26-VC.zip available at https://github.com/libsdl-org/SDL/releases.
+- As SDL releases produce many assets, it could be hidden until you click a link titled like "Show all 14 assets".
+- unzip this somewhere handy, let's say `C:\dev\libs\`
+- archive contains a subfolder `SDL3-3.2.26`. Zip extraction graphical tools tends to create one also, don't mess up.
+- it could be `C:\dev\libs\SDL3-3.2.26`. You should have `C:\dev\libs\SDL3-3.2.26\include` folder.
+- set a user environnement variable named `SDL3_DIR` with `C:\dev\libs\SDL3-3.2.26`
+  - in system "Environment variables" window, user variables are on the top of the UI, don't add in system variables.
+  - when applied, you don't need to restart your session (true only since Windows 10 I think)
+  - you may need to restart VisualStudio if already opened
+
+### Why two Solution files
+I made 2 `.sln` files : 
+- 1 for the app
+- 1 for the mod template
+Because app developpers and plugins developpers should be different group of people, compiling at different time on different machines.
+
+I plan to provide a simple plugin developement SDK without the need to compile the whole app that will ship `llss.exe` and `llss-mod-template.sln` (and their dependencies).
+
+### Building
+
+Open an issue if you do have building errors and double-checked `echo %SDL3_DIR%` results in a `cmd.exe`.
+Choose if you want a Debug or a Release build, keep it consistent for all projects in you first build attempts.
+
+From the less tricky to the more tricky :
+- Open `llss.sln`
+- build `flecs`, then `ImGuiLib`, then `llss`
+- Copy `%SDL_DIR\lib\x64\SDL3.DLL` next to `llss.exe` that have been outputed at the root of the git cloned folder
+- Run `llss.exe` (without mods), it should not fail
+- Close `llss.sln` or the whole VisualStudio
+- Open `llss-mod-template.sln` VistualStudio
+- build only `llss-mod-template` as other referenced projects have already built
+- Re-run `llss.exe` (with a mod), it should not fail
+
+## Linux
+I currently use GNU/Linux Debian 13 (trixie) for early development cycles.
+It will generate a binary with low system dependancy but needs `GLIBC_2.38` symbols which is not a good choice to distribute currently.
+
+### Prerequisites
+- A working system-wide SDL3 shared lib and headers that pkg-config can find.
+  - ArchLinux : `pacman -S sdl3`
+  - Debian like : `apt install libsdl3-dev`
+  - Redhat like : `dnf install libsdl3-devel`
+- A GNU make and gcc-based build environnement
+  - ArchLinux : `pacman -S base-devel git`
+  - Debian like : `apt install build-essential git pkg-config`
+  - Redhat like : `dnf groupinstall "Development Tools" && dnf install git`
+
+### Building
+I hope provided Makefile are ok on a wide range of linux distro.
+Open an issue if you do have building errors.
+
+It's a `git clone` then `./configure` then `make` fashioned system.
+Parrallel build with `make -j` is way faster but I managed to early commit many Makefile versions that don't really work with `make -j` parallel builds. Hoping this is past.
+
+Below a trace for reference:
+```
+ludolpif@lud-5490:~/git$ git clone https://github.com/ludolpif/llss.git llss
+Cloning into 'llss'...
+remote: Enumerating objects: 534, done.
+remote: Counting objects: 100% (110/110), done.
+remote: Compressing objects: 100% (66/66), done.
+remote: Total 534 (delta 50), reused 83 (delta 35), pack-reused 424 (from 1)
+Receiving objects: 100% (534/534), 1.13 MiB | 8.44 MiB/s, done.
+Resolving deltas: 100% (246/246), done.
+ludolpif@lud-5490:~/git$ cd llss
+ludolpif@lud-5490:~/git/llss$ ./configure 
++ git                                                                      FOUND
++ make                                                                     FOUND
++ gcc                                                                      FOUND
++ ar                                                                       FOUND
++ pkg-config                                                               FOUND
++ pkg-config sdl3 --cflags
++ git submodule update --init --recursive third-party/static/ui/imgui
+Submodule 'dear_imgui' (https://github.com/ludolpif/dear_imgui.git) registered for path 'third-party/static/ui/imgui'
+Cloning into '/home/ludolpif/git/llss/third-party/static/ui/imgui'...
+Submodule path 'third-party/static/ui/imgui': checked out '79a89a40e96554922f6530a37e5a517faaf6b9ed'
+ludolpif@lud-5490:~/git/llss$ make -j
+make -C src
+make -C mods/llss-mod-template/src
+make[1]: Entering directory '/home/ludolpif/git/llss/mods/llss-mod-template/src'
+make[1]: Entering directory '/home/ludolpif/git/llss/src'
+make -C ../third-party/static/ui
+make -C ../third-party/static/ecs
+make[2]: Entering directory '/home/ludolpif/git/llss/third-party/static/ui'
+g++ -g -O3 `./cflags`   -c -o imgui.o imgui/imgui.cpp
+make[2]: Entering directory '/home/ludolpif/git/llss/third-party/static/ecs'
+cc -g -O3 -std=gnu99 -Iflecs -c -o flecs.o flecs/flecs.c
+g++ -g -O3 `./cflags`   -c -o imgui_demo.o imgui/imgui_demo.cpp
+make -C ../../../third-party/static/ui
+g++ -g -O3 `./cflags`   -c -o imgui_draw.o imgui/imgui_draw.cpp
+make -C ../../../third-party/static/ecs
+g++ -g -O3 `./cflags`   -c -o imgui_tables.o imgui/imgui_tables.cpp
+make[2]: Entering directory '/home/ludolpif/git/llss/third-party/static/ecs'
+cc -g -O3 -std=gnu99 -Iflecs -c -o flecs.o flecs/flecs.c
+make[2]: Entering directory '/home/ludolpif/git/llss/third-party/static/ui'
+g++ -g -O3 `./cflags`   -c -o imgui.o imgui/imgui.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_widgets.o imgui/imgui_widgets.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_demo.o imgui/imgui_demo.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_impl_sdl3.o imgui/backends/imgui_impl_sdl3.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_draw.o imgui/imgui_draw.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_tables.o imgui/imgui_tables.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_widgets.o imgui/imgui_widgets.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_impl_sdlgpu3.o imgui/backends/imgui_impl_sdlgpu3.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_impl_sdl3.o imgui/backends/imgui_impl_sdl3.cpp
+g++ -g -O3 `./cflags`   -c -o dcimgui.o dear_bindings_generated/dcimgui.cpp
+g++ -g -O3 `./cflags`   -c -o imgui_impl_sdlgpu3.o imgui/backends/imgui_impl_sdlgpu3.cpp
+g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdl3.o dear_bindings_generated/backends/dcimgui_impl_sdl3.cpp
+g++ -g -O3 `./cflags`   -c -o dcimgui.o dear_bindings_generated/dcimgui.cpp
+g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdl3.o dear_bindings_generated/backends/dcimgui_impl_sdl3.cpp
+g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdlgpu3.o dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
+g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdlgpu3.o dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
+ar rcs libdcimgui.a imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o dcimgui.o dcimgui_impl_sdl3.o dcimgui_impl_sdlgpu3.o
+make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/static/ui'
+ar rcs libdcimgui.a imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o dcimgui.o dcimgui_impl_sdl3.o dcimgui_impl_sdlgpu3.o
+make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/static/ui'
+make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/static/ecs'
+gcc -MT alloc.o -MMD -MP -MF .deps/alloc.d -g -Wall -Wformat -O0  `./cflags`   -c -o alloc.o alloc.c
+gcc -MT app-event.o -MMD -MP -MF .deps/app-event.d -g -Wall -Wformat -O0  `./cflags`   -c -o app-event.o app-event.c
+gcc -MT app-init.o -MMD -MP -MF .deps/app-init.d -g -Wall -Wformat -O0  `./cflags`   -c -o app-init.o app-init.c
+gcc -MT app-iterate.o -MMD -MP -MF .deps/app-iterate.d -g -Wall -Wformat -O0  `./cflags`   -c -o app-iterate.o app-iterate.c
+gcc -MT main.o -MMD -MP -MF .deps/main.d -g -Wall -Wformat -O0  `./cflags`   -c -o main.o main.c
+gcc -MT mod-host.o -MMD -MP -MF .deps/mod-host.d -g -Wall -Wformat -O0  `./cflags`   -c -o mod-host.o mod-host.c
+gcc -MT ui-main.o -MMD -MP -MF .deps/ui-main.d -g -Wall -Wformat -O0  `./cflags`   -c -o ui-main.o ui-main.c
+gcc -g -Wall -Wformat -O0  `./cflags`  -Wl,-Bsymbolic -L../third-party/static/ui  alloc.o app-event.o app-init.o app-iterate.o main.o mod-host.o ui-main.o ../third-party/static/ecs/flecs.o -ldcimgui -lm -lstdc++ -lSDL3 -o ../llss
+make[1]: Leaving directory '/home/ludolpif/git/llss/src'
+make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/static/ecs'
+gcc -MT hello.o -MMD -MP -MF .deps/hello.d -g -Wall -Wformat -O0 `./cflags`   -c -o hello.o hello.c
+gcc -MT mod.o -MMD -MP -MF .deps/mod.d -g -Wall -Wformat -O0 `./cflags`   -c -o mod.o mod.c
+gcc -g -Wall -Wformat -O0 `./cflags`  -Wl,-Bsymbolic -Wl,--default-symver -Wl,-soname,llss-mod-template.so -shared -L../../../third-party/static/ui  hello.o mod.o -ldcimgui -lm -lstdc++ -o ../llss-mod-template.so
+make[1]: Leaving directory '/home/ludolpif/git/llss/mods/llss-mod-template/src'
+ludolpif@lud-5490:~/git/llss$ ./llss 
+INFO  0000000000000055 SDL_AppInit(): tick0_wallclock==1764707268650884098
+INFO  0000000261642776 ECS world initialized, first entity name: Bob
+WARN  0000000261702845 mod_tryload(): will load /home/ludolpif/git/llss/mods/llss-mod-template/llss-mod-template.so
+INFO  0000000261990450 heap allocation at end of SDL_AppInit:
+INFO  [      0 frames] ctxt   malloc   calloc  realloc     free
+INFO       STARTUP_SHUTDOWN     1810      324       45      474 (+1660)
+INFO           FIRST_FRAMES        0        0        0        0 (+0)
+INFO              RENDERING        0        0        0        0 (+0)
+INFO  This only count calls via SDL_(*alloc|free)
+INFO  0000008492174162 heap allocation at end of SDL_AppQuit:
+INFO  [    494 frames] ctxt   malloc   calloc  realloc     free
+INFO       STARTUP_SHUTDOWN     1855      324       47      993 (+1186)
+INFO           FIRST_FRAMES      589       62       49      452 (+199)
+INFO              RENDERING      271       97       26      349 (+19)
+INFO  This only count calls via SDL_(*alloc|free)
+ludolpif@lud-5490:~/git/llss$ 
+```
+
+# Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)
