@@ -10,32 +10,31 @@ CXXFLAGS += -g -O3
 CXXFLAGS += `./cflags`
 ARFLAGS = rcs
 
-EXE = libdcimgui.a
-SRCS := imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
-SRCS += imgui/backends/imgui_impl_sdl3.cpp imgui/backends/imgui_impl_sdlgpu3.cpp
-SRCS += dear_bindings_generated/dcimgui.cpp
-SRCS += dear_bindings_generated/backends/dcimgui_impl_sdl3.cpp
-SRCS += dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
-OBJS := $(SRCS:.cpp=.o)
+OBJS := imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o
+OBJS += dcimgui.o dcimgui_impl_sdl3.o dcimgui_impl_sdlgpu3.o
+
+VPATH := imgui:imgui/backends:dear_bindings_generated:dear_bindings_generated/backends
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-all: $(EXE)
+all: libdcimgui.a
 
-$(EXE): $(OBJS)
-	$(AR) $(ARFLAGS) $(EXE) $(OBJS)
-	rm -f $(OBJS)
+# Use GNU Make archive member syntax archive(member):
+libdcimgui.a: libdcimgui.a($(OBJS))
 
-# Trigger full rebuild on imgui_config.h change
-# by undefining implicit rule and redefine with additinonal prerequisites
-%.o : %.cpp
-%.o : %.cpp ../../../include/imgui_config.h
-	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+# https://www.gnu.org/software/make/manual/html_node/Archive-Pitfalls.html
+(%): %	;
+%.a:
+	$(AR) $(ARFLAGS) $@ $?
+
+# Trigger full rebuild off all archive members on imgui_config.h change
+(%.o): %.cpp ../../../include/imgui_config.h
+	$(COMPILE.cpp) -o $% $<
 
 clean:
-	rm -f $(EXE)
+	rm -f libdcimgui.a $(OBJS)
 
 # targets : normal-prerequisites | order-only-prerequisites
 bindings: | dear_bindings/dear_bindings.py
