@@ -12,7 +12,8 @@ I have no hardware, Makefile are meant to be usable but MacOS specificities is n
 I made Solution and Project files with a default install of VisualStudio 2022 on a Windows 10.
 
 ### Prerequisites
-`git clone` this repository in a convinient folder. You need https://git-scm.com/install/windows.
+`git clone` this repository in a convenient folder with submodules. You need https://git-scm.com/install/windows.
+You need at least to `git submodule update --init --recursive third-party/static/ui/imgui`.
 
 For now, I didn't choose to automate SDL3 download or detection (no vcpkg nor CMake).
 
