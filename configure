@@ -1,14 +1,24 @@
 #!/bin/sh
 check() {
 	cmd="$1"; shift
-	$cmd $* > /dev/null || echo "You need $cmd in PATH" >&2
+	err=$($cmd $* 2>&1 >/dev/null)
+      	res=$?
+	if [ $res -eq 127 ]; then
+		echo "You need $cmd in PATH" >&2
+	fi
+	if [ $res -ne 0 ]; then
+		echo "${PS4}$cmd $*"
+		echo $err >&2
+	fi
+	printf "%s%-72s FOUND\n" "$PS4" "$cmd"
 }
 check git --version
 check make --version
 check gcc --version
 check ar --version
 check pkg-config --version
-pkg-config sdl3 --cflags > /dev/null
 
+set -x
+pkg-config sdl3 --cflags > /dev/null
 git submodule update --init --recursive third-party/static/ui/imgui
-# So far this ./configure output nothing, it just make sanity checks for static Makefiles
+# So far this ./configure output no files, it just make sanity checks for static Makefiles
