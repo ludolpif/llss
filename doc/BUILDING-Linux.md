@@ -17,7 +17,7 @@ I hope provided Makefile are ok on a wide range of linux distro.
 Open an issue if you do have building errors.
 
 It's a `git clone` then `./configure` then `make` fashioned system.
-Parrallel build with `make -j` is way faster but I managed to early commit many Makefile versions that don't really work with `make -j` parallel builds. Hoping this is past.
+Parallel build with `make -j` is way faster but I managed to early commit many Makefile versions that don't really work with `make -j` parallel builds. Hoping this is past.
 
 Below a trace for reference:
 ```
