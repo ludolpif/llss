@@ -1,5 +1,4 @@
 # Performance
-
 More is good but hardly push it will make this a dead project. Choose only smart and usage-aligned spots.
 
 - Is important but not as OBS crucially needed it in early years to be a barely usable thing

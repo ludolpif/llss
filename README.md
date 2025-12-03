@@ -13,7 +13,6 @@ Libre Live Streaming Software (LLSS) for Streamers making live brodcasts on plat
 I also leave public an unfiltered-yet dubious goals ideas: [GOALS-scratchpad.md](doc/dev/early/GOALS-scratchpad.md).
 
 ## How to use it
-
 You barely can't yet.
 - This software will never be production-ready while I am the (sole) developer. Jump in !
 - No releases it at all. I want to do it early mostly for mod developers first
@@ -24,16 +23,16 @@ You barely can't yet.
 Build instructions for [GNU/Linux](doc/BUILDING-Linux.md) (which I use), [Windows 10/11](doc/BUILDING-Windows.md) (which it works), [Mac OS X](doc/BUILDING-MacOSX.md) (not yet).
 Code and other help/contribution instructions here: [CONTRIBUTING.md](doc/CONTRIBUTING.md).
 
-# First technical choices
-- Early stage, we can make huge change now but not later, jump in !
+# Technical choices
+- Early stage, we can make huge changes now but not later, jump in !
 - Don't dive into costly complex and platform-specific [short-term hopefully performant](doc/PERFORMANCE.md) C++ code
   - Keep low gatekeeping on who can actually write code here
   - Tried Rust + Bevy, powerful, not easy, fast changing, slow compiling, no stable ABI for mods
   - Trying C + SDL3, fine and very *fun to write* and C is king for other languages bindings
-  - prove me Zig or other can help to have more contributors here (I can really just switch if it really happens)
+  - Prove me Zig or other can help to have more contributors here (I can really just switch if it really happens)
 - Few but strong base libraries 
   - [FLECS](https://www.flecs.dev/flecs/): ECS are mind blowing building block for live-hackable data and behaviors
   - [Dear ImGui](https://github.com/ocornut/imgui) + [C bindings](https://github.com/dearimgui/dear_bindings): *enjoyable and simple* GUI crafting/modding
   - [SDL3](https://wiki.libsdl.org/SDL3/FrontPage): cross-platform development library handling platform-specific sadness for us
-  - help me choose the few next
+  - Help me choose the few next
 
