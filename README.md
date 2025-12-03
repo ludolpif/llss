@@ -1,7 +1,5 @@
 # Purpose and status
-Libre Live Streaming Software (LLSS) is my attempt to mockup a Streaming software, to make live brodcasts on platforms like https://twitch.tv.
-
-This software will never be production-ready while I am the (sole) developer and will change to a better name if I feel it can really reach users one day.
+Libre Live Streaming Software (LLSS) is tool for Streamers to make live brodcasts on platforms like https://twitch.tv.
 
 ## Design goals summary
 - Be a game by itself as many streamers enjoy spending time to *not* stream but prepare new stream ideas
@@ -14,11 +12,17 @@ This software will never be production-ready while I am the (sole) developer and
 
 I also leave public an unfiltered-yet dubious goals ideas: [GOALS-scratchpad.md](doc/dev/early/GOALS-scratchpad.md).
 
-# How to run and build it
+## How to user it
 
-No releases it at all. I want to do it early.
+You barely can't yet.
+- This software is in early development stage and will never be production-ready while I am the (sole) developer
+- No releases it at all. I want to do it early mostly for mod developers first
+- I want to find, reserve then change to a better project name if I feel it can really reach users one day
+
+## How to write it, mod it
 
 Build instructions for [GNU/Linux](BUILDING-Linux.md) (which I use), [Windows 10/11](BUILDING-Windows.md) (which it works), [Mac OS X](BUILDING-MacOSX.md) (not yet).
+Contribution instructions here: [CONTRIBUTING.md](doc/CONTRIBUTING.md].
 
 # Firsts technical choices (jump in !)
 - Don't dive into costly complex and platform-specific [short-term hopefully performant](doc/PERFORMANCE.md) C++ code
