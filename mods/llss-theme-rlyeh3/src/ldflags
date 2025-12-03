@@ -1,0 +1,11 @@
+#!/bin/sh
+gitroot="../../.."
+soname=`./soname`
+flags="-Wl,-Bsymbolic -Wl,--default-symver -Wl,-soname,$soname -shared"
+case $(uname -s) in
+	Linux)      imgui="-L$gitroot/third-party/static/ui" ;;
+	Darwin)     imgui="-L$gitroot/third-party/static/ui -L/usr/local/lib -L/opt/local/lib" ;;
+	Windows_NT) imgui="-L$gitroot/third-party/static/ui" ;;
+	*)          echo "Unknown platform" >&2
+esac
+echo $flags $imgui

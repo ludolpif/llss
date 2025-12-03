@@ -1,7 +1,7 @@
 #define DLL_EXPORT
 #define MOD_USES_IMGUI
 #include "app.h"
-#include "hello.h"
+#include "ui-theming.h"
 
 // SDL_DECLSPEC: A macro to tag a symbol as a public API.
 // Windows : DLL_EXPORT must be defined before inclusion of SDL.h (here through app.h) to have a non empty SDL_DECLSPEC
@@ -30,6 +30,12 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_init(appstate_t *appstate, void **use
 	// This mod don't need an additionnal internal state but you can SDL_calloc() one here
 	*userptr = appstate;
 
+	// Set an ImGui theme from this plugin, to demonstrate modding possibilities
+	// V3 theme v1.1
+	// - rlyeh, public domain
+	igThemeV3('P','Y','C', 0, 0, 1, 3);
+
+
 	return SDL_APP_CONTINUE;
 }
 
@@ -46,26 +52,4 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_reload(void *userptr) {
 	return SDL_APP_CONTINUE;
 }
 
-// No app_mod_hook_purpose1 for this mod (doesn't need it)
-
-// Optionnal app_mod_hook_purpose2
-SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_hook_purpose2(void *userptr) {
-	appstate_t *appstate = (appstate_t *) userptr;
-
-	if (appstate->show_another_window)
-	{
-		// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui_Begin("A mod Window", &appstate->show_another_window, 0);
-		ImGui_Text("Hello from llss-mod-template!");
-		if (ImGui_Button("Close Me"))
-			appstate->show_another_window = false;
-		ImGui_End();
-	}
-
-	return SDL_APP_CONTINUE;
-}
-
-// This function will not be an exported dynamic symbol because SDL_DECLSPEC is absent
-Sint32 some_private_func(Sint32 a) {
-	return a;
-}
+// No app_mod_hook_* for this mod (doesn't need it)

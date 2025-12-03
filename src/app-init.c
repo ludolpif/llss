@@ -187,8 +187,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	app_load_mods(appstate);
 
-	app_info("%016lu heap allocation at end of SDL_AppInit:", SDL_GetTicksNS());
-	alloc_count_dump_counters(appstate->frameid);
+	alloc_count_dump_counters(appstate->frameid, "end of SDL_AppInit()");
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
 	return SDL_APP_CONTINUE;
@@ -223,6 +222,5 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	ecs_fini(appstate->world);
 	SDL_free(appstate);
 
-	app_info("%016lu heap allocation at end of SDL_AppQuit:", SDL_GetTicksNS());
-	alloc_count_dump_counters(appstate->frameid);
+	alloc_count_dump_counters(appstate->frameid, "begin of SDL_AppInit()");
 }

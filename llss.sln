@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llss", "src\llss.vcxproj", "{4E4536B5-7943-4153-B43A-1D196B9FC220}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llss-theme-rlyeh3", "mods\llss-theme-rlyeh3", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiLib", "third-party\static\ui\ImGuiLib.vcxproj", "{9189BEED-5EFC-480F-8D82-88826A5CD120}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flecs", "third-party\static\ecs\flecs.vcxproj", "{3C19E747-7542-4D39-9965-5FA360E64954}"
@@ -19,6 +21,10 @@ Global
 		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Debug|x64.Build.0 = Debug|x64
 		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Release|x64.ActiveCfg = Release|x64
 		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Release|x64.Build.0 = Release|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Debug|x64.ActiveCfg = Debug|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Debug|x64.Build.0 = Debug|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Release|x64.ActiveCfg = Release|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Release|x64.Build.0 = Release|x64
 		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Debug|x64.ActiveCfg = Debug|x64
 		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Debug|x64.Build.0 = Debug|x64
 		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Release|x64.ActiveCfg = Release|x64

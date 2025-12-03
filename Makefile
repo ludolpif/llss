@@ -2,34 +2,27 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-.PHONY: all clean clean-recursive run llss mods/llss-mod-template/llss-mod-template.so
+.PHONY: all clean llss mods run run-app-trace run-all-trace
 
-
-# TODO https://media.bernat.ch/files/debian-debug-packages.pdf
-
-all: llss mods/llss-mod-template/llss-mod-template.so
+all: llss mods
 
 llss:
 	$(MAKE) -C src
 
-mods/llss-mod-template/llss-mod-template.so:
-	$(MAKE) -C mods/llss-mod-template/src
+mods:
+	$(MAKE) -C mods
 
 clean:
 	$(MAKE) -C src clean
-
-clean-recursive:
-	$(MAKE) -C src clean
-	$(MAKE) -C mods/llss-mod-template/src clean
+	$(MAKE) -C mods clean
 	$(MAKE) -C third-party/static/ecs clean
 	$(MAKE) -C third-party/static/ui clean
 
-run: llss
+run: all
 	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" ./llss
 
-run-app-trace: llss
-	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" ./llss
+run-app-trace: all
+	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" ./llss 2>&1 | dev/pretty-log.pl
 
-run-all-trace: llss
-	SDL_LOGGING="*=trace" ./llss
-
+run-all-trace: all
+	SDL_LOGGING="*=trace" ./llss 2>&1 | dev/pretty-log.pl

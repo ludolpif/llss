@@ -2,6 +2,7 @@
 
 // V3 theme v1.1
 // - rlyeh, public domain
+// - ludolpif, modifications to use from C code
 ImVec4 igThemeV3_dim(ImVec4 hi);
 int igThemeV3(int hue07, int alt07, int nav07, int lit01 /*= 0*/, int compact01 /*= 0*/, int border01 /*= 1*/, int shape0123 /*= 1*/) {
 	bool rounded = shape0123 == 2;

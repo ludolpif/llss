@@ -1,4 +1,7 @@
 # TODO list
+
+- uniformize naming: ImGui and SDL use camel case for functions, do the same, check what they do on variables names
+- mods ABI : put a `_v1` suffix to everything ?
 - FLECS
 - https://media.bernat.ch/files/debian-debug-packages.pdf
 - linux builds compatible with fairly old GLIBC
@@ -10,3 +13,8 @@
 #define IMGUI_ENABLE_FREETYPE
 #define IMGUI_ENABLE_FREETYPE_PLUTOSVG
 ```
+
+## Ideas
+
+- Have a theming color change (blinking ?) when there is network drops
+
