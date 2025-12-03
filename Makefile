@@ -2,7 +2,7 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-.PHONY: all clean clean-recursive llss run
+.PHONY: all clean clean-recursive run llss mods/llss-mod-template/llss-mod-template.so
 
 
 # TODO https://media.bernat.ch/files/debian-debug-packages.pdf

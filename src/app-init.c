@@ -7,6 +7,13 @@
 
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
+// For now disable multiple viewports and docking as API may change, because Omar want to rework them
+#undef IMGUI_HAS_VIEWPORT
+#undef IMGUI_HAS_DOCK
+
+#define APP_UI_DEFAULT_WIDTH 1280
+#define APP_UI_DEFAULT_HEIGHT 720
+
 // Forward declarations
 void app_load_mods(appstate_t *appstate);
 
@@ -62,7 +69,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Create SDL window graphics context
 	float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
 	SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	SDL_Window* window = SDL_CreateWindow("LLSS Mockup", (int)(1280 * main_scale), (int)(800 * main_scale), window_flags);
+	SDL_Window* window = SDL_CreateWindow("LLSS Mockup", (int)(APP_UI_DEFAULT_WIDTH * main_scale), (int)(APP_UI_DEFAULT_HEIGHT * main_scale), window_flags);
 	if (window == NULL)
 		app_failure("SDL_CreateWindow(): %s", SDL_GetError());
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);

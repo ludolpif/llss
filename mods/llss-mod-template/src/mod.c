@@ -1,6 +1,7 @@
 #define DLL_EXPORT
 #include "app.h"
 #include "hello.h"
+#include "ui-theming.h"
 
 // SDL_DECLSPEC: A macro to tag a symbol as a public API.
 // Windows : DLL_EXPORT must be defined before inclusion of SDL.h (here through app.h) to have a non empty SDL_DECLSPEC
@@ -23,7 +24,14 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_init(appstate_t *appstate, void **use
 	}
 	ImGui_SetAllocatorFunctions(appstate->imgui_malloc_func, appstate->imgui_free_func, NULL);
 
-	*userptr = appstate; // This mod don't need an additionnal internal state
+	// This mod don't need an additionnal internal state
+	*userptr = appstate;
+
+	// Set an ImGui theme from this plugin, to demonstrate modding possibilities
+	// V3 theme v1.1
+	// - rlyeh, public domain
+	igThemeV3('P','Y','C', 0, 0, 1, 3);
+
 
 	return SDL_APP_CONTINUE;
 }
