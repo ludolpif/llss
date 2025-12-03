@@ -1,30 +1,31 @@
 # Purpose and status
-Libre Live Streaming Software (LLSS) is tool for Streamers to make live brodcasts on platforms like https://twitch.tv.
+Libre Live Streaming Software (LLSS) for Streamers making live brodcasts on platforms like [twitch.tv](https://twitch.tv).
 
 ## Design goals summary
 - Be a game by itself as many streamers enjoy spending time to *not* stream but prepare new stream ideas
 - Be intuitive by using Streamers known concepts: a simplified Photoshop-like composition system and UI
 - Be a [Free Software](https://www.gnu.org/philosophy/free-sw.html) that lowers the bar for Streamers to be autonomous and creative
-- Be live hackable like [Hack'n'Slash](https://en.wikipedia.org/wiki/Hack_%27n%27_Slash) game by the Streamer himself
+- Be live hackable like [Hack'n'Slash](https://en.wikipedia.org/wiki/Hack_%27n%27_Slash) game by the Streamer himself or a remote helping person
 - Be heavily moddable like Minecraft game by enthousiast communities with diverse programming skills
-- Be portable, unzip it works, .exe, config, everything on an USB stick for Streamers going to events without their computer
-- Make simple to have a production choosen version + config and a testing new version + separate config on same computer
+- Be portable, unzip it works, software + mods + config on an USB stick for streaming on leased computers
+- Trivally have a well-tested configured version and a draft config + new version on the same computer
 
 I also leave public an unfiltered-yet dubious goals ideas: [GOALS-scratchpad.md](doc/dev/early/GOALS-scratchpad.md).
 
-## How to user it
+## How to use it
 
 You barely can't yet.
-- This software is in early development stage and will never be production-ready while I am the (sole) developer
+- This software will never be production-ready while I am the (sole) developer. Jump in !
 - No releases it at all. I want to do it early mostly for mod developers first
 - I want to find, reserve then change to a better project name if I feel it can really reach users one day
 
 ## How to write it, mod it
 
 Build instructions for [GNU/Linux](BUILDING-Linux.md) (which I use), [Windows 10/11](BUILDING-Windows.md) (which it works), [Mac OS X](BUILDING-MacOSX.md) (not yet).
-Contribution instructions here: [CONTRIBUTING.md](doc/CONTRIBUTING.md].
+Code and other help/contribution instructions here: [CONTRIBUTING.md](doc/CONTRIBUTING.md).
 
-# Firsts technical choices (jump in !)
+# First technical choices
+- Early stage, we can make huge change now but not later, jump in !
 - Don't dive into costly complex and platform-specific [short-term hopefully performant](doc/PERFORMANCE.md) C++ code
   - Keep low gatekeeping on who can actually write code here
   - Tried Rust + Bevy, powerful, not easy, fast changing, slow compiling, no stable ABI for mods
