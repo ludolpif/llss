@@ -1,0 +1,3 @@
+#!/bin/sh
+solution="-O0 -flto=jobserver"
+echo $solution

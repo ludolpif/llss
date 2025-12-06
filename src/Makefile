@@ -6,13 +6,12 @@
 
 CC := gcc
 #CPPFLAGS +=
-CFLAGS += -g -Wall -Wformat -O0 
 CFLAGS += `./cflags`
 LDFLAGS += $(shell ./ldflags)
 LDLIBS += $(shell ./ldlibs)
 
 EXE = ../llss
-# ../Makefile.autodeps needs $(SRCS)
+# Makefile.autodeps needs $(SRCS)
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 

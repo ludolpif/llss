@@ -6,8 +6,8 @@
 
 CXX := g++
 #CPPFLAGS +=
-CXXFLAGS += -g -O3
 CXXFLAGS += `./cflags`
+#AR := gcc-ar # old platforms needed in -lto linking mode
 ARFLAGS = rcs
 
 OBJS := imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o

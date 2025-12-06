@@ -33,7 +33,7 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_init(appstate_t *appstate, void **use
 	// Set an ImGui theme from this plugin, to demonstrate modding possibilities
 	// V3 theme v1.1
 	// - rlyeh, public domain
-	igThemeV3('P','Y','C', 0, 0, 1, 3);
+	igThemeV3('P','Y','C', 0, 0, 1, 1);
 
 
 	return SDL_APP_CONTINUE;

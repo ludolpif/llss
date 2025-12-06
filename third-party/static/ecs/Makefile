@@ -4,16 +4,16 @@
 #
 .PHONY: all clean
 
-CFLAGS = -g -O3 -std=gnu99
+CFLAGS += `./cflags`
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-flecs.o: flecs/flecs.c
-	$(CC) $(CFLAGS) -Iflecs -c -o $@ $<
-
 all: flecs.o
+
+flecs.o: flecs/flecs.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
 clean:
 	rm -f flecs.o

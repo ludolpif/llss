@@ -1,7 +1,9 @@
 #!/bin/sh -x
 # a tool for automatic rebuild and re-run on source-code modification under linux
-# needs find and inotifywait
-cd $(dirname $0)/..
+# dependencies: inotifywait, find
+SolutionDir="`dirname $0`/../"
+
+cd "${SolutionDir}"
 while true; do
 	if make all; then killall llss; make run-app-trace & fi
 	find -name third-party -prune -o \( -regex '.*\.[ch]' -print0 \) | xargs -r0 inotifywait -e move

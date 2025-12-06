@@ -1,10 +1,12 @@
 #!/bin/sh
-gitroot=".."
-flags="-Wl,-Bsymbolic"
+SolutionDir="../"
+
+solution=`${SolutionDir}ldflags`
+project="-Wl,-Bsymbolic"
 case $(uname -s) in
-	Linux)      imgui="-L$gitroot/third-party/static/ui" ;;
-	Darwin)     imgui="-L$gitroot/third-party/static/ui -L/usr/local/lib -L/opt/local/lib" ;;
-	Windows_NT) imgui="-L$gitroot/third-party/static/ui" ;;
+	Linux)      libdcimgui="-L${SolutionDir}third-party/static/ui" ;;
+	Darwin)     libdcimgui="-L${SolutionDir}third-party/static/ui -L/usr/local/lib -L/opt/local/lib" ;;
+	Windows_NT) libdcimgui="-L${SolutionDir}third-party/static/ui" ;;
 	*)          echo "Unknown platform" >&2
 esac
-echo $flags $imgui
+echo $solution $project $libdcimgui
