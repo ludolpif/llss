@@ -13,7 +13,8 @@ CFLAGS += `./cflags`
 all: flecs.o
 
 flecs.o: flecs/flecs.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
+	$(COMPILE.c) -o $@ $<
+# COMPILE.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
 clean:
 	rm -f flecs.o

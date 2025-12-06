@@ -6,7 +6,15 @@ DIRS := $(shell dirname */src)
 
 .PHONY: all clean $(DIRS)
 
-all: $(DIRS)
+##---------------------------------------------------------------------
+## BUILD RULES
+##---------------------------------------------------------------------
+# targets: normal-prerequisites | order-only-prerequisites
+
+all: $(DIRS) #| libdcimgui.so
+
+#libdcimgui.so: ../lib/ui/so/libdcimgui.so
+#	ln -nsf ../lib/ui/so/libdcimgui.so
 
 $(DIRS):
 	$(MAKE) -C $@/src

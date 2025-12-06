@@ -21,23 +21,25 @@ VPATH := imgui:imgui/backends:dear_bindings_generated:dear_bindings_generated/ba
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-all: libdcimgui.a libdcimgui.so
+all: ar/libdcimgui.a so/libdcimgui.so
 
 # https://www.gnu.org/software/make/manual/html_node/Archive-Pitfalls.html
 (%): %	;
-libdcimgui.a: $(OBJS)
+ar/libdcimgui.a: $(OBJS)
+	mkdir -p ar
 	$(AR) $(ARFLAGS) $@ $?
 
-libdcimgui.so: $(OBJS)
-	$(LINK.cpp) -shared $(OBJS) $(LDLIBS) -o $@
-# LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
+so/libdcimgui.so: $(OBJS)
+	mkdir -p so
+	$(LINK.cc) -shared $(OBJS) $(LDLIBS) -o $@
+# LINK.cc = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 # Trigger full rebuild off all archive members on imgui_config.h change
 %.o: %.cpp ../../include/imgui_config.h
 	$(COMPILE.cpp) -o $@ $<
 
 clean:
-	rm -f libdcimgui.a libdcimgui.so $(OBJS)
+	rm -f ar/libdcimgui.a so/libdcimgui.so $(OBJS)
 
 # targets : normal-prerequisites | order-only-prerequisites
 bindings: | dear_bindings/dear_bindings.py

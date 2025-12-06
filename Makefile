@@ -6,7 +6,8 @@
 
 all: app mods
 
-# ordering rule to circumvent src and mods $(MAKE) call lib $(MAKE) themselves and concurrently
+# ordering rule. if dependencies are expressed subdirs Makefile
+# then calling here make -j can call $(MAKE) -C lib multiple times, concurrently
 app mods: lib
 
 app:
