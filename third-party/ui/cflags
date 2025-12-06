@@ -1,8 +1,8 @@
 #!/bin/sh
-SolutionDir="../../../"
+SolutionDir="../../"
 
 solution=`${SolutionDir}cflags`
-project="-std=c++14 -fvisibility=hidden"
+project="-std=c++14 -fPIC -fvisibility=hidden"
 project="$project
 -DIMGUI_USER_CONFIG=\"imgui_config.h\"
 -I${SolutionDir}include

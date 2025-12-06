@@ -17,7 +17,7 @@ SDL_AppResult UI_Main(appstate_t *appstate) {
 
 		ImGui_Text("This is some useful text.");               // Display some text (you can use a format strings too)
 		ImGui_Checkbox("Demo Window", &appstate->show_demo_window);      // Edit bools storing our window open/close state
-		ImGui_Checkbox("llss-mod-template Window", &appstate->show_another_window);
+		ImGui_Checkbox("mod-template Window", &appstate->show_another_window);
 
 		ImGui_SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 		ImGui_ColorEdit3("clear color", (float*)&appstate->clear_color, 0); // Edit 3 floats representing a color

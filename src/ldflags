@@ -4,9 +4,9 @@ SolutionDir="../"
 solution=`${SolutionDir}ldflags`
 project="-Wl,-Bsymbolic"
 case $(uname -s) in
-	Linux)      libdcimgui="-L${SolutionDir}third-party/static/ui" ;;
-	Darwin)     libdcimgui="-L${SolutionDir}third-party/static/ui -L/usr/local/lib -L/opt/local/lib" ;;
-	Windows_NT) libdcimgui="-L${SolutionDir}third-party/static/ui" ;;
+	Linux)      libdcimgui="-L${SolutionDir}third-party/ui" ;;
+	Darwin)     libdcimgui="-L${SolutionDir}third-party/ui -L/usr/local/lib -L/opt/local/lib" ;;
+	Windows_NT) libdcimgui="-L${SolutionDir}third-party/ui" ;;
 	*)          echo "Unknown platform" >&2
 esac
 echo $solution $project $libdcimgui

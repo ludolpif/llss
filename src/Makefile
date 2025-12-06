@@ -10,7 +10,7 @@ CFLAGS += `./cflags`
 LDFLAGS += $(shell ./ldflags)
 LDLIBS += $(shell ./ldlibs)
 
-EXE = ../llss
+EXE = ../app
 # Makefile.autodeps needs $(SRCS)
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
@@ -23,22 +23,20 @@ OBJS := $(SRCS:.c=.o)
 all: $(EXE)
 
 $(EXE): $(OBJS)
-	$(LINK.c) $(OBJS) ../third-party/static/ecs/flecs.o $(LDLIBS) -o $@
+	$(LINK.c) $(OBJS) ../third-party/ecs/flecs.o $(LDLIBS) -o $@
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 # Prevent rule '%.o : %.c' to start before imgui submodule is available
-$(OBJS): ../third-party/static/ui/libdcimgui.a ../third-party/static/ecs/flecs.o
+$(OBJS): ../third-party/ui/libdcimgui.a ../third-party/ecs/flecs.o
 
-../third-party/static/ecs/flecs.o:
-	$(MAKE) -C ../third-party/static/ecs
+../third-party/ecs/flecs.o:
+	$(MAKE) -C ../third-party/ecs
 
-../third-party/static/ui/libdcimgui.a:
-	$(MAKE) -C ../third-party/static/ui
+../third-party/ui/libdcimgui.a:
+	$(MAKE) -C ../third-party/ui
 
 clean:
 	rm -f $(EXE) $(OBJS)
-
-clean-recursive:
-	$(MAKE) -C ../clean-recursive
+	rm -rf .deps
 
 include ../Makefile.autodeps

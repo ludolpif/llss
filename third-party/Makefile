@@ -2,14 +2,14 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-DIRS := $(shell dirname */src)
+DIRS := $(shell dirname */Makefile)
 
 .PHONY: all clean $(DIRS)
 
 all: $(DIRS)
 
 $(DIRS):
-	$(MAKE) -C $@/src
+	$(MAKE) -C $@
 
 clean:
-	for dir in $(DIRS); do $(MAKE) -C $$dir/src clean; done
+	for dir in $(DIRS); do $(MAKE) -C $$dir clean; done

@@ -1,8 +1,8 @@
 [submodule "dear_bindings"]
-	path = third-party/static/ui/dear_bindings
+	path = third-party/ui/dear_bindings
 	url = https://github.com/ludolpif/dear_bindings.git
 	branch = for-llss-main
 [submodule "dear_imgui"]
-	path = third-party/static/ui/imgui
+	path = third-party/ui/imgui
 	url = https://github.com/ludolpif/dear_imgui.git
 	branch = for-llss-main

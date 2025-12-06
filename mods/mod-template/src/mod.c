@@ -56,7 +56,7 @@ SDL_DECLSPEC SDL_AppResult SDLCALL app_mod_hook_purpose2(void *userptr) {
 	{
 		// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
 		ImGui_Begin("A mod Window", &appstate->show_another_window, 0);
-		ImGui_Text("Hello from llss-mod-template!");
+		ImGui_Text("Hello from mod-template!");
 		if (ImGui_Button("Close Me"))
 			appstate->show_another_window = false;
 		ImGui_End();

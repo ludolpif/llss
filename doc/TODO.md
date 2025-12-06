@@ -1,7 +1,6 @@
 # TODO list
 - change licence to Affero for --headless, add it to all files
 - uniformize naming: ImGui and SDL use camel case for functions, do the same, check what they do on variables names
-- remove non-usefull "llss" occurences (mod naming, etc)
 - mods ABI : put a `_v1` suffix to everything ?
 - FLECS
 - lygia and `SDL_shadercompiler`

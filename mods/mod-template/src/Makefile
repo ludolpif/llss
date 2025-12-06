@@ -29,16 +29,17 @@ $(EXE): $(OBJS)
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 # Prevent rule '%.o : %.c' to start before imgui submodule is available
-$(OBJS): $(SolutionDir)third-party/static/ui/libdcimgui.a $(SolutionDir)third-party/static/ecs/flecs.o
+$(OBJS): $(SolutionDir)third-party/ui/libdcimgui.a $(SolutionDir)third-party/ecs/flecs.o
 
-$(SolutionDir)third-party/static/ecs/flecs.o:
-	$(MAKE) -C $(SolutionDir)third-party/static/ecs
+$(SolutionDir)third-party/ecs/flecs.o:
+	$(MAKE) -C $(SolutionDir)third-party/ecs
 
-$(SolutionDir)third-party/static/ui/libdcimgui.a:
-	$(MAKE) -C $(SolutionDir)third-party/static/ui
+$(SolutionDir)third-party/ui/libdcimgui.a:
+	$(MAKE) -C $(SolutionDir)third-party/ui
 
 clean:
 	rm -f $(EXE) $(OBJS)
+	rm -rf .deps
 
 symdump: $(EXE)
 	objdump -T $(EXE)

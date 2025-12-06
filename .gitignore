@@ -1,5 +1,5 @@
 # Linux things
-/llss
+/app
 *.a
 *.o
 *.so
@@ -11,8 +11,11 @@
 *.pdb
 *.exp
 *.lib
-.vs
 x64
+# VisualStudio things
+*.vcxproj.filters
+*.vcxproj.user
+.vs
 # Makefile things
 .deps
 # App things

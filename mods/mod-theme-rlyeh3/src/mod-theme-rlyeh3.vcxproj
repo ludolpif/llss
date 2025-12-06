@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4e4536b5-7943-4153-b43a-1d196b9fc220}</ProjectGuid>
+    <ProjectGuid>{37c290ad-5f29-408a-80ef-fc4837176f2e}</ProjectGuid>
     <RootNamespace>src</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -44,11 +44,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)third-party\static\ui\imgui;$(SolutionDir)third-party\static\ui\imgui\backends;$(SolutionDir)third-party\static\ui\dear_bindings_generated;$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends;$(SolutionDir)third-party\static\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)third-party\ui\imgui;$(SolutionDir)third-party\ui\imgui\backends;$(SolutionDir)third-party\ui\dear_bindings_generated;$(SolutionDir)third-party\ui\dear_bindings_generated\backends;$(SolutionDir)third-party\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>..\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)third-party\static\ui\imgui;$(SolutionDir)third-party\static\ui\imgui\backends;$(SolutionDir)third-party\static\ui\dear_bindings_generated;$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends;$(SolutionDir)third-party\static\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)third-party\ui\imgui;$(SolutionDir)third-party\ui\imgui\backends;$(SolutionDir)third-party\ui\dear_bindings_generated;$(SolutionDir)third-party\ui\dear_bindings_generated\backends;$(SolutionDir)third-party\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>..\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -94,26 +94,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hello.c" />
+    <ClCompile Include="ui-theming.c" />
     <ClCompile Include="mod.c" />
     <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SDL3_DIR)\include\SDL\SDL.h" />
-    <ClInclude Include="$(SolutionDir)third-party\static\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)third-party\static\ui\imgui\backends\imgui_impl_sdl3.h" />
-    <ClInclude Include="$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
+    <ClInclude Include="$(SolutionDir)third-party\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
+    <ClInclude Include="$(SolutionDir)third-party\ui\imgui\backends\imgui_impl_sdl3.h" />
+    <ClInclude Include="$(SolutionDir)third-party\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
+    <ClInclude Include="$(SolutionDir)third-party\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
     <ClInclude Include="$(SolutionDir)include\app.h" />
     <ClInclude Include="$(SolutionDir)include\imgui_config.h" />
     <ClInclude Include="$(SolutionDir)include\mods-api.h" />
-    <ClInclude Include="hello.h" />
+    <ClInclude Include="ui-theming.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)third-party\static\ecs\flecs.vcxproj">
+    <ProjectReference Include="$(SolutionDir)third-party\ecs\flecs.vcxproj">
       <Project>{3c19e747-7542-4d39-9965-5fa360e64954}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)third-party\static\ui\ImGuiLib.vcxproj">
+    <ProjectReference Include="$(SolutionDir)third-party\ui\ImGuiLib.vcxproj">
       <Project>{9189beed-5efc-480f-8d82-88826a5cd120}</Project>
     </ProjectReference>
   </ItemGroup>

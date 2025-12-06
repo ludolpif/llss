@@ -1,6 +1,3 @@
 #!/bin/sh
-# The current implementation of LTO makes no attempt to generate bytecode that is portable between different types of hosts. The bytecode files are versioned and there is a strict version check, so bytecode files generated in one version of GCC do not work with an older or newer version of GCC.
-# Note that modern binutils provide plugin auto-load mechanism. Installing the linker plugin into $libdir/bfd-plugins has the same effect as usage of the command wrappers (gcc-ar, gcc-nm and gcc-ranlib).
-# The default is -fno-fat-lto-objects on targets with linker plugin support.
-solution="-ggdb3 -O0 -flto=jobserver"
+solution="-ggdb3 -O0"
 echo $solution

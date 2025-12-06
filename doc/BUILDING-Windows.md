@@ -27,7 +27,7 @@ I made 2 `.sln` files :
 
 Because app developpers and plugins developpers should be different group of people, compiling at different time on different machines.
 
-I plan to provide a simple plugin development SDK without the need to compile the whole app. It will ship `llss.exe` and `llss-mod-template.sln` and their dependencies.
+I plan to provide a simple plugin development SDK without the need to compile the whole app. It will ship `app.exe` and `mod-template.sln` and their dependencies.
 
 ## Actually Building
 Open an issue if you do have building errors and double-checked `echo %SDL3_DIR%` result in a `cmd.exe`.
@@ -35,14 +35,14 @@ Choose if you want a Debug or a Release build, keep it consistent for all projec
 I don't test builds with paths containing spaces. It may help to avoid them at first place.
 
 From the less fragile to the more fragile :
-- Open `llss.sln`
-- build `flecs`, then `ImGuiLib`, then `llss`
-- Copy `%SDL_DIR\lib\x64\SDL3.DLL` next to `llss.exe` that have been outputed at the root of the git cloned folder
-- Run `llss.exe` (without mods), it should not fail
-- Close `llss.sln` or the whole VisualStudio
-- Open `llss-mod-template.sln` VistualStudio
-- build only `llss-mod-template` as other referenced projects have already built
-- Re-run `llss.exe` (with a mod), it should not fail
+- Open `app.sln`
+- build `flecs`, then `ImGuiLib`, then `app`
+- Copy `%SDL_DIR\lib\x64\SDL3.DLL` next to `app.exe` that have been outputed at the root of the git cloned folder
+- Run `app.exe` (without mods), it should not fail
+- Close `app.sln` or the whole VisualStudio
+- Open `mod-template.sln` VistualStudio
+- build only `mod-template` as other referenced projects have already built
+- Re-run `app.exe` (with a mod), it should not fail
 
 ## Debugging tools
 TODO

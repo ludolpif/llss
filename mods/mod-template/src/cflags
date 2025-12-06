@@ -1,8 +1,8 @@
 #!/bin/sh
-SolutionDir="../"
+SolutionDir="../../../"
 
 solution=`${SolutionDir}cflags`
-project="-Wall -Wformat -std=c11 -fvisibility=hidden"
+project="-Wall -Wformat -std=gnu99 -fvisibility=hidden"
 project="$project
 -I${SolutionDir}third-party/ui/dear_bindings_generated
 -I${SolutionDir}third-party/ui/imgui
@@ -11,5 +11,5 @@ project="$project
 -I${SolutionDir}third-party/ecs/flecs
 -I${SolutionDir}include
 "
-libsdl3=`pkg-config --libs sdl3`
-echo $solution $project $libsdl3
+libsdl3=`pkg-config --cflags sdl3`
+echo -fPIC -fvisibility=hidden $project $libsdl3

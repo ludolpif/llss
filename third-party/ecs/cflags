@@ -1,5 +1,5 @@
 #!/bin/sh
-SolutionDir="../../../"
+SolutionDir="../../"
 
 solution=`${SolutionDir}cflags`
 project="-std=gnu99 -Iflecs"
