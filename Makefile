@@ -2,12 +2,12 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-.PHONY: all clean app mods third-party run run-app-trace run-all-trace
+.PHONY: all clean app mods lib run run-app-trace run-all-trace
 
 all: app mods
 
-# ordering rule to circumvent src and mods $(MAKE) call third-party $(MAKE) themselves and concurrently
-app mods: third-party
+# ordering rule to circumvent src and mods $(MAKE) call lib $(MAKE) themselves and concurrently
+app mods: lib
 
 app:
 	$(MAKE) -C src
@@ -15,13 +15,13 @@ app:
 mods:
 	$(MAKE) -C mods
 
-third-party:
-	$(MAKE) -C third-party
+lib:
+	$(MAKE) -C lib
 
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C mods clean
-	$(MAKE) -C third-party clean
+	$(MAKE) -C lib clean
 
 run: all
 	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" ./app

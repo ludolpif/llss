@@ -7,9 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app", "src\app.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-theme-rlyeh3", "mods\mod-theme-rlyeh3\src\mod-theme-rlyeh3.vcxproj", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiLib", "third-party\ui\ImGuiLib.vcxproj", "{9189BEED-5EFC-480F-8D82-88826A5CD120}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiLib", "lib\ui\ImGuiLib.vcxproj", "{9189BEED-5EFC-480F-8D82-88826A5CD120}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flecs", "third-party\ecs\flecs.vcxproj", "{3C19E747-7542-4D39-9965-5FA360E64954}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flecs", "lib\ecs\flecs.vcxproj", "{3C19E747-7542-4D39-9965-5FA360E64954}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

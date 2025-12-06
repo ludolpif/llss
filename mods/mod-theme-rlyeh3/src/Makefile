@@ -29,13 +29,13 @@ $(EXE): $(OBJS)
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 # Prevent rule '%.o : %.c' to start before imgui submodule is available
-$(OBJS): $(SolutionDir)third-party/ui/libdcimgui.a $(SolutionDir)third-party/ecs/flecs.o
+$(OBJS): $(SolutionDir)lib/ui/libdcimgui.a $(SolutionDir)lib/ecs/flecs.o
 
-$(SolutionDir)third-party/ecs/flecs.o:
-	$(MAKE) -C $(SolutionDir)third-party/ecs
+$(SolutionDir)lib/ecs/flecs.o:
+	$(MAKE) -C $(SolutionDir)lib/ecs
 
-$(SolutionDir)third-party/ui/libdcimgui.a:
-	$(MAKE) -C $(SolutionDir)third-party/ui
+$(SolutionDir)lib/ui/libdcimgui.a:
+	$(MAKE) -C $(SolutionDir)lib/ui
 
 clean:
 	rm -f $(EXE) $(OBJS)

@@ -18,8 +18,8 @@ check gcc --version
 check ar --version
 check pkg-config --version
 
-set -x
+set -xe
 pkg-config sdl3 --cflags > /dev/null
-[ -f third-party/ui/imgui/imgui.h ] || git submodule update --init --recursive third-party/ui/imgui
+[ -f lib/ui/imgui/imgui.h ] || git submodule update --init --recursive lib/ui/imgui
 
 # So far this ./configure output no files, it just make sanity checks for static Makefiles

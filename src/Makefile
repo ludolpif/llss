@@ -23,17 +23,17 @@ OBJS := $(SRCS:.c=.o)
 all: $(EXE)
 
 $(EXE): $(OBJS)
-	$(LINK.c) $(OBJS) ../third-party/ecs/flecs.o $(LDLIBS) -o $@
+	$(LINK.c) $(OBJS) ../lib/ecs/flecs.o $(LDLIBS) -o $@
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 # Prevent rule '%.o : %.c' to start before imgui submodule is available
-$(OBJS): ../third-party/ui/libdcimgui.a ../third-party/ecs/flecs.o
+$(OBJS): ../lib/ui/libdcimgui.a ../lib/ecs/flecs.o
 
-../third-party/ecs/flecs.o:
-	$(MAKE) -C ../third-party/ecs
+../lib/ecs/flecs.o:
+	$(MAKE) -C ../lib/ecs
 
-../third-party/ui/libdcimgui.a:
-	$(MAKE) -C ../third-party/ui
+../lib/ui/libdcimgui.a:
+	$(MAKE) -C ../lib/ui
 
 clean:
 	rm -f $(EXE) $(OBJS)

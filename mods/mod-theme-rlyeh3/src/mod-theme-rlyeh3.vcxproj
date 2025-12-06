@@ -44,11 +44,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)third-party\ui\imgui;$(SolutionDir)third-party\ui\imgui\backends;$(SolutionDir)third-party\ui\dear_bindings_generated;$(SolutionDir)third-party\ui\dear_bindings_generated\backends;$(SolutionDir)third-party\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>..\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)third-party\ui\imgui;$(SolutionDir)third-party\ui\imgui\backends;$(SolutionDir)third-party\ui\dear_bindings_generated;$(SolutionDir)third-party\ui\dear_bindings_generated\backends;$(SolutionDir)third-party\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>..\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -100,20 +100,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SDL3_DIR)\include\SDL\SDL.h" />
-    <ClInclude Include="$(SolutionDir)third-party\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)third-party\ui\imgui\backends\imgui_impl_sdl3.h" />
-    <ClInclude Include="$(SolutionDir)third-party\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)third-party\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
+    <ClInclude Include="$(SolutionDir)lib\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
+    <ClInclude Include="$(SolutionDir)lib\ui\imgui\backends\imgui_impl_sdl3.h" />
+    <ClInclude Include="$(SolutionDir)lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
+    <ClInclude Include="$(SolutionDir)lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
     <ClInclude Include="$(SolutionDir)include\app.h" />
     <ClInclude Include="$(SolutionDir)include\imgui_config.h" />
     <ClInclude Include="$(SolutionDir)include\mods-api.h" />
     <ClInclude Include="ui-theming.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)third-party\ecs\flecs.vcxproj">
+    <ProjectReference Include="$(SolutionDir)lib\ecs\flecs.vcxproj">
       <Project>{3c19e747-7542-4d39-9965-5fa360e64954}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)third-party\ui\ImGuiLib.vcxproj">
+    <ProjectReference Include="$(SolutionDir)lib\ui\ImGuiLib.vcxproj">
       <Project>{9189beed-5efc-480f-8d82-88826a5cd120}</Project>
     </ProjectReference>
   </ItemGroup>

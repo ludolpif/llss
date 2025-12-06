@@ -6,5 +6,5 @@ SolutionDir="`dirname $0`/../"
 cd "${SolutionDir}"
 while true; do
 	if make all; then killall llss; make run-app-trace & fi
-	find -name third-party -prune -o \( -regex '.*\.[ch]' -print0 \) | xargs -r0 inotifywait -e move
+	find -name lib -prune -o \( -regex '.*\.[ch]' -print0 \) | xargs -r0 inotifywait -e move
 done

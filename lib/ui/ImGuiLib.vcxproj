@@ -73,10 +73,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>%SDL3_DIR%\include;$(SolutionDir)third-party\static\ui\imgui;$(SolutionDir)third-party\static\ui\imgui\backends;$(SolutionDir)third-party\static\ui\dear_bindings_generated;$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends;$(IncludePath)</IncludePath>
+    <IncludePath>%SDL3_DIR%\include;$(SolutionDir)lib\static\ui\imgui;$(SolutionDir)lib\static\ui\imgui\backends;$(SolutionDir)lib\static\ui\dear_bindings_generated;$(SolutionDir)lib\static\ui\dear_bindings_generated\backends;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>%SDL3_DIR%\include;$(SolutionDir)third-party\static\ui\imgui;$(SolutionDir)third-party\static\ui\imgui\backends;$(SolutionDir)third-party\static\ui\dear_bindings_generated;$(SolutionDir)third-party\static\ui\dear_bindings_generated\backends;$(IncludePath)</IncludePath>
+    <IncludePath>%SDL3_DIR%\include;$(SolutionDir)lib\static\ui\imgui;$(SolutionDir)lib\static\ui\imgui\backends;$(SolutionDir)lib\static\ui\dear_bindings_generated;$(SolutionDir)lib\static\ui\dear_bindings_generated\backends;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

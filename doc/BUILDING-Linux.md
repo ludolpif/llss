@@ -37,29 +37,29 @@ ludolpif@lud-5490:~/git/llss$ ./configure
 + ar                                                                       FOUND
 + pkg-config                                                               FOUND
 + pkg-config sdl3 --cflags
-+ git submodule update --init --recursive third-party/ui/imgui
-Submodule 'dear_imgui' (https://github.com/ludolpif/dear_imgui.git) registered for path 'third-party/ui/imgui'
-Cloning into '/home/ludolpif/git/llss/third-party/ui/imgui'...
-Submodule path 'third-party/ui/imgui': checked out '79a89a40e96554922f6530a37e5a517faaf6b9ed'
++ git submodule update --init --recursive lib/ui/imgui
+Submodule 'dear_imgui' (https://github.com/ludolpif/dear_imgui.git) registered for path 'lib/ui/imgui'
+Cloning into '/home/ludolpif/git/llss/lib/ui/imgui'...
+Submodule path 'lib/ui/imgui': checked out '79a89a40e96554922f6530a37e5a517faaf6b9ed'
 ludolpif@lud-5490:~/git/llss$ make -j
 make -C src
 make -C mods/llss-mod-template/src
 make[1]: Entering directory '/home/ludolpif/git/llss/mods/llss-mod-template/src'
 make[1]: Entering directory '/home/ludolpif/git/llss/src'
-make -C ../third-party/ui
-make -C ../third-party/ecs
-make[2]: Entering directory '/home/ludolpif/git/llss/third-party/ui'
+make -C ../lib/ui
+make -C ../lib/ecs
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/ui'
 g++ -g -O3 `./cflags`   -c -o imgui.o imgui/imgui.cpp
-make[2]: Entering directory '/home/ludolpif/git/llss/third-party/ecs'
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/ecs'
 cc -g -O3 -std=gnu99 -Iflecs -c -o flecs.o flecs/flecs.c
 g++ -g -O3 `./cflags`   -c -o imgui_demo.o imgui/imgui_demo.cpp
-make -C ../../../third-party/ui
+make -C ../../../lib/ui
 g++ -g -O3 `./cflags`   -c -o imgui_draw.o imgui/imgui_draw.cpp
-make -C ../../../third-party/ecs
+make -C ../../../lib/ecs
 g++ -g -O3 `./cflags`   -c -o imgui_tables.o imgui/imgui_tables.cpp
-make[2]: Entering directory '/home/ludolpif/git/llss/third-party/ecs'
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/ecs'
 cc -g -O3 -std=gnu99 -Iflecs -c -o flecs.o flecs/flecs.c
-make[2]: Entering directory '/home/ludolpif/git/llss/third-party/ui'
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/ui'
 g++ -g -O3 `./cflags`   -c -o imgui.o imgui/imgui.cpp
 g++ -g -O3 `./cflags`   -c -o imgui_widgets.o imgui/imgui_widgets.cpp
 g++ -g -O3 `./cflags`   -c -o imgui_demo.o imgui/imgui_demo.cpp
@@ -77,10 +77,10 @@ g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdl3.o dear_bindings_generated/backen
 g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdlgpu3.o dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
 g++ -g -O3 `./cflags`   -c -o dcimgui_impl_sdlgpu3.o dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
 ar rcs libdcimgui.a imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o dcimgui.o dcimgui_impl_sdl3.o dcimgui_impl_sdlgpu3.o
-make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/ui'
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/ui'
 ar rcs libdcimgui.a imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o dcimgui.o dcimgui_impl_sdl3.o dcimgui_impl_sdlgpu3.o
-make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/ui'
-make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/ecs'
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/ui'
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/ecs'
 gcc -MT alloc.o -MMD -MP -MF .deps/alloc.d -g -Wall -Wformat -O0  `./cflags`   -c -o alloc.o alloc.c
 gcc -MT app-event.o -MMD -MP -MF .deps/app-event.d -g -Wall -Wformat -O0  `./cflags`   -c -o app-event.o app-event.c
 gcc -MT app-init.o -MMD -MP -MF .deps/app-init.d -g -Wall -Wformat -O0  `./cflags`   -c -o app-init.o app-init.c
@@ -88,12 +88,12 @@ gcc -MT app-iterate.o -MMD -MP -MF .deps/app-iterate.d -g -Wall -Wformat -O0  `.
 gcc -MT main.o -MMD -MP -MF .deps/main.d -g -Wall -Wformat -O0  `./cflags`   -c -o main.o main.c
 gcc -MT mod-host.o -MMD -MP -MF .deps/mod-host.d -g -Wall -Wformat -O0  `./cflags`   -c -o mod-host.o mod-host.c
 gcc -MT ui-main.o -MMD -MP -MF .deps/ui-main.d -g -Wall -Wformat -O0  `./cflags`   -c -o ui-main.o ui-main.c
-gcc -g -Wall -Wformat -O0  `./cflags`  -Wl,-Bsymbolic -L../third-party/ui  alloc.o app-event.o app-init.o app-iterate.o main.o mod-host.o ui-main.o ../third-party/ecs/flecs.o -ldcimgui -lm -lstdc++ -lSDL3 -o ../app
+gcc -g -Wall -Wformat -O0  `./cflags`  -Wl,-Bsymbolic -L../lib/ui  alloc.o app-event.o app-init.o app-iterate.o main.o mod-host.o ui-main.o ../lib/ecs/flecs.o -ldcimgui -lm -lstdc++ -lSDL3 -o ../app
 make[1]: Leaving directory '/home/ludolpif/git/llss/src'
-make[2]: Leaving directory '/home/ludolpif/git/llss/third-party/ecs'
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/ecs'
 gcc -MT hello.o -MMD -MP -MF .deps/hello.d -g -Wall -Wformat -O0 `./cflags`   -c -o hello.o hello.c
 gcc -MT mod.o -MMD -MP -MF .deps/mod.d -g -Wall -Wformat -O0 `./cflags`   -c -o mod.o mod.c
-gcc -g -Wall -Wformat -O0 `./cflags`  -Wl,-Bsymbolic -Wl,--default-symver -Wl,-soname,llss-mod-template.so -shared -L../../../third-party/ui  hello.o mod.o -ldcimgui -lm -lstdc++ -o ../llss-mod-template.so
+gcc -g -Wall -Wformat -O0 `./cflags`  -Wl,-Bsymbolic -Wl,--default-symver -Wl,-soname,llss-mod-template.so -shared -L../../../lib/ui  hello.o mod.o -ldcimgui -lm -lstdc++ -o ../llss-mod-template.so
 make[1]: Leaving directory '/home/ludolpif/git/llss/mods/llss-mod-template/src'
 ludolpif@lud-5490:~/git/llss$ ./app 
 INFO  0000000000000055 SDL_AppInit(): tick0_wallclock==1764707268650884098
