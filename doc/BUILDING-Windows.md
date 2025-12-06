@@ -3,7 +3,7 @@ I made Solution and Project files with a default install of VisualStudio 2022 on
 
 ## Prerequisites
 `git clone` this repository in a convenient folder with submodules. You need https://git-scm.com/install/windows.
-You need at least to `git submodule update --init --recursive third-party/static/ui/imgui`.
+You need at least to `git submodule update --init --recursive third-party/ui/imgui`.
 
 For now, I didn't choose to automate SDL3 download or detection (no vcpkg nor CMake).
 
