@@ -7,6 +7,8 @@
 CXX := g++
 #CPPFLAGS +=
 CXXFLAGS += `./cflags`
+LDFLAGS += $(shell ./ldflags)
+#LDLIBS += $(shell ./ldlibs)
 #AR := gcc-ar # old platforms needed in -lto linking mode
 ARFLAGS = rcs
 
@@ -19,22 +21,23 @@ VPATH := imgui:imgui/backends:dear_bindings_generated:dear_bindings_generated/ba
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-all: libdcimgui.a
-
-# Use GNU Make archive member syntax archive(member):
-libdcimgui.a: libdcimgui.a($(OBJS))
+all: libdcimgui.a libdcimgui.so
 
 # https://www.gnu.org/software/make/manual/html_node/Archive-Pitfalls.html
 (%): %	;
-%.a:
+libdcimgui.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 
+libdcimgui.so: $(OBJS)
+	$(LINK.cpp) -shared $(OBJS) $(LDLIBS) -o $@
+# LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
+
 # Trigger full rebuild off all archive members on imgui_config.h change
-(%.o): %.cpp ../../../include/imgui_config.h
-	$(COMPILE.cpp) -o $% $<
+%.o: %.cpp ../../include/imgui_config.h
+	$(COMPILE.cpp) -o $@ $<
 
 clean:
-	rm -f libdcimgui.a $(OBJS)
+	rm -f libdcimgui.a libdcimgui.so $(OBJS)
 
 # targets : normal-prerequisites | order-only-prerequisites
 bindings: | dear_bindings/dear_bindings.py

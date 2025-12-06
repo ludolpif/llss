@@ -14,6 +14,11 @@
 
 #pragma once
 #include <SDL3/SDL_assert.h>
+#include <SDL3/SDL_stdinc.h>
+
+// begin: dear_bindings specifics
+#define CIMGUI_API SDL_DECLSPEC
+// end: dear_bindings specifics
 
 //---- Define assertion handler. Defaults to calling assert().
 // - If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
