@@ -6,4 +6,4 @@ case $(uname -s) in
 	Windows_NT) lto="" ;;
 	*)          echo "Unknown platform" >&2
 esac
-echo $solution $lto
+echo $solution # $lto (is very slow)
