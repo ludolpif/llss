@@ -11,5 +11,5 @@ project="$project
 -I${SolutionDir}lib/ecs/flecs
 -I${SolutionDir}include
 "
-libsdl3=`pkg-config --libs sdl3`
+libsdl3=`pkg-config --cflags sdl3`
 echo $solution $project $libsdl3

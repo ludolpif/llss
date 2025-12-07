@@ -4,5 +4,11 @@ ProjectDir="`dirname $0`/"
 
 solution=`${SolutionDir}ldflags`
 soname=`${ProjectDir}soname`
-project="-Wl,--default-symver -Wl,-soname,$soname -shared -Wl,-rpath=.:.. -Wl,-Bsymbolic"
-echo $solution $project
+project="-Wl,--default-symver -Wl,-soname,$soname -shared"
+case $(uname -s) in
+	Linux)      dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
+	Darwin)     dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
+	Windows_NT) dynload="" ;;
+	*)          echo "Unknown platform" >&2
+esac
+echo $solution $project $dynload

@@ -2,7 +2,7 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-DIRS := $(shell dirname */Makefile)
+DIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
 .PHONY: all clean $(DIRS)
 

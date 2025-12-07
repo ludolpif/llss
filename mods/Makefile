@@ -2,14 +2,13 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-DIRS := $(shell dirname */src)
+DIRS := $(patsubst %/src,%,$(wildcard */src))
 
 .PHONY: all clean $(DIRS)
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
-# targets: normal-prerequisites | order-only-prerequisites
 
 all: $(DIRS)
 

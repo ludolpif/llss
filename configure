@@ -18,8 +18,18 @@ check gcc --version
 check ar --version
 check pkg-config --version
 
-set -xe
-pkg-config sdl3 --cflags > /dev/null
+if ! pkg-config sdl3 --cflags > /dev/null; then
+	cat <<"EOT"
+pkg-config sdl3 --cflags have failed
+
+On Windows + MingGW (using skeeto/w64devkit for example),
+ you need to export an environment variable in your shell:
+export PKG_CONFIG_PATH=/dev/libs/SDL3-3.2.26-mingw/x86_64-w64-mingw32/lib/pkgconfig
+
+On linux, you just need to install libsdl3-dev (debian) or sdl3-devel (redhat) package.
+EOT
+fi
+
 [ -f lib/ui/imgui/imgui.h ] || git submodule update --init --recursive lib/ui/imgui
 
 # So far this ./configure output no files, it just make sanity checks for static Makefiles

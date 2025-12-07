@@ -1,3 +1,9 @@
 #!/bin/sh
 solution="-ggdb3 -O0"
-echo $solution
+case $(uname -s) in
+	Linux)      lto="-flto=jobserver" ;;
+	Darwin)     lto="-lto=jobserver" ;;
+	Windows_NT) lto="" ;;
+	*)          echo "Unknown platform" >&2
+esac
+echo $solution $lto

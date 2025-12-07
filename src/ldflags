@@ -2,7 +2,12 @@
 SolutionDir="../"
 
 solution=`${SolutionDir}ldflags`
-project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic"
+case $(uname -s) in
+	Linux)      project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic" ;;
+	Darwin)     project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic" ;;
+	Windows_NT) project="" ;;
+	*)          echo "Unknown platform" >&2
+esac
 case $(uname -s) in
 	Linux)      libdcimgui="-L${SolutionDir}lib/ui" ;;
 	Darwin)     libdcimgui="-L${SolutionDir}lib/ui -L/usr/local/lib -L/opt/local/lib" ;;
