@@ -129,6 +129,6 @@ void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logprio
 		mods->hook_ui_menu_v1_from[j]=i;
 		mods->hook_ui_menu_v1_count++;
 	} else {
-		app_info("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_menu_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_debug("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_menu_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 	}
 }
