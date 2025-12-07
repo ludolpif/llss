@@ -11,10 +11,7 @@ DIRS := $(shell dirname */src)
 ##---------------------------------------------------------------------
 # targets: normal-prerequisites | order-only-prerequisites
 
-all: $(DIRS) #| libdcimgui.so
-
-#libdcimgui.so: ../lib/ui/so/libdcimgui.so
-#	ln -nsf ../lib/ui/so/libdcimgui.so
+all: $(DIRS)
 
 $(DIRS):
 	$(MAKE) -C $@/src

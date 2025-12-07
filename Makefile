@@ -6,8 +6,8 @@
 
 all: app mods
 
-# ordering rule. if dependencies are expressed subdirs Makefile
-# then calling here make -j can call $(MAKE) -C lib multiple times, concurrently
+# ordering rule. if dependencies are expressed in subdirs Makefile then calling here a 
+# "make -j" can call $(MAKE) -C lib multiple times, concurrently and it will fail
 app mods: lib
 
 app:

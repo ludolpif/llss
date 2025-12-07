@@ -10,11 +10,11 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 /*= 0*/, int compact01 
 	// V3 style from ImThemes
 	ImGuiStyle *style = ImGui_GetStyle();
 
-	const float h_8 = compact01 ? 4 : 8;
-	const float h_4 = compact01 ? 2 : 4;
-	const float h_2 = compact01 ? 0.5 : 1;
+	const float h_8 = compact01 ? 4.f : 8.f;
+	const float h_4 = compact01 ? 2.f : 4.f;
+	const float h_2 = compact01 ? 0.5f : 1.f;
 
-	style->Alpha = 1.0f;
+	style->Alpha = 1.f;
 	style->DisabledAlpha = 0.3f;
 
 	style->WindowPadding = (ImVec2){4, h_8};
@@ -22,29 +22,29 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 /*= 0*/, int compact01 
 	style->ItemSpacing = (ImVec2){h_8, h_2 + h_2};
 	style->ItemInnerSpacing = (ImVec2){4, 4};
 	style->IndentSpacing = 16;
-	style->ScrollbarSize = compact01 ? 12 : 18;
-	style->GrabMinSize = compact01 ? 16 : 20;
+	style->ScrollbarSize = compact01 ? 12.f : 18.f;
+	style->GrabMinSize = compact01 ? 16.f : 20.f;
 
-	style->WindowBorderSize = border01;
-	style->ChildBorderSize = border01;
-	style->PopupBorderSize = border01;
-	style->FrameBorderSize = 0;
+	style->WindowBorderSize = border01 ? 1.f : 0.f;
+	style->ChildBorderSize = border01 ? 1.f : 0.f;
+	style->PopupBorderSize = border01 ? 1.f : 0.f;
+	style->FrameBorderSize = 0.f;
 
-	style->WindowRounding = 4;
-	style->ChildRounding = 6;
-	style->FrameRounding = shape0123 == 0 ? 0 : shape0123 == 1 ? 4 : 12;
-	style->PopupRounding = 4;
-	style->ScrollbarRounding = rounded * 8 + 4;
+	style->WindowRounding = 4.f;
+	style->ChildRounding = 6.f;
+	style->FrameRounding = shape0123 == 0 ? 0.f : shape0123 == 1 ? 4.f : 12.f;
+	style->PopupRounding = 4.f;
+	style->ScrollbarRounding = rounded * 8.f + 4.f;
 	style->GrabRounding = style->FrameRounding;
 
-	style->TabBorderSize = 0;
-	style->TabBarBorderSize = 2;
-	style->TabBarOverlineSize = 2;
-	style->TabCloseButtonMinWidthSelected = -1; // -1:always visible, 0:visible when hovered, >0:visible when hovered if minimum width
-	style->TabCloseButtonMinWidthUnselected = -1;
+	style->TabBorderSize = 0.f;
+	style->TabBarBorderSize = 2.f;
+	style->TabBarOverlineSize = 2.f;
+	style->TabCloseButtonMinWidthSelected = -1.f; // -1:always visible, 0:visible when hovered, >0:visible when hovered if minimum width
+	style->TabCloseButtonMinWidthUnselected = -1.f;
 	style->TabRounding = rounded;
 
-	style->CellPadding = (ImVec2){8.0f, 4.0f};
+	style->CellPadding = (ImVec2){8.f, 4.f};
 
 	style->WindowTitleAlign = (ImVec2){0.5f, 0.5f};
 	style->WindowMenuButtonPosition = ImGuiDir_Right;
@@ -52,12 +52,12 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 /*= 0*/, int compact01 
 	style->ColorButtonPosition = ImGuiDir_Right;
 	style->ButtonTextAlign = (ImVec2){0.5f, 0.5f};
 	style->SelectableTextAlign = (ImVec2){0.5f, 0.5f};
-	style->SeparatorTextAlign.x = 1.00f;
-	style->SeparatorTextBorderSize = 1;
-	style->SeparatorTextPadding = (ImVec2){0,0};
+	style->SeparatorTextAlign.x = 1.f;
+	style->SeparatorTextBorderSize = 1.f;
+	style->SeparatorTextPadding = (ImVec2){0.f,0.f };
 
-	style->WindowMinSize = (ImVec2){32.0f, 16.0f};
-	style->ColumnsMinSpacing = 6.0f;
+	style->WindowMinSize = (ImVec2){32.f, 16.f};
+	style->ColumnsMinSpacing = 6.f;
 
 	// diamond sliders
 	style->CircleTessellationMaxError = shape0123 == 3 ? 4.00f : 0.30f;
@@ -194,7 +194,7 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 /*= 0*/, int compact01 
 			float H, S, V;
 			ImVec4 *col = &style->Colors[i];
 			ImGui_ColorConvertRGBtoHSV( col->x, col->y, col->z, &H, &S, &V );
-			if( S < 0.5 ) V = 1.0 - V, S *= 0.15;
+			if( S < 0.5f ) V = 1.0f - V, S *= 0.15f;
 			ImGui_ColorConvertHSVtoRGB( H, S, V, &col->x, &col->y, &col->z );
 		}
 	}
@@ -205,7 +205,7 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 /*= 0*/, int compact01 
 
 ImVec4 igThemeV3_dim(ImVec4 hi) {
 	float h,s,v; ImGui_ColorConvertRGBtoHSV(hi.x,hi.y,hi.z, &h,&s,&v);
-	ImVec4 dim = ImColor_HSV(h,s,/*lit01 ? v*0.65:*/v*0.65, hi.w).Value;
+	ImVec4 dim = ImColor_HSV(h,s,/*lit01 ? v*0.65f:*/v*0.65f, hi.w).Value;
 	if( hi.z > hi.x && hi.z > hi.y ) return (ImVec4){dim.x,dim.y,hi.z,dim.w};
 	return dim;
 }
