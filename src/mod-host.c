@@ -3,7 +3,7 @@
 #include "mod-host.h"
 
 // Forward declarations
-void mod_tryload_optionnal_hooks(appmods_t *mods, int i);
+void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logpriority_earlyskip);
 
 SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, const char *mod_dirname) {
 	appstate_t *appstate = (appstate_t *) _appstate;
@@ -42,45 +42,45 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 		goto bad4;
 	}
 
-	app_warn("%016lu mod_tryload(): will load %s", SDL_GetTicksNS(), mods->mod_sopath[i]);
+	app_warn("%016lu mod_tryload(): %s", SDL_GetTicksNS(), mods->mod_sopath[i]);
 	mods->shared_object[i] = SDL_LoadObject(mods->mod_sopath[i]);
 	if (!mods->shared_object[i]) {
 		app_warn("%016lu mod_tryload(): SDL_LoadObject(): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad2;
 	}
 
-	app_mod_handshake_t app_mod_handshake = (app_mod_handshake_t) SDL_LoadFunction(mods->shared_object[i], "app_mod_handshake");
-	if (!app_mod_handshake) {
-		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., app_mod_handshake): %s", SDL_GetTicksNS(), SDL_GetError());
+	mod_handshake_v1_t mod_handshake_v1 = (mod_handshake_v1_t) SDL_LoadFunction(mods->shared_object[i], "mod_handshake_v1");
+	if (!mod_handshake_v1) {
+		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., mod_handshake_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad;
 	}
 
-	mods->app_version_compiled_against[i] = app_mod_handshake(APP_VERSION_INT);
+	mods->app_version_compiled_against[i] = mod_handshake_v1(APP_VERSION_INT);
 	int minimal_app_version = APP_VERSION_TO_INT(0,1,0); //TODO put in a public header
 	if (mods->app_version_compiled_against[i] < APP_VERSION_TO_INT(0,1,0)) {
-		app_warn("%016lu app_mod_handshake(): too old app_version_compiled_against: %i"
+		app_warn("%016lu mod_handshake_v1(): too old app_version_compiled_against: %i"
 				"Please update this module. Current minimal_app_version: %i",
 				SDL_GetTicksNS(), mods->app_version_compiled_against[i], minimal_app_version);
 		goto bad;
 	}
 
-	mods->app_mod_init[i] = (app_mod_init_t) SDL_LoadFunction(mods->shared_object[i], "app_mod_init");
-	if (!mods->app_mod_init[i]) {
-		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., app_mod_init): %s", SDL_GetTicksNS(), SDL_GetError());
+	mods->mod_init_v1[i] = (mod_init_v1_t) SDL_LoadFunction(mods->shared_object[i], "mod_init_v1");
+	if (!mods->mod_init_v1[i]) {
+		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad;
 	}
 
-	mods->app_mod_fini[i] = (app_mod_fini_t) SDL_LoadFunction(mods->shared_object[i], "app_mod_fini");
-	if (!mods->app_mod_fini[i]) {
-		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., app_mod_fini): %s", SDL_GetTicksNS(), SDL_GetError());
+	mods->mod_fini_v1[i] = (mod_fini_v1_t) SDL_LoadFunction(mods->shared_object[i], "mod_fini_v1");
+	if (!mods->mod_fini_v1[i]) {
+		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad;
 	}
 
-	mod_tryload_optionnal_hooks(mods, i);
+	mod_tryload_optionnal_hooks(mods, i, appstate->logpriority_earlyskip);
 
-	SDL_AppResult init_res = mods->app_mod_init[i](appstate, &mods->userptr[i]);
-	if (init_res != SDL_APP_CONTINUE) {
-		app_warn("%016lu mod_tryload(): app_mod_init(): error %d", SDL_GetTicksNS(), init_res);
+	mod_result_t init_res = mods->mod_init_v1[i](appstate, &mods->userptr[i]);
+	if (init_res != MOD_RESULT_CONTINUE) {
+		app_warn("%016lu mod_tryload(): mod_init_v1(): error %d", SDL_GetTicksNS(), init_res);
 		goto bad;
 	}
 
@@ -102,20 +102,33 @@ bad4:
 	return SDL_ENUM_CONTINUE;
 }
 
-void mod_tryload_optionnal_hooks(appmods_t *mods, int i) {
+void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logpriority_earlyskip) {
 	// If the symbol is not exported in the shared object, SDL_LoadFunction will return NULL and it's fine
 	int j;
-	j = mods->hook_purpose1_count;
-	mods->app_mod_hook_purpose1[j] = (app_mod_hook_purpose1_t) SDL_LoadFunction(mods->shared_object[i], "app_mod_hook_purpose1");
-	if ( mods->app_mod_hook_purpose1[j] ) {
-		mods->app_mod_hook_purpose1_from[j]=i;
-		mods->hook_purpose1_count++;
+	j = mods->hook_ui_config_v1_count;
+	mods->hook_ui_config_v1[j] = (hook_ui_config_v1_t) SDL_LoadFunction(mods->shared_object[i], "hook_ui_config_v1");
+	if ( mods->hook_ui_config_v1[j] ) {
+		mods->hook_ui_config_v1_from[j]=i;
+		mods->hook_ui_config_v1_count++;
+	} else {
+		app_debug("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_config_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 	}
 
-	j = mods->hook_purpose2_count;
-	mods->app_mod_hook_purpose2[j] = (app_mod_hook_purpose2_t) SDL_LoadFunction(mods->shared_object[i], "app_mod_hook_purpose2");
-	if ( mods->app_mod_hook_purpose2[j] ) {
-		mods->app_mod_hook_purpose2_from[j]=i;
-		mods->hook_purpose2_count++;
+	j = mods->hook_ui_main_v1_count;
+	mods->hook_ui_main_v1[j] = (hook_ui_main_v1_t) SDL_LoadFunction(mods->shared_object[i], "hook_ui_main_v1");
+	if ( mods->hook_ui_main_v1[j] ) {
+		mods->hook_ui_main_v1_from[j]=i;
+		mods->hook_ui_main_v1_count++;
+	} else {
+		app_debug("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_main_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+	}
+
+	j = mods->hook_ui_menu_v1_count;
+	mods->hook_ui_menu_v1[j] = (hook_ui_menu_v1_t) SDL_LoadFunction(mods->shared_object[i], "hook_ui_menu_v1");
+	if ( mods->hook_ui_menu_v1[j] ) {
+		mods->hook_ui_menu_v1_from[j]=i;
+		mods->hook_ui_menu_v1_count++;
+	} else {
+		app_info("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_menu_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 	}
 }

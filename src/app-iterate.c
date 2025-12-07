@@ -8,7 +8,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	appstate_t *appstate = (appstate_t *) _appstate;
 	SDL_AppResult then = SDL_APP_CONTINUE;
 
-	bool skip_debug = appstate->skip_debug;
+	SDL_LogPriority logpriority_earlyskip = appstate->logpriority_earlyskip;
 	SDL_Window *window = appstate->window;
 	SDL_GPUDevice* gpu_device = appstate->gpu_device;
 	ImGuiIO *imgui_io = appstate->imgui_io;

@@ -32,16 +32,19 @@ SDL_AppResult UI_Main(appstate_t *appstate) {
 		ImGui_End();
 	}
 
-	//TODO hooks that return always a non SDL_APP_CONTINUE will flood the logs, prevent it
-	// (replace with counters + last frameid failure instead)
+	//TODO hooks that return persistently a non MOD_RESULT_CONTINUE should be noticed,
+	// but if logged, will flood the logs at 60 lines per second, prevent it
+	// by using counters + last frameid of each status instead
 	appmods_t *mods = &appstate->internal->mods;
-	Sint32 count = mods->hook_purpose2_count;
-	SDL_AppResult result;
-	for (int j=0; j<count; j++) {
-		void *userptr = mods->userptr[j];
-		result = mods->app_mod_hook_purpose2[j](userptr);
-		if (result != SDL_APP_CONTINUE)
-			app_info("%016lu UI-main(): app_mod_hook_purpose2 failed for %s", SDL_GetTicksNS(), mods->mod_dirname[j]);
+	if ( appstate->show_another_window ) {
+		Sint32 count = mods->hook_ui_config_v1_count;
+		for (int j=0; j<count; j++) {
+			void *userptr = mods->userptr[j];
+			mod_result_t res = mods->hook_ui_config_v1[j](userptr);
+			if ( res == MOD_RESULT_SUCCESS ) {
+				appstate->show_another_window = false;
+			}
+		}
 	}
 
 	return then;

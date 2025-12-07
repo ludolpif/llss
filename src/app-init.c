@@ -32,7 +32,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 		app_failure("SDL_calloc(1,sizeof(appinternal_t))");
 
 	// Configure logging
-	SDL_LogPriority pri = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
+	SDL_LogPriority logpriority_earlyskip = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_TRACE,    "TRACE ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE,  "VERB  ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG,    "DEBUG ");
@@ -40,7 +40,6 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN,     "WARN  ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR,    "ERROR ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRIT  ");
-	bool skip_debug = ( pri > SDL_LOG_PRIORITY_DEBUG );
 
 	// Set metadata before SDL_Init because it will print it if loglevel is high enough
 	// We don't check return value, we don't want to abort the app startup if this fails anyway.
@@ -158,12 +157,13 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	appstate->running_app_version = APP_VERSION_INT;
 	appstate->internal = internal;
-	appstate->skip_debug = skip_debug;
+	appstate->logpriority_earlyskip = logpriority_earlyskip;
 
 	appstate->sdl_malloc_func = alloc_count_malloc;
 	appstate->sdl_calloc_func = alloc_count_calloc;
 	appstate->sdl_realloc_func = alloc_count_realloc;
 	appstate->sdl_free_func = alloc_count_free;
+	appstate->imgui_allocator_functions_user_data = NULL;
 
 	appstate->imgui_malloc_func = alloc_count_malloc_userptr;
 	appstate->imgui_free_func = alloc_count_free_userptr;

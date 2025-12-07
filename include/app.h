@@ -4,14 +4,13 @@
 #include "dcimgui.h"
 #include "flecs.h"
 
-#define APP_VERSION_TO_DOT(a, b, c) a ##.## b ##.## c
 #define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
 #define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
 #define	APP_VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
 #define	APP_VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
 
 #define APP_VERSION_INT APP_VERSION_TO_INT(0,2,1)
-#define APP_VERSION_STR "0.2.1" //TODO broken APP_VERSION_TO_DOT(0,2,1)
+#define APP_VERSION_STR "0.2.1"
 
 #define APP_METADATA_NAME_STRING "llss"
 #define APP_METADATA_VERSION_STRING APP_VERSION_STR
@@ -22,14 +21,14 @@
 #define APP_METADATA_TYPE_STRING "application"
 
 /* TODO
-typedef enum APP_LogCategory {
+typedef enum app_logcategory {
 	APP_CATEGORY_CORE = SDL_LOG_CATEGORY_CUSTOM,
 	APP_CATEGORY_PLUGIN,
-} APP_LogCategory;
+} app_logcategory_t;
 */
-#define app_trace(...)    if (!skip_debug) SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
-#define app_verbose(...)  if (!skip_debug) SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
-#define app_debug(...)    if (!skip_debug) SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_trace(...)    if (logpriority_earlyskip > SDL_LOG_PRIORITY_TRACE) SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_verbose(...)  if (logpriority_earlyskip > SDL_LOG_PRIORITY_VERBOSE) SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_debug(...)    if (logpriority_earlyskip > SDL_LOG_PRIORITY_DEBUG) SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_info(...)     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_warn(...)     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_error(...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
@@ -39,13 +38,13 @@ typedef enum APP_LogCategory {
 struct appinternal;
 
 // App state, used by the app and exposed to mods, should only extended by adding fields at the end
-// Don't use bitfields members as binary layout isn't specification defined (can vary between compilers)
+//  Don't use bitfields members as binary layout isn't specification defined (can vary between compilers)
+//  Use fixed-size types like Sint32 and not int
 typedef struct appstate {
 	Sint32 running_app_version;
 	struct appinternal *internal;
-	bool skip_debug;
+	SDL_LogPriority logpriority_earlyskip;
 
-	//TODO Check if this necessary (may SDL do it by himself after dlopen ?
 	SDL_malloc_func sdl_malloc_func;
 	SDL_calloc_func sdl_calloc_func;
 	SDL_realloc_func sdl_realloc_func;
@@ -53,6 +52,7 @@ typedef struct appstate {
 
 	ImGuiMemAllocFunc imgui_malloc_func;
 	ImGuiMemFreeFunc imgui_free_func;
+	void* imgui_allocator_functions_user_data;
 
 	SDL_Time tick0_wallclock;
 	Sint32 frameid;
