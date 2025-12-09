@@ -55,7 +55,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;flecs_EXPORTS;imgui_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -74,9 +74,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;flecs_EXPORTS;imgui_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-	  <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -99,14 +99,15 @@
     <ClCompile Include="ui-main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SDL3_DIR)include\SDL3\SDL.h" />
-    <ClInclude Include="$(SolutionDir)include\app.h" />
-    <ClInclude Include="$(SolutionDir)include\imgui_config.h" />
-    <ClInclude Include="$(SolutionDir)include\mods-api.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\imgui\backends\imgui_impl_sdl3.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
+    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL.h" />
+    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL_gpu.h" />
+    <ClInclude Include="$(SolutionDir)\include\app.h" />
+    <ClInclude Include="$(SolutionDir)\include\imgui_config.h" />
+    <ClInclude Include="$(SolutionDir)\include\mods-api.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
     <ClInclude Include="app-internal.h" />
     <ClInclude Include="mod-host.h" />
     <ClInclude Include="ui.h" />

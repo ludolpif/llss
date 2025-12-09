@@ -5,10 +5,6 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-template", "mods\mod-template\src\mod-template.vcxproj", "{4E4536B5-7943-4153-B43A-1D196B9FC220}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiLib", "lib\ui\ImGuiLib.vcxproj", "{9189BEED-5EFC-480F-8D82-88826A5CD120}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flecs", "lib\ecs\flecs.vcxproj", "{3C19E747-7542-4D39-9965-5FA360E64954}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -19,14 +15,6 @@ Global
 		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Debug|x64.Build.0 = Debug|x64
 		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Release|x64.ActiveCfg = Release|x64
 		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Release|x64.Build.0 = Release|x64
-		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Debug|x64.ActiveCfg = Debug|x64
-		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Debug|x64.Build.0 = Debug|x64
-		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Release|x64.ActiveCfg = Release|x64
-		{9189BEED-5EFC-480F-8D82-88826A5CD120}.Release|x64.Build.0 = Release|x64
-		{3C19E747-7542-4D39-9965-5FA360E64954}.Debug|x64.ActiveCfg = Debug|x64
-		{3C19E747-7542-4D39-9965-5FA360E64954}.Debug|x64.Build.0 = Debug|x64
-		{3C19E747-7542-4D39-9965-5FA360E64954}.Release|x64.ActiveCfg = Release|x64
-		{3C19E747-7542-4D39-9965-5FA360E64954}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
