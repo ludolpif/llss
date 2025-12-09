@@ -16,9 +16,16 @@
 #include <SDL3/SDL_assert.h>
 #include <SDL3/SDL_stdinc.h>
 
-// begin: dear_bindings specifics
-#define CIMGUI_API SDL_DECLSPEC
-// end: dear_bindings specifics
+// Symmetric construction as in "flecs.h" with flecs_EXPORTS
+#if defined(imgui_EXPORTS) && (defined(_MSC_VER) || defined(__MINGW32__))
+  #define CIMGUI_API __declspec(dllexport)
+#elif defined(imgui_EXPORTS)
+  #define CIMGUI_API __attribute__((__visibility__("default")))
+#elif defined(_MSC_VER)
+  #define CIMGUI_API __declspec(dllimport)
+#else
+  #define CIMGUI_API
+#endif
 
 //---- Define assertion handler. Defaults to calling assert().
 // - If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.

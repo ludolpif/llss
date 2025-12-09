@@ -2,5 +2,5 @@
 SolutionDir="../../"
 
 solution=`${SolutionDir}cflags`
-project="-std=gnu99 -Iflecs"
+project="-std=gnu99 -Iflecs -Dflecs_EXPORTS"
 echo $solution $project

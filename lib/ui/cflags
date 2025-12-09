@@ -4,6 +4,7 @@ SolutionDir="../../"
 solution=`${SolutionDir}cflags`
 project="-std=c++14 -fPIC -fvisibility=hidden"
 project="$project
+-Dimgui_EXPORTS
 -DIMGUI_USER_CONFIG=\"imgui_config.h\"
 -I${SolutionDir}include
 -Idear_bindings_generated
