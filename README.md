@@ -15,7 +15,7 @@ I also leave public an unfiltered-yet dubious goals ideas: [GOALS-scratchpad.md]
 ## How to use it
 You barely can't yet.
 - This software will never be production-ready while I am the (sole) developer. Jump in !
-- No releases it at all. I want to do it early mostly for mod developers first
+- No releases exists at all. I want to do it early mostly for mod developers first
 - I want to find, reserve then change to a better project name if I feel it can really reach users one day
 
 ## How to write it, mod it
