@@ -48,7 +48,7 @@ void * SDLCALL alloc_count_malloc(size_t size) {
 	return orig_malloc_func(size);
 }
 
-void * SDLCALL alloc_count_malloc_userptr(size_t size, void *userptr) {
+void * SDLCALL alloc_count_malloc_userptr(size_t size, void * /*userptr*/) {
 	SDL_AtomicIncRef(alloc_count_current_context+0);
 	return orig_malloc_func(size);
 }
@@ -68,7 +68,7 @@ void   SDLCALL alloc_count_free(void *mem) {
 	orig_free_func(mem);
 }
 
-void   SDLCALL alloc_count_free_userptr(void *mem, void *userptr) {
+void   SDLCALL alloc_count_free_userptr(void *mem, void * /*userptr*/) {
 	SDL_AtomicIncRef(alloc_count_current_context+3);
 	orig_free_func(mem);
 }

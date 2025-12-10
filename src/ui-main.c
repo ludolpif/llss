@@ -1,7 +1,7 @@
 #include "ui.h"
 #include "app-internal.h"
 
-SDL_AppResult UI_Main(appstate_t *appstate) {
+SDL_AppResult ui_main(appstate_t *appstate) {
 	SDL_AppResult then = SDL_APP_CONTINUE;
 
 	// 1. Show the big demo window (Most of the sample code is in ImGui_ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).

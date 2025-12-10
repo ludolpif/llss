@@ -60,3 +60,10 @@ Streaming software used to be a tool for gamers. Let's change this to : a game f
 
 
 command palette (omni search)
+
+
+## Feature ideas
+
+- ffmpeg -f nut -i -
+- vdo.ninja integration (or in-app multi-streamer helpers and stream forwarding)
+

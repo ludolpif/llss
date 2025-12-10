@@ -31,7 +31,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	ImGui_NewFrame();
 
 	// Prepare UI content (it produces command buffers, not pixels)
-	then = UI_Main(appstate);
+	then = ui_main(appstate);
 
 	// Rendering
 	ImGui_Render();
