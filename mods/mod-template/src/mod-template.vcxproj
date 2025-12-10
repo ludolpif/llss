@@ -65,8 +65,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir);%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>app.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -87,8 +87,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir);%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>app.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -97,23 +97,13 @@
     <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SDL3_DIR)\include\SDL\SDL.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\imgui\backends\imgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\imgui\backends\imgui_impl_sdl3.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
-    <ClInclude Include="$(SolutionDir)lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
-    <ClInclude Include="$(SolutionDir)include\app.h" />
-    <ClInclude Include="$(SolutionDir)include\imgui_config.h" />
-    <ClInclude Include="$(SolutionDir)include\mods-api.h" />
+    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL.h" />
+    <ClInclude Include="$(SolutionDir)\include\app.h" />
+    <ClInclude Include="$(SolutionDir)\include\imgui_config.h" />
+    <ClInclude Include="$(SolutionDir)\include\mods-api.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />
     <ClInclude Include="hello.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)lib\ecs\flecs.vcxproj">
-      <Project>{3c19e747-7542-4d39-9965-5fa360e64954}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)lib\ui\ImGuiLib.vcxproj">
-      <Project>{9189beed-5efc-480f-8d82-88826a5cd120}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
