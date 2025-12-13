@@ -6,6 +6,8 @@
 # Apple things
 .DS_Store
 *.dylib
+# XCode things
+project.xcworkspace
 # Windows things
 *.exe
 *.dll
