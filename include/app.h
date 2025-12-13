@@ -107,16 +107,14 @@ typedef struct appstate {
 	SDL_Time tick0_wallclock;
 	Sint32 frameid;
 
-	ecs_world_t *world;
 	SDL_Window *window;
 	SDL_GPUDevice *gpu_device;
 	ImGuiContext* imgui_context;
 	ImGuiIO *imgui_io;
 
-	//TODO this is temporary, move in appinternal
-	bool show_demo_window;
-	bool show_another_window;
-	ImVec4 clear_color;
+	SDL_AsyncIOQueue *sdl_io_queue;
+	ecs_world_t *world;
+
 } appstate_t;
 
 //-----------------------------------------------------------------------------

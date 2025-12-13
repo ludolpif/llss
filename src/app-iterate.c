@@ -1,4 +1,5 @@
 #include "app.h"
+#include "app-internal.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 #include "alloc.h"
@@ -13,7 +14,8 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	SDL_GPUDevice* gpu_device = appstate->gpu_device;
 	ImGuiIO *imgui_io = appstate->imgui_io;
 	Sint32 frameid = appstate->frameid;
-	ImVec4 clear_color = appstate->clear_color;
+	SDL_AsyncIOQueue *sdl_io_queue = appstate->sdl_io_queue;
+	ImVec4 clear_color = appstate->internal->clear_color;
 
 	app_trace("%016"PRIu64" SDL_AppIterate(%d)", SDL_GetTicksNS(), frameid);
 
@@ -30,7 +32,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	cImGui_ImplSDL3_NewFrame();
 	ImGui_NewFrame();
 
-	// Prepare UI content (it produces command buffers, not pixels)
+	// Prepare UI content (it produces meshes, not pixels)
 	then = ui_main(appstate);
 
 	// Rendering
@@ -75,6 +77,23 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 
 	// Submit the command buffer
 	SDL_SubmitGPUCommandBuffer(command_buffer);
+
+	// Process finished SDL async IO operations if any
+	SDL_AsyncIOOutcome outcome;
+	if ( SDL_GetAsyncIOResult(sdl_io_queue, &outcome) ) {
+		// TODO push the asset into the ECS
+		// typedef struct SDL_AsyncIOOutcome
+		// {
+		// 	SDL_AsyncIO *asyncio;   < what generated this task. This pointer will be invalid if it was closed!
+		// 	SDL_AsyncIOTaskType type;  < What sort of task was this? Read, write, etc?
+		// 	SDL_AsyncIOResult result;  < the result of the work (success, failure, cancellation).
+		// 	void *buffer;  < buffer where data was read/written.
+		// 	Uint64 offset;  < offset in the SDL_AsyncIO where data was read/written.
+		// 	Uint64 bytes_requested;  < number of bytes the task was to read/write.
+		// 	Uint64 bytes_transferred;  < actual number of bytes that were read/written.
+		// 	void *userdata;    < pointer provided by the app when starting the task
+		// } SDL_AsyncIOOutcome;
+	}
 
 	appstate->frameid++;
 

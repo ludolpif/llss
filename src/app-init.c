@@ -15,8 +15,10 @@
 #define APP_UI_DEFAULT_HEIGHT 720
 
 // Forward declarations
+void app_dummy_demo_code_init(appstate_t *appstate);
 void app_load_mods(appstate_t *appstate);
 
+// Implementations
 SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
 	alloc_count_install_hooks();
@@ -136,26 +138,37 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	cImGui_ImplSDLGPU3_Init(&init_info);
 
 	// Load Fonts
-	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui_PushFont()/PopFont() to select them.
-	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+	// - If no fonts are loaded, dear imgui will use the default font.
+	// You can also load multiple fonts and use ImGui_PushFont()/PopFont() to select them.
+	// - AddFontFrom*TTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+	// - If the file cannot be loaded, the function will return NULL.
+	// Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
 	// - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
 	// - Read 'docs/FONTS.md' for more instructions and details. If you like the default font but want it to scale better, consider using the 'ProggyVector' from the same author!
-	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+	// - In SDL use case, use SDL file API then:
+	// ImFontAtlas_AddFontFromMemoryTTF(ImFontAtlas* self, void* font_data, int font_data_size, float size_pixels = 0.0f, const ImFontConfig* font_cfg = NULL, const ImWchar* glyph_ranges = NULL);
+	// Note: Transfer ownership of 'ttf_data' to ImFontAtlas! Will be deleted after destruction of the atlas.
+	// Set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed.
+	//
 	//style.FontSizeBase = 20.0f;
-	//imgui_io->Fonts->AddFontDefault();
-	//imgui_io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf");
-	//imgui_io->Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
-	//imgui_io->Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
-	//imgui_io->Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
-	//ImFont* font = imgui_io->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
-	//IM_ASSERT(font != NULL);
+	//ImFontAtlas *atlas = ...
+	//ImFontAtlas_AddFontDefault(atlas, NULL);
+	//char *font_basepath = ...
+	//char *font_path;
+	//if (!SDL_asprintf(&font_path, "%s/%s", font_basepath)) { ... }
+	//size_t font_data_size;
+	//void *font_data = SDL_LoadFile(font_path, &font_data_size);
+	//if ( !font_data ) { ... }
+	//ImFont *font = ImFontAtlas_AddFontFromMemoryTTF(atlas, font_data, font_data_size, 0.0f, NULL, NULL)
+	//if ( !font ) { ... }
 
-	//TODO this is dummy code for first sanity checks
+	// SDL Async IO initialization
+	SDL_AsyncIOQueue *sdl_io_queue = SDL_CreateAsyncIOQueue();
+
+	// ECS initialization
 	ecs_world_t *world = ecs_init();
-	ecs_entity_t e = ecs_entity(world, { .name = "Bob" });
-	app_info("%016"PRIu64" ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
 
+	// appstate_t initialisation
 	appstate->running_app_version = APP_VERSION_INT;
 	appstate->internal = internal;
 	appstate->logpriority_earlyskip = logpriority_earlyskip;
@@ -172,26 +185,43 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->tick0_wallclock = tick0_wallclock;
 	appstate->frameid = 0;
 
-	appstate->world = world;
 	appstate->window = window;
 	appstate->gpu_device = gpu_device;
 	appstate->imgui_context = imgui_context;
 	appstate->imgui_io = imgui_io;
-	
-	//TODO this is temporary, move in appinternal
-	appstate->show_demo_window = true;
-	appstate->show_another_window = false;
-	appstate->clear_color.x = 0.45f;
-	appstate->clear_color.y = 0.55f;
-	appstate->clear_color.z = 0.60f;
-	appstate->clear_color.w = 1.00f;
 
+	appstate->sdl_io_queue = sdl_io_queue;
+	appstate->world = world;
+
+	// Extra tasks
+	app_dummy_demo_code_init(appstate);
 	app_load_mods(appstate);
 
+
+	// Memory allocation statistics
 	alloc_count_dump_counters(appstate->frameid, "end of SDL_AppInit()");
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
 	return SDL_APP_CONTINUE;
+}
+
+void app_dummy_demo_code_init(appstate_t *appstate) {
+	ecs_world_t *world = appstate->world;
+
+	ecs_entity_t e = ecs_entity(world, { .name = "Bob" });
+	app_info("%016"PRIu64" ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
+
+	appstate->internal->show_demo_window = true;
+	appstate->internal->show_another_window = false;
+	appstate->internal->clear_color.x = 0.45f;
+	appstate->internal->clear_color.y = 0.55f;
+	appstate->internal->clear_color.z = 0.60f;
+	appstate->internal->clear_color.w = 1.00f;
+
+	// TODO enqueue some demo asset load here
+	// (end of app-iterate handle SDL async IO events, to be drawn by ImGui then)
+	// https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/TexturedQuad.c
+	// https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
 }
 
 void app_load_mods(appstate_t *appstate) {

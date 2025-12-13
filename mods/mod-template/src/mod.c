@@ -7,10 +7,10 @@
 /*
  * mod writer quickstart: no main(), no global variables.
  * You have to implement a few mandatory hooks, export them. The app will call them.
- * The full list of available hooks are in "mods-api.h", with extensive details about each of them.
+ * The full list of available hooks are in "mods-api.h", with extensive details.
  *
  * Windows : macro DLL_EXPORT must be defined before inclusion of SDL.h (here through app.h) to have a non empty SDL_DECLSPEC
- * SDL_DECLSPEC macro purpose: tag something to be exported as a dynamic symbol. Build system hide symbols by default
+ * SDL_DECLSPEC macro purpose: tag something to be exported as a dynamic symbol. Build system hide symbols by default.
  * SDLCALL macro purpose: set a function's calling conventions (unsure if really needed in this project scope, but SDL do it)
  *
  * Parameters
@@ -36,7 +36,7 @@ typedef struct mod_main_data {
 	 * The remaining of this struct should be reserved only for pointers
 	 *  and things that your mod dependencies needs to have internally.
 	 */
-
+	bool show_another_window;
 	//lib_something_internal_data_t lib_something;
 	//Sint32 some_fixed_size_typed_data_for_the_mod1;
 	//mod_template_something_t *list_of_something;
@@ -70,8 +70,10 @@ SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(appstate_t *appstate, void **userp
 
 	// Allocate our mod private state
 	*userptr = SDL_calloc(1, sizeof(mod_main_data_t));
-	if ( !*userptr) return MOD_RESULT_FAILURE;
+	if (!*userptr) return MOD_RESULT_FAILURE;
 
+	mod_main_data_t *data = (mod_main_data_t *) userptr;
+	data->show_another_window = true;
 
 	return MOD_RESULT_CONTINUE;
 }
@@ -97,11 +99,11 @@ SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) {
 
 // Optionnal hooks
 SDL_DECLSPEC mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
-	appstate_t *appstate = (appstate_t *) userptr;
+	mod_main_data_t *data = (mod_main_data_t *) userptr;
 	mod_result_t then = MOD_RESULT_CONTINUE;
 
 	// Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-	ImGui_Begin("A mod Window", &appstate->show_another_window, 0);
+	ImGui_Begin("A mod Window", &data->show_another_window, 0);
 	ImGui_Text("Hello from mod-template!");
 	if (ImGui_Button("Close Me"))
 		then = MOD_RESULT_SUCCESS;
@@ -109,6 +111,7 @@ SDL_DECLSPEC mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
 
 	// You can also ImGui_Begin("An existing window", NULL), it will add components to it, even if created by app or other plugin !
 
+	//TODO see if we can have ImGui and ECS share the same data copy (&data->show_another_window is not correctly shared for now)
 	return then;
 }
 
