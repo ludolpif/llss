@@ -61,6 +61,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	Uint64 tick = SDL_GetTicksNS();
 	tick0_wallclock -= tick;
 	app_info("%016"PRIu64" SDL_AppInit(): tick0_wallclock==%"PRId64, tick, tick0_wallclock);
+    app_info("%016"PRIu64" SDL_GetBasePath(): %s", SDL_GetTicksNS(), SDL_GetBasePath());
 
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_CAMERA))
 		app_failure("SDL_Init(): %s", SDL_GetError());
