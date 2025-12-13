@@ -2,7 +2,6 @@
 I have no hardware, Makefile are designed to be usable but MacOS specificities aren't really written yet.
 
 ## Prerequisites
-TODO
 
 ### MacOS user session configuration
 
@@ -20,6 +19,12 @@ You will need to unhdide the user `~/Library` special folder in finder:
   - https://journal.stuffwithstuff.com/2025/07/13/setting-up-an-sdl3-mac-app-in-xcode-16/
   - https://wiki.libsdl.org/SDL3/README-macos#setting-up-a-new-project-by-hand
 
+
+```
+user@Mac-mini ~ % hdiutil attach -readonly SDL3-3.2.26.dmg
+# Read INSTALL.md, copy to ~/Library/Frameworks/SDL3.xcframework
+user@Mac-mini ~ % hdiutil eject /dev/disk4s1
+```
 
 
 You may have a warning about readlink() failure in `SDL3.xcframework/macos-arm64_x86_64/SDL3.framework/Versions`, if so, it could be the tool used to unzip SDL3 that duplicated the folders instead trying to create a symlink. My quick fix :
