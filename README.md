@@ -20,7 +20,7 @@ You barely can't yet.
 
 ## How to write it, mod it
 
-Build instructions for [GNU/Linux](doc/BUILDING-Linux.md) (which I use), [Windows 10/11](doc/BUILDING-Windows.md) (which it works), [Mac OS X](doc/BUILDING-MacOSX.md) (not yet).
+Build instructions for [GNU/Linux](doc/BUILDING-Linux.md) (which I use), [Windows 10/11](doc/BUILDING-Windows.md) (which it works), [Mac OS 15/26](doc/BUILDING-MacOS.md).
 Code and other help/contribution instructions here: [CONTRIBUTING.md](doc/CONTRIBUTING.md).
 
 # Technical choices
