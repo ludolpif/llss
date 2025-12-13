@@ -4,6 +4,7 @@
 *.o
 *.so
 # Apple things
+.DS_Store
 *.dylib
 # Windows things
 *.exe
