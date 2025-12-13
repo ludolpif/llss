@@ -18,6 +18,7 @@ You will need to unhdide the user `~/Library` special folder in finder:
   - and choosen `~/Library/Frameworks` as we may want manual and CLI builds
   - https://journal.stuffwithstuff.com/2025/07/13/setting-up-an-sdl3-mac-app-in-xcode-16/
   - https://wiki.libsdl.org/SDL3/README-macos#setting-up-a-new-project-by-hand
+  - https://discourse.libsdl.org/t/issues-using-sdl2-on-xcode-on-macos/37776/8
 
 
 ```
