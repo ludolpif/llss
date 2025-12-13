@@ -16,14 +16,14 @@ const char app_alloc_count_contexts_str[APP_CONTEXT_COUNT][20] = {
 };
 
 
-void alloc_count_install_hooks() {
+void alloc_count_install_hooks(void) {
 	SDL_GetOriginalMemoryFunctions(&orig_malloc_func, &orig_calloc_func, &orig_realloc_func, &orig_free_func);
 	SDL_SetMemoryFunctions(alloc_count_malloc, alloc_count_calloc, alloc_count_realloc, alloc_count_free);
 	ImGui_SetAllocatorFunctions(alloc_count_malloc_userptr, alloc_count_free_userptr, NULL);
 }
 
 void alloc_count_dump_counters(Sint32 frames, char *when) {
-	if (when) app_info("%016lu heap allocation at %s (only SDL_*alloc/SDL_free calls)", SDL_GetTicksNS(), when);
+	if (when) app_info("%016"PRIu64" heap allocation at %s (only SDL_*alloc/SDL_free calls)", SDL_GetTicksNS(), when);
 	app_info("[%7d frames] ctxt   malloc   calloc  realloc     free (+diff)", frames);
 	for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
 		int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);

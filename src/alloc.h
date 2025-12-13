@@ -9,7 +9,7 @@ typedef enum app_alloc_count_contexts {
 	APP_CONTEXT_COUNT
 } app_alloc_count_contexts_t;
 
-void alloc_count_install_hooks();
+void alloc_count_install_hooks(void);
 void alloc_count_dump_counters(Sint32 frames, char *when);
 void alloc_count_set_context(app_alloc_count_contexts_t contextid);
 

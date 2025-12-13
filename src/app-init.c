@@ -60,7 +60,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	Uint64 tick = SDL_GetTicksNS();
 	tick0_wallclock -= tick;
-	app_info("%016lu SDL_AppInit(): tick0_wallclock==%ld", tick, tick0_wallclock);
+	app_info("%016"PRIu64" SDL_AppInit(): tick0_wallclock==%ld", tick, tick0_wallclock);
 
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_CAMERA))
 		app_failure("SDL_Init(): %s", SDL_GetError());
@@ -153,7 +153,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	//TODO this is dummy code for first sanity checks
 	ecs_world_t *world = ecs_init();
 	ecs_entity_t e = ecs_entity(world, { .name = "Bob" });
-	app_info("%016lu ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
+	app_info("%016"PRIu64" ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
 
 	appstate->running_app_version = APP_VERSION_INT;
 	appstate->internal = internal;
@@ -196,12 +196,12 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 void app_load_mods(appstate_t *appstate) {
 	char *mods_basepath;
 	if (!SDL_asprintf(&mods_basepath, "%smods", SDL_GetBasePath())) {
-		app_error("%016lu app_load_mods(): SDL_asprintf(&mods_basepath, ...) failed", SDL_GetTicksNS());
+		app_error("%016"PRIu64" app_load_mods(): SDL_asprintf(&mods_basepath, ...) failed", SDL_GetTicksNS());
 		return;
 	}
 
 	if (!SDL_EnumerateDirectory(mods_basepath, mod_tryload, appstate)) {
-		app_error("%016lu app_load_mods(): SDL_EnumerateDirectory(%s) failed", SDL_GetTicksNS(), mods_basepath);
+		app_error("%016"PRIu64" app_load_mods(): SDL_EnumerateDirectory(%s) failed", SDL_GetTicksNS(), mods_basepath);
 	}
 	// The module loading effectively happens in mods_tryload(void *_appstate) function/callback. See mod-host.c
 }

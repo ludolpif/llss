@@ -13,13 +13,13 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	// Note: SDL invite us to use "/" as path separator even on Windows, see https://github.com/libsdl-org/SDL/issues/11370
 	if (!SDL_asprintf(&mod_dirpath, "%s%s", mods_basepath, mod_dirname)) {
-		app_error("%016lu mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s\",...): %s",
+		app_error("%016"PRIu64" mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s\",...): %s",
 				SDL_GetTicksNS(), mods_basepath, mod_dirname, SDL_GetError());
 		goto bad4;
 	}
 	// Silently skip files living at mods_basepath
 	if (!SDL_GetPathInfo(mod_dirpath, &info)) {
-		app_error("%016lu mod_tryload(): SDL_GetPathInfo(): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_error("%016"PRIu64" mod_tryload(): SDL_GetPathInfo(): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad3;
 	}
 	if (info.type != SDL_PATHTYPE_DIRECTORY) {
@@ -28,7 +28,7 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	int i = mods->mods_count;
 	if ( i == APP_MAX_MODS_COUNT ) {
-		app_error("%016lu mod_tryload(): APP_MAX_MODS_COUNT reached", SDL_GetTicksNS());
+		app_error("%016"PRIu64" mod_tryload(): APP_MAX_MODS_COUNT reached", SDL_GetTicksNS());
 		goto bad3;
 	}
 
@@ -37,28 +37,28 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	// Allocate and set mods->mod_sopath[i]
 	if (!SDL_asprintf(&mods->mod_sopath[i], "%s%s/%s%s", mods_basepath, mod_dirname, mod_dirname, APP_MOD_FILEEXT)) {
-		app_error("%016lu mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s/%%s%%s\",...): %s",
+		app_error("%016"PRIu64" mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s/%%s%%s\",...): %s",
 				SDL_GetTicksNS(), mods_basepath, mod_dirname, SDL_GetError());
 		goto bad4;
 	}
 
-	app_warn("%016lu mod_tryload(): %s", SDL_GetTicksNS(), mods->mod_sopath[i]);
+	app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), mods->mod_sopath[i]);
 	mods->shared_object[i] = SDL_LoadObject(mods->mod_sopath[i]);
 	if (!mods->shared_object[i]) {
-		app_warn("%016lu mod_tryload(): SDL_LoadObject(): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_warn("%016"PRIu64" mod_tryload(): SDL_LoadObject(): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad2;
 	}
 
 	mod_handshake_v1_t mod_handshake_v1 = (mod_handshake_v1_t) SDL_LoadFunction(mods->shared_object[i], "mod_handshake_v1");
 	if (!mod_handshake_v1) {
-		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., mod_handshake_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_handshake_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad;
 	}
 
 	mods->app_version_compiled_against[i] = mod_handshake_v1(APP_VERSION_INT);
 	int minimal_app_version = APP_VERSION_TO_INT(0,1,0); //TODO put in a public header
 	if (mods->app_version_compiled_against[i] < APP_VERSION_TO_INT(0,1,0)) {
-		app_warn("%016lu mod_handshake_v1(): too old app_version_compiled_against: %i"
+		app_warn("%016"PRIu64" mod_handshake_v1(): too old app_version_compiled_against: %i"
 				"Please update this module. Current minimal_app_version: %i",
 				SDL_GetTicksNS(), mods->app_version_compiled_against[i], minimal_app_version);
 		goto bad;
@@ -66,13 +66,13 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	mods->mod_init_v1[i] = (mod_init_v1_t) SDL_LoadFunction(mods->shared_object[i], "mod_init_v1");
 	if (!mods->mod_init_v1[i]) {
-		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad;
 	}
 
 	mods->mod_fini_v1[i] = (mod_fini_v1_t) SDL_LoadFunction(mods->shared_object[i], "mod_fini_v1");
 	if (!mods->mod_fini_v1[i]) {
-		app_warn("%016lu mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 		goto bad;
 	}
 
@@ -80,7 +80,7 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	mod_result_t init_res = mods->mod_init_v1[i](appstate, &mods->userptr[i]);
 	if (init_res != MOD_RESULT_CONTINUE) {
-		app_warn("%016lu mod_tryload(): mod_init_v1(): error %d", SDL_GetTicksNS(), init_res);
+		app_warn("%016"PRIu64" mod_tryload(): mod_init_v1(): error %d", SDL_GetTicksNS(), init_res);
 		goto bad;
 	}
 
@@ -111,7 +111,7 @@ void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logprio
 		mods->hook_ui_config_v1_from[j]=i;
 		mods->hook_ui_config_v1_count++;
 	} else {
-		app_debug("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_config_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_debug("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., hook_ui_config_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 	}
 
 	j = mods->hook_ui_main_v1_count;
@@ -120,7 +120,7 @@ void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logprio
 		mods->hook_ui_main_v1_from[j]=i;
 		mods->hook_ui_main_v1_count++;
 	} else {
-		app_debug("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_main_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_debug("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., hook_ui_main_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 	}
 
 	j = mods->hook_ui_menu_v1_count;
@@ -129,6 +129,6 @@ void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logprio
 		mods->hook_ui_menu_v1_from[j]=i;
 		mods->hook_ui_menu_v1_count++;
 	} else {
-		app_debug("%016lu mod_tryload(): SDL_LoadFunction(..., hook_ui_menu_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+		app_debug("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., hook_ui_menu_v1): %s", SDL_GetTicksNS(), SDL_GetError());
 	}
 }

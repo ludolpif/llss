@@ -15,7 +15,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	Sint32 frameid = appstate->frameid;
 	ImVec4 clear_color = appstate->clear_color;
 
-	app_trace("%016lu SDL_AppIterate(%d)", SDL_GetTicksNS(), frameid);
+	app_trace("%016"PRIu64" SDL_AppIterate(%d)", SDL_GetTicksNS(), frameid);
 
 	if ( frameid == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
 
