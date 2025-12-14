@@ -50,11 +50,12 @@
 
 #define APP_METADATA_NAME_STRING "llss"
 #define APP_METADATA_VERSION_STRING APP_VERSION_STR
-#define APP_METADATA_IDENTIFIER_STRING "todo"
-#define APP_METADATA_CREATOR_STRING "ludolpif"
+#define APP_METADATA_IDENTIFIER_STRING "fr.ludolpif.llss.app"
+#define APP_METADATA_CREATOR_STRING "ludolpif" // Also used as Windows prop "CompanyName"
 #define APP_METADATA_COPYRIGHT_STRING "Copyright 2025-now ludolpif <ludolpif@gmail.com>"
 #define APP_METADATA_URL_STRING "https://ludolpif.fr/llss"
 #define APP_METADATA_TYPE_STRING "application"
+#define APP_METADATA_DESCRIPTION "Libre Live Streaming Software (LLSS) for Streamers making live brodcasts on platforms like twitch.tv"
 
 //-----------------------------------------------------------------------------
 // [SECTION] Logging helpers and counters definitions

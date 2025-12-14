@@ -110,6 +110,7 @@
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
     <ClInclude Include="app-internal.h" />
     <ClInclude Include="mod-host.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ui.h" />
   </ItemGroup>
   <ItemGroup>
@@ -121,8 +122,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico" />
-    <Image Include="src.ico" />
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="platform-specific\rc\app.ico" />
+    <Image Include="platform-specific\rc\small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

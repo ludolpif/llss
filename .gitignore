@@ -8,6 +8,7 @@
 *.dylib
 # XCode things
 project.xcworkspace
+xcuserdata
 # Windows things
 *.exe
 *.dll
@@ -16,6 +17,7 @@ project.xcworkspace
 *.lib
 x64
 # VisualStudio things
+*.aps
 *.vcxproj.filters
 *.vcxproj.user
 .vs
