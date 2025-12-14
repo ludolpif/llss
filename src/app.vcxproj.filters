@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="alloc.c" />
+    <ClCompile Include="app-event.c" />
+    <ClCompile Include="app-init.c" />
+    <ClCompile Include="app-iterate.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="mod-host.c" />
+    <ClCompile Include="ui-main.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL_gpu.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\app.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\imgui_config.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\mods-api.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="app-internal.h">
+      <Filter>Internal Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mod-host.h">
+      <Filter>Internal Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ui.h">
+      <Filter>Internal Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\version.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Internal Dependencies">
+      <UniqueIdentifier>{19cb4614-51fb-4e5d-a18c-71369b525317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{86ba037f-cb76-4e17-99cd-a4c4dc0e0a2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public Headers">
+      <UniqueIdentifier>{8c064074-b63c-495b-afaf-06cb89834a9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal Headers">
+      <UniqueIdentifier>{65fa91ad-5a32-49d8-a268-269c30eb35b6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="platform-specific\rc\app.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="platform-specific\rc\small.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

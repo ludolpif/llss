@@ -45,15 +45,16 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// Set metadata before SDL_Init because it will print it if loglevel is high enough
 	// We don't check return value, we don't want to abort the app startup if this fails anyway.
+	app_warn("Starting %s %s", APP_METADATA_NAME_STRING, APP_VERSION_STR);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, APP_METADATA_NAME_STRING);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, APP_METADATA_VERSION_STRING);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, APP_VERSION_STR);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, APP_METADATA_IDENTIFIER_STRING);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING, APP_METADATA_CREATOR_STRING);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING, APP_METADATA_COPYRIGHT_STRING);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING, APP_METADATA_URL_STRING);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, APP_METADATA_TYPE_STRING);
 
-	// Early first log message to help troubleshoot application init and allow human readable timestamps later conversion
+	// Early log message to help troubleshoot application init and allow human readable timestamps later conversion
 	// Note SDL_Ticks should be a CLOCK_MONOTIC source, but some platforms may not provide it
 	// SDL_Time is real time, subject to system clock adjustment
 	SDL_Time tick0_wallclock;

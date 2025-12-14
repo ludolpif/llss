@@ -18,7 +18,6 @@ xcuserdata
 x64
 # VisualStudio things
 *.aps
-*.vcxproj.filters
 *.vcxproj.user
 .vs
 # Makefile things

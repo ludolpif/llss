@@ -40,22 +40,17 @@
 //-----------------------------------------------------------------------------
 // [SECTION] General and metadata macro definitions
 //-----------------------------------------------------------------------------
+#include "metadata.h"
+#define xstr(s) str(s)
+#define str(s) #s
+#define APP_VERSION_TO_STR(a, b, c) xstr(a) "." xstr(b) "." xstr(c)
 #define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
 #define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
 #define	APP_VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
 #define	APP_VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
 
-#define APP_VERSION_INT APP_VERSION_TO_INT(0,2,1)
-#define APP_VERSION_STR "0.2.1"
-
-#define APP_METADATA_NAME_STRING "llss"
-#define APP_METADATA_VERSION_STRING APP_VERSION_STR
-#define APP_METADATA_IDENTIFIER_STRING "fr.ludolpif.llss.app"
-#define APP_METADATA_CREATOR_STRING "ludolpif" // Also used as Windows prop "CompanyName"
-#define APP_METADATA_COPYRIGHT_STRING "Copyright 2025-now ludolpif <ludolpif@gmail.com>"
-#define APP_METADATA_URL_STRING "https://ludolpif.fr/llss"
-#define APP_METADATA_TYPE_STRING "application"
-#define APP_METADATA_DESCRIPTION "Libre Live Streaming Software (LLSS) for Streamers making live brodcasts on platforms like twitch.tv"
+#define APP_VERSION_INT APP_VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
+#define APP_VERSION_STR APP_VERSION_TO_STR(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
 
 //-----------------------------------------------------------------------------
 // [SECTION] Logging helpers and counters definitions

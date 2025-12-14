@@ -67,6 +67,9 @@
       <AdditionalLibraryDirectories>%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>%(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -88,6 +91,9 @@
       <AdditionalLibraryDirectories>%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>%(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="alloc.c" />
@@ -108,6 +114,7 @@
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
+    <ClInclude Include="..\include\version.h" />
     <ClInclude Include="app-internal.h" />
     <ClInclude Include="mod-host.h" />
     <ClInclude Include="resource.h" />
