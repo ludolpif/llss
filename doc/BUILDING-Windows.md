@@ -3,7 +3,9 @@ I made Solution and Project files with a default install of VisualStudio 2022 Co
 
 ## Prerequisites
 
-- Install VisualStudio 2022 Community (should work on others versions, but ABI between mods and app is at risk)
+- Install VisualStudio 2022 Community (Free)
+  - Should work on others versions, but ABI between mods and app is at risk
+  - Be sure to install the 'Desktop Development with C++' workload
   - You may let it install in it's default `C:\Program Files\Microsoft Visual Studio\2022\Community` folder
   - Make a first launch, try to run an Hello World then exit
 - Create some folders for development, I use `C:\dev\libs` and `C:\dev\git`
@@ -15,6 +17,7 @@ I made Solution and Project files with a default install of VisualStudio 2022 Co
   - Run those commands :
 ```
 git clone https://github.com/ludolpif/llss.git
+cd llss
 git submodule update --init --recursive lib/ui/imgui
 ```
   - You should now have a `c:\dev\git\llss\lib\ui\imgui\imgui.h` file
@@ -82,7 +85,7 @@ Open an issue if you do have building errors but double check those before:
 - mandatory git submodule: type Win+R and run `notepad c:\dev\git\llss\lib\ui\imgui\imgui.h`, it should display ``// dear imgui, v1.92.5``
 
 - If the error occurs using the GUI, please try also MSBuild to attach it's full terminal output in the bug report
-- You can compare with a successufl build trace here: [doc/dev/early/build-trace-msbuild.txt](doc/dev/early/build-trace-msbuild.txt)
+- You can compare with a successufl build trace here: [dev/early/build-trace-msbuild.txt](dev/early/build-trace-msbuild.txt)
 
 ## Debugging tools
 TODO

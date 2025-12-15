@@ -1,7 +1,7 @@
 #!/bin/sh
 SolutionDir="../../"
 
-solution=`${SolutionDir}cflags`
+solution=`${SolutionDir}cflags $1`
 project="-std=c++14 -fPIC -fvisibility=hidden"
 project="$project
 -Dimgui_EXPORTS

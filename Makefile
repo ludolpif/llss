@@ -4,6 +4,9 @@
 #
 .PHONY: all clean app mods lib run run-app-trace run-all-trace
 
+# default value for command-line arguments (like make BUILD_TYPE=RelWithDebInfo)
+BUILD_TYPE ?= Debug
+
 all: app mods
 
 # ordering rule. if dependencies are expressed in subdirs Makefile then calling here a 
@@ -11,18 +14,18 @@ all: app mods
 app mods: lib
 
 app:
-	$(MAKE) -C src
+	$(MAKE) -C src BUILD_TYPE=$(BUILD_TYPE)
 
 mods:
-	$(MAKE) -C mods
+	$(MAKE) -C mods BUILD_TYPE=$(BUILD_TYPE)
 
 lib:
-	$(MAKE) -C lib
+	$(MAKE) -C lib BUILD_TYPE=$(BUILD_TYPE)
 
 clean:
-	$(MAKE) -C src clean
-	$(MAKE) -C mods clean
-	$(MAKE) -C lib clean
+	$(MAKE) -C src clean BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C mods clean BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C lib clean BUILD_TYPE=$(BUILD_TYPE)
 
 run: all
 	SDL_LOGGING="app=info,assert=warn,test=verbose,*=error" ./app

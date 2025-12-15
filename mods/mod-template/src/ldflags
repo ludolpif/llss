@@ -2,8 +2,8 @@
 SolutionDir="../../../"
 ProjectDir="`dirname $0`/"
 
-solution=`${SolutionDir}ldflags`
-soname=`${ProjectDir}soname`
+solution=`${SolutionDir}ldflags $1`
+soname=`${ProjectDir}soname $1`
 project="-Wl,--default-symver -Wl,-soname,$soname -shared"
 case $(uname -s) in
 	Linux)      dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;

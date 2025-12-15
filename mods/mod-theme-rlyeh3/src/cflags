@@ -1,7 +1,7 @@
 #!/bin/sh
 SolutionDir="../../../"
 
-solution=`${SolutionDir}cflags`
+solution=`${SolutionDir}cflags $1`
 project="-Wall -Wformat -std=gnu99 -fvisibility=hidden"
 project="$project
 -I${SolutionDir}lib/ui/dear_bindings_generated

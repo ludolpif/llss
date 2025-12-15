@@ -4,18 +4,23 @@
 #
 .PHONY: all clean symdump
 
-SolutionDir=../../../
+# default value for command-line arguments (like make BUILD_TYPE=RelWithDebInfo)
+BUILD_TYPE ?= Debug
+
+ODIR := x64/$(BUILD_TYPE)/
+DEPDIR := $(ODIR).deps
+SolutionDir := ../../../
 
 CC := gcc
 #CPPFLAGS +=
-CFLAGS += `./cflags`
-LDFLAGS += $(shell ./ldflags)
-LDLIBS += $(shell ./ldlibs)
+CFLAGS += `./cflags $(BUILD_TYPE)`
+LDFLAGS += $(shell ./ldflags $(BUILD_TYPE))
+LDLIBS += $(shell ./ldlibs $(BUILD_TYPE))
 
-MOD_SO := ../$(shell ./soname)
+MOD_SO := $(ODIR)$(shell ./soname)
 # Makefile.autodeps needs $(SRCS), not easly compatible with sources in subfolders
 SRCS := $(wildcard *.c)
-OBJS := $(SRCS:.c=.o)
+OBJS := $(SRCS:%.c=$(ODIR)%.o)
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
@@ -29,7 +34,7 @@ $(MOD_SO): $(OBJS)
 
 clean:
 	rm -f $(MOD_SO) $(OBJS)
-	rm -rf .deps
+	rm -rf $(DEPDIR)
 
 symdump: $(MOD_SO)
 	objdump -T $(MOD_SO)

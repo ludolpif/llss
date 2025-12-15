@@ -1,9 +1,13 @@
 #!/bin/sh
-solution="-ggdb3 -O0"
-case $(uname -s) in
-	Linux)      lto="-flto=auto" ;;
-	Darwin)     lto="-flto=auto" ;;
-	Windows_NT) lto="" ;;
-	*)          echo "Unknown platform" >&2
+case "$1" in
+	RelWithDebInfo) solution="-g -O2 -DNDEBUG" ;;
+	Release)        solution="-O2 -DNDEBUG" ;;
+	Debug|*)	solution="-ggdb3 -O0 -D_DEBUG" ;;
 esac
+#case $(uname -s) in
+#	Linux)      lto="-flto=auto" ;;
+#	Darwin)     lto="-flto=auto" ;;
+#	Windows_NT) lto="" ;;
+#	*)          echo "Unknown platform" >&2
+#esac
 echo $solution # $lto (is very slow)

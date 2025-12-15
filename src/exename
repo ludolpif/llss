@@ -1,0 +1,7 @@
+#!/bin/sh
+name="llss"
+ext=""
+case $(uname -s) in
+	Windows_NT) ext=".exe" ;;
+esac
+echo $name$ext

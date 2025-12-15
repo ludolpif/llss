@@ -6,6 +6,9 @@ DIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))
 
 .PHONY: all clean $(DIRS)
 
+# default value for command-line arguments (like make BUILD_TYPE=RelWithDebInfo)
+BUILD_TYPE ?= Debug
+
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
@@ -13,7 +16,7 @@ DIRS := $(patsubst %/Makefile,%,$(wildcard */Makefile))
 all: $(DIRS)
 
 $(DIRS):
-	$(MAKE) -C $@
+	$(MAKE) -C $@ BUILD_TYPE=$(BUILD_TYPE)
 
 clean:
-	for dir in $(DIRS); do $(MAKE) -C $$dir clean; done
+	for dir in $(DIRS); do $(MAKE) -C $$dir clean BUILD_TYPE=$(BUILD_TYPE); done

@@ -4,6 +4,9 @@
 #
 .PHONY: all clean
 
+# default value for command-line arguments (like make BUILD_TYPE=RelWithDebInfo)
+BUILD_TYPE ?= Debug
+
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------

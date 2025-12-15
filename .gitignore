@@ -1,26 +1,11 @@
-# Linux things
-/app
-*.a
-*.o
-*.so
 # Apple things
 .DS_Store
-*.dylib
 # XCode things
 project.xcworkspace
 xcuserdata
-# Windows things
-*.exe
-*.dll
-*.pdb
-*.exp
-*.lib
-x64
 # VisualStudio things
 *.aps
 *.vcxproj.user
 .vs
-# Makefile things
-.deps
-# App things
-*.ini
+# Build dirs
+x64

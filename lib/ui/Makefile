@@ -4,39 +4,48 @@
 #
 .PHONY: all bindings clean
 
+# default value for command-line arguments (like make BUILD_TYPE=RelWithDebInfo)
+BUILD_TYPE ?= Debug
+
+ODIR := x64/$(BUILD_TYPE)/
+
 CXX := g++
 #CPPFLAGS +=
-CXXFLAGS += `./cflags`
-LDFLAGS += $(shell ./ldflags)
-#LDLIBS += $(shell ./ldlibs)
+CXXFLAGS += `./cflags $(BUILD_TYPE)`
+LDFLAGS += $(shell ./ldflags $(BUILD_TYPE))
+#LDLIBS += $(shell ./ldlibs $(BUILD_TYPE))
 #AR := gcc-ar # old platforms needed in -lto linking mode
 ARFLAGS = rcs
 
 OBJS := imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_sdl3.o imgui_impl_sdlgpu3.o
 OBJS += dcimgui.o dcimgui_impl_sdl3.o dcimgui_impl_sdlgpu3.o
+OBJS := $(OBJS:%.o=$(ODIR)%.o)
 
 VPATH := imgui:imgui/backends:dear_bindings_generated:dear_bindings_generated/backends
 
 ##---------------------------------------------------------------------
 ## BUILD RULES
 ##---------------------------------------------------------------------
+# targets: normal-prerequisites | order-only-prerequisites
 
-all: libdcimgui.a
+all: $(ODIR)libdcimgui.a
 
 # https://www.gnu.org/software/make/manual/html_node/Archive-Pitfalls.html
 (%): %	;
-libdcimgui.a: $(OBJS)
+$(ODIR)libdcimgui.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 
 
 # Trigger full rebuild off all archive members on imgui_config.h change
-%.o: %.cpp ../../include/imgui_config.h
+$(ODIR)%.o: %.cpp ../../include/imgui_config.h | $(ODIR)
 	$(COMPILE.cpp) -o $@ $<
 
-clean:
-	rm -f libdcimgui.a $(OBJS)
+$(ODIR):
+	@mkdir -p $(ODIR)
 
-# targets : normal-prerequisites | order-only-prerequisites
+clean:
+	rm -f $(ODIR)libdcimgui.a $(OBJS)
+
 bindings: | dear_bindings/dear_bindings.py
 	mkdir -p dear_bindings_generated/backends
 	cd dear_bindings; python3 dear_bindings.py -o ../dear_bindings_generated/dcimgui ../imgui/imgui.h
