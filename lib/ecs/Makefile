@@ -10,7 +10,7 @@ BUILD_TYPE ?= Debug
 ODIR := x64/$(BUILD_TYPE)/
 
 CC := gcc
-CFLAGS += `./cflags $(BUILD_TYPE)`
+CFLAGS += `./get --cflags $(BUILD_TYPE)`
 
 ##---------------------------------------------------------------------
 ## BUILD RULES

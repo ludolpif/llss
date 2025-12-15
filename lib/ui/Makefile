@@ -11,9 +11,9 @@ ODIR := x64/$(BUILD_TYPE)/
 
 CXX := g++
 #CPPFLAGS +=
-CXXFLAGS += `./cflags $(BUILD_TYPE)`
-LDFLAGS += $(shell ./ldflags $(BUILD_TYPE))
-#LDLIBS += $(shell ./ldlibs $(BUILD_TYPE))
+CXXFLAGS += `./get --cflags $(BUILD_TYPE)`
+LDFLAGS += $(shell ./get --ldflags $(BUILD_TYPE))
+#LDLIBS += $(shell ./get --ldlibs $(BUILD_TYPE))
 #AR := gcc-ar # old platforms needed in -lto linking mode
 ARFLAGS = rcs
 

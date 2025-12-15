@@ -5,11 +5,11 @@ ODIR ?=
 DEPDIR ?= $(ODIR).deps
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 
-COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
-
-%.o : %.c
+# Display normal $(COMPILE.c) for readability but run with $(DEPFLAGS) added
+%.o: %.c
 $(ODIR)%.o : %.c $(DEPDIR)/%.d | $(DEPDIR)
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
+	@echo '$(COMPILE.c) $(OUTPUT_OPTION) $<'
+	@$(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c $(OUTPUT_OPTION) $<
 
 $(DEPDIR):
 	@mkdir -p $@

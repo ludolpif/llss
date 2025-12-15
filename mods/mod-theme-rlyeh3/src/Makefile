@@ -13,11 +13,11 @@ SolutionDir := ../../../
 
 CC := gcc
 #CPPFLAGS +=
-CFLAGS += `./cflags $(BUILD_TYPE)`
-LDFLAGS += $(shell ./ldflags $(BUILD_TYPE))
-LDLIBS += $(shell ./ldlibs $(BUILD_TYPE))
+CFLAGS += `./get --cflags $(BUILD_TYPE)`
+LDFLAGS += $(shell ./get --ldflags $(BUILD_TYPE))
+LDLIBS += $(shell ./get --ldlibs $(BUILD_TYPE))
 
-MOD_SO := $(ODIR)$(shell ./soname)
+MOD_SO := $(ODIR)$(shell ./get --soname $(BUILD_TYPE))
 # Makefile.autodeps needs $(SRCS), not easly compatible with sources in subfolders
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:%.c=$(ODIR)%.o)

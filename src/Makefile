@@ -12,10 +12,10 @@ DEPDIR := $(ODIR).deps
 
 CC := gcc
 #CPPFLAGS +=
-CFLAGS += `./cflags $(BUILD_TYPE)`
-LDFLAGS += $(shell ./ldflags $(BUILD_TYPE))
-LDLIBS += $(shell ./ldlibs $(BUILD_TYPE))
-EXE = $(ODIR)$(shell ./exename $(BUILD_TYPE))
+CFLAGS += `./get --cflags $(BUILD_TYPE)`
+LDFLAGS += $(shell ./get --ldflags $(BUILD_TYPE))
+LDLIBS += $(shell ./get --ldlibs $(BUILD_TYPE))
+EXE = $(ODIR)$(shell ./get --exename $(BUILD_TYPE))
 
 # Makefile.autodeps needs $(SRCS)
 SRCS := $(wildcard *.c)

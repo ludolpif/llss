@@ -1,0 +1,73 @@
+ludolpif@lud-5490:~/git$ git clone https://github.com/ludolpif/llss.git llss
+Cloning into 'llss'...
+remote: Enumerating objects: 534, done.
+remote: Counting objects: 100% (110/110), done.
+remote: Compressing objects: 100% (66/66), done.
+remote: Total 534 (delta 50), reused 83 (delta 35), pack-reused 424 (from 1)
+Receiving objects: 100% (534/534), 1.13 MiB | 8.44 MiB/s, done.
+Resolving deltas: 100% (246/246), done.
+ludolpif@lud-5490:~/git$ cd llss
+ludolpif@lud-5490:~/git/llss$ ./configure 
++ git                                                                      FOUND
++ make                                                                     FOUND
++ gcc                                                                      FOUND
++ ar                                                                       FOUND
++ pkg-config                                                               FOUND
++ pkg-config sdl3 --cflags
++ git submodule update --init --recursive lib/ui/imgui
+Submodule 'dear_imgui' (https://github.com/ludolpif/dear_imgui.git) registered for path 'lib/ui/imgui'
+Cloning into '/home/ludolpif/git/llss/lib/ui/imgui'...
+Submodule path 'lib/ui/imgui': checked out '79a89a40e96554922f6530a37e5a517faaf6b9ed'
+ludolpif@lud-5490:~/git/llss$ make -j
+make -C lib BUILD_TYPE=Debug
+make[1]: Entering directory '/home/ludolpif/git/llss/lib'
+make -C ecs BUILD_TYPE=Debug
+make -C platform BUILD_TYPE=Debug
+make -C ui BUILD_TYPE=Debug
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/ecs'
+gcc `./get --cflags Debug`   -c -o x64/Debug/flecs.o flecs/flecs.c
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/platform'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/platform'
+make[2]: Entering directory '/home/ludolpif/git/llss/lib/ui'
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui.o imgui/imgui.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui_demo.o imgui/imgui_demo.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui_draw.o imgui/imgui_draw.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui_tables.o imgui/imgui_tables.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui_widgets.o imgui/imgui_widgets.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui_impl_sdl3.o imgui/backends/imgui_impl_sdl3.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/imgui_impl_sdlgpu3.o imgui/backends/imgui_impl_sdlgpu3.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/dcimgui.o dear_bindings_generated/dcimgui.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/dcimgui_impl_sdl3.o dear_bindings_generated/backends/dcimgui_impl_sdl3.cpp
+g++ `./get --cflags Debug`   -c -o x64/Debug/dcimgui_impl_sdlgpu3.o dear_bindings_generated/backends/dcimgui_impl_sdlgpu3.cpp
+ar rcs x64/Debug/libdcimgui.a x64/Debug/imgui.o x64/Debug/imgui_demo.o x64/Debug/imgui_draw.o x64/Debug/imgui_tables.o x64/Debug/imgui_widgets.o x64/Debug/imgui_impl_sdl3.o x64/Debug/imgui_impl_sdlgpu3.o x64/Debug/dcimgui.o x64/Debug/dcimgui_impl_sdl3.o x64/Debug/dcimgui_impl_sdlgpu3.o
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/ui'
+make[2]: Leaving directory '/home/ludolpif/git/llss/lib/ecs'
+make[1]: Leaving directory '/home/ludolpif/git/llss/lib'
+make -C src BUILD_TYPE=Debug
+make -C mods BUILD_TYPE=Debug
+make[1]: Entering directory '/home/ludolpif/git/llss/src'
+make[1]: Entering directory '/home/ludolpif/git/llss/mods'
+make -C mod-template/src
+make -C mod-theme-rlyeh3/src
+make[2]: Entering directory '/home/ludolpif/git/llss/mods/mod-template/src'
+make[2]: Entering directory '/home/ludolpif/git/llss/mods/mod-theme-rlyeh3/src'
+gcc `./get --cflags Debug`   -c -o x64/Debug/alloc.o alloc.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/app-event.o app-event.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/hello.o hello.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/mod.o mod.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/app-init.o app-init.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/ui-theming.o ui-theming.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/mod.o mod.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/app-iterate.o app-iterate.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/mod-host.o mod-host.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/main.o main.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/ui-main.o ui-main.c
+gcc `./get --cflags Debug`  -Wl,--default-symver -Wl,-soname,mod-theme-rlyeh3.so -shared -Wl,-rpath=.:.. -Wl,-Bsymbolic  x64/Debug/mod.o x64/Debug/ui-theming.o  -o x64/Debug/mod-theme-rlyeh3.so
+make[2]: Leaving directory '/home/ludolpif/git/llss/mods/mod-theme-rlyeh3/src'
+gcc `./get --cflags Debug`  -Wl,--default-symver -Wl,-soname,mod-template.so -shared -Wl,-rpath=.:.. -Wl,-Bsymbolic  x64/Debug/hello.o x64/Debug/mod.o  -o x64/Debug/mod-template.so
+make[2]: Leaving directory '/home/ludolpif/git/llss/mods/mod-template/src'
+make[1]: Leaving directory '/home/ludolpif/git/llss/mods'
+gcc `./get --cflags Debug`  -Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic -L../lib/ui/x64/Debug  x64/Debug/alloc.o x64/Debug/app-event.o x64/Debug/app-init.o x64/Debug/app-iterate.o x64/Debug/main.o x64/Debug/mod-host.o x64/Debug/ui-main.o ../lib/ecs/x64/Debug/flecs.o -ldcimgui -lm -lstdc++ -lSDL3 -o x64/Debug/llss
+make[1]: Leaving directory '/home/ludolpif/git/llss/src'
+ludolpif@lud-5490:~/git/llss$ 

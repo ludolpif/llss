@@ -1,6 +1,0 @@
-#!/bin/sh
-SolutionDir="../../"
-
-solution=`${SolutionDir}cflags $1`
-project="-std=gnu99 -Iflecs -Dflecs_EXPORTS"
-echo $solution $project

@@ -1,6 +1,0 @@
-#!/bin/sh
-SolutionDir="../../"
-
-solution=`${SolutionDir}ldflags $1`
-project="-Wl,-Bsymbolic"
-echo $solution $project

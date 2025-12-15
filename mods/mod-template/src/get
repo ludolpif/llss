@@ -1,0 +1,50 @@
+#!/bin/sh
+SolutionDir="../../../"
+
+cflags() {
+	solution=`${SolutionDir}get --cflags $1`
+	project="-Wall -Wformat -std=gnu99 -fvisibility=hidden"
+	project="$project
+	-I${SolutionDir}lib/ui/dear_bindings_generated
+	-I${SolutionDir}lib/ui/imgui
+	-I${SolutionDir}lib/ui/dear_bindings_generated/backends
+	-I${SolutionDir}lib/ui/imgui/backends
+	-I${SolutionDir}lib/ecs/flecs
+	-I${SolutionDir}include
+	"
+	libsdl3=`pkg-config --cflags sdl3`
+	echo -fPIC -fvisibility=hidden $project $libsdl3
+}
+ldflags() {
+	solution=`${SolutionDir}get --ldflags $1`
+	soname=$(soname $1)
+	project="-Wl,--default-symver -Wl,-soname,$soname -shared"
+	case $(uname -s) in
+		Linux)      dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
+		Darwin)     dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
+		Windows_NT) dynload="" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+	echo $solution $project $dynload
+}
+ldlibs() {
+	echo
+}
+soname() {
+	name="$(basename $(realpath ..))"
+	suffix=
+	# Suffix may be used to have a -debug or versionning, not decided yet. It will implies globbing in mod-host.c
+	case $(uname -s) in
+		Linux)      echo "$name$suffix.so" ;;
+		Darwin)     echo "$name$suffix.dylib" ;;
+		Windows_NT) echo "$name$suffix.dll" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+}
+case $1 in
+	--cflags) cflags $2 ;;
+	--ldflags) ldflags $2 ;;
+	--ldlibs) ldlibs $2 ;;
+	--soname) soname $2 ;;
+	*) echo "Usage $0 (--cflags|--ldflags|--ldlibs|--soname) (Release|RelWithDebInfo|Debug)" >&2 ;;
+esac
