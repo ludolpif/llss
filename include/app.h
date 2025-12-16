@@ -41,16 +41,13 @@
 // [SECTION] General and metadata macro definitions
 //-----------------------------------------------------------------------------
 #include "metadata.h"
-#define xstr(s) str(s)
-#define str(s) #s
-#define APP_VERSION_TO_STR(a, b, c) xstr(a) "." xstr(b) "." xstr(c)
+// Following macros can't be in metadata.h as Microsoft res.exe can't cope with it (app.rc includes metadata.h)
 #define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
 #define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
 #define	APP_VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
 #define	APP_VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
 
 #define APP_VERSION_INT APP_VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
-#define APP_VERSION_STR APP_VERSION_TO_STR(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
 
 //-----------------------------------------------------------------------------
 // [SECTION] Logging helpers and counters definitions

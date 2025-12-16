@@ -7,5 +7,8 @@ xcuserdata
 *.aps
 *.vcxproj.user
 .vs
-# Build dirs
+# Output dirs
 x64
+artifacts
+# program things
+imgui.ini

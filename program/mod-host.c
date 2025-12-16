@@ -5,6 +5,21 @@
 // Forward declarations
 void mod_tryload_optionnal_hooks(appmods_t *mods, int i, SDL_LogPriority logpriority_earlyskip);
 
+// Implementations
+void mod_load_all(appstate_t *appstate) {
+	char *mods_basepath;
+
+	if (!SDL_asprintf(&mods_basepath, APP_MOD_PATH_FROM_BASEPATH, SDL_GetBasePath())) {
+		app_error("%016"PRIu64" mod_load_all(): SDL_asprintf(&mods_basepath, ...) failed", SDL_GetTicksNS());
+		return;
+	}
+
+	if (!SDL_EnumerateDirectory(mods_basepath, mod_tryload, appstate)) {
+		app_error("%016"PRIu64" mod_load_all(): SDL_EnumerateDirectory(%s) failed", SDL_GetTicksNS(), mods_basepath);
+	}
+	// The module loading effectively happens in mods_tryload(void *_appstate) function/callback. See below.
+}
+
 SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, const char *mod_dirname) {
 	appstate_t *appstate = (appstate_t *) _appstate;
 	appmods_t *mods = &appstate->internal->mods;
@@ -13,7 +28,7 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 
 	// Note: SDL invite us to use "/" as path separator even on Windows, see https://github.com/libsdl-org/SDL/issues/11370
 	if (!SDL_asprintf(&mod_dirpath, "%s%s", mods_basepath, mod_dirname)) {
-		app_error("%016"PRIu64" mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s\",...): %s",
+		app_error("%016"PRIu64" mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s\",...): %s",
 				SDL_GetTicksNS(), mods_basepath, mod_dirname, SDL_GetError());
 		goto bad4;
 	}
@@ -27,7 +42,7 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 	}
 
 	int i = mods->mods_count;
-	if ( i == APP_MAX_MODS_COUNT ) {
+	if (i == APP_MAX_MODS_COUNT) {
 		app_error("%016"PRIu64" mod_tryload(): APP_MAX_MODS_COUNT reached", SDL_GetTicksNS());
 		goto bad3;
 	}
@@ -36,7 +51,8 @@ SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, co
 	mods->mod_dirname[i] = SDL_strdup(mod_dirname);
 
 	// Allocate and set mods->mod_sopath[i]
-	if (!SDL_asprintf(&mods->mod_sopath[i], "%s%s/%s%s", mods_basepath, mod_dirname, mod_dirname, APP_MOD_FILEEXT)) {
+	if (!SDL_asprintf(&mods->mod_sopath[i], "%s%s/"APP_MOD_SUBDIR"%s"APP_MOD_FILEEXT,
+			       	mods_basepath, mod_dirname, mod_dirname)) {
 		app_error("%016"PRIu64" mod_tryload(): mod_tryload(appstate, \"%s\", \"%s\"): SDL_asprintf(...,\"%%s%%s/%%s%%s\",...): %s",
 				SDL_GetTicksNS(), mods_basepath, mod_dirname, SDL_GetError());
 		goto bad4;

@@ -11,7 +11,7 @@ typedef enum mod_result {
 /**
  * @symbol-name    mod_handshake_v1
  * @calling-thread SDL_Main
- * @called-from    src/mod-host.c
+ * @called-from    program/mod-host.c
  * @when           after SDL_LoadObject(".../this-mod.so")
  * @mandatory      yes
  * @purpose        version compatibility check while a mod is loaded. no data availble yet.
@@ -22,7 +22,7 @@ typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
 /**
  * @symbol-name    mod_init_v1
  * @calling-thread SDL_Main
- * @called-from    src/mod-host.c
+ * @called-from    program/mod-host.c
  * @when           after mod_handshake_v1 success
  * @mandatory      yes
  * @purpose        mod own state initialization on stack without global variables
@@ -35,7 +35,7 @@ typedef mod_result_t (*mod_init_v1_t)(appstate_t *appstate, void **userptr);
 /**
  * @symbol-name    mod_fini_v1
  * @calling-thread SDL_Main
- * @called-from    src/mod-host.c
+ * @called-from    program/mod-host.c
  * @when           right before SDL_UnloadObject()
  * @mandatory      yes
  * @purpose        mod own state de-initialization (free structs from stack)
@@ -46,7 +46,7 @@ typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
 /**
  * @symbol-name    mod_reload_v1
  * @calling-thread SDL_Main
- * @called-from    src/mod-host.c
+ * @called-from    program/mod-host.c
  * @when           after loading the new one, before unloading the old one
  * @mandatory      yes
  * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one

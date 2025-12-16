@@ -58,6 +58,6 @@ case $1 in
 	--ldflags) ldflags $2 ;;
 	--ldlibs) ldlibs $2 ;;
 	--exename) exename $2 ;;
-	*) echo "Usage $0 (--cflags|--ldflags|--ldlibs|--exename) (Release|RelWithDebInfo|Debug)" >&2 ;;
+	*) echo "Usage $0 (--cflags|--ldflags|--ldlibs|--exename) (Release|Debug)" >&2 ;;
 esac
 

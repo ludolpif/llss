@@ -2,6 +2,14 @@
 #include "mods-api.h"
 
 #define APP_MAX_MODS_COUNT 64
+#define APP_MOD_PATH_FROM_BASEPATH "%s../../../mods/"
+
+#ifdef _DEBUG
+#define APP_MOD_SUBDIR "program/x64/Debug/"
+#else
+#define APP_MOD_SUBDIR "program/x64/Release/"
+#endif
+
 #if defined(SDL_PLATFORM_WINDOWS)
 #define APP_MOD_FILEEXT ".dll"
 #elif defined(SDL_PLATFORM_APPLE)
@@ -37,6 +45,7 @@ typedef struct appmods {
 
 } appmods_t;
 
+void mod_load_all(appstate_t *appstate);
 // Next declaration must be a function compatible with SDL_EnumerateDirectoryCallback
 // typedef SDL_EnumerationResult (SDLCALL *SDL_EnumerateDirectoryCallback)(void *userdata, const char *dirname, const char *fname);
 SDL_EnumerationResult mod_tryload(void *_appstate, const char *mods_basepath, const char *mod_dirname);

@@ -10,8 +10,8 @@ Build started 12/15/2025 6:35:34 PM.
 Project "C:\dev\git\llss\app.sln" on node 1 (default targets).
 ValidateSolutionConfiguration:
   Building solution configuration "Release|x64".
-Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\src\app.vcxproj" (2) on node 1 (default targets).
-Project "C:\dev\git\llss\src\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (3) on node 1 (default targets).
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\program\app.vcxproj" (2) on node 1 (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (3) on node 1 (default targets).
 PrepareForBuild:
   Creating directory "x64\Release\".
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
@@ -30,7 +30,7 @@ FinalizeBuildStatus:
   Deleting file "x64\Release\flecs.tlog\unsuccessfulbuild".
   Touching "x64\Release\flecs.tlog\flecs.lastbuildstate".
 Done Building Project "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (default targets).
-Project "C:\dev\git\llss\src\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (4) on node 1 (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (4) on node 1 (default targets).
 PrepareForBuild:
   Creating directory "x64\Release\".
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
@@ -106,8 +106,8 @@ Link:
 FinalizeBuildStatus:
   Deleting file "x64\Release\app.tlog\unsuccessfulbuild".
   Touching "x64\Release\app.tlog\app.lastbuildstate".
-Done Building Project "C:\dev\git\llss\src\app.vcxproj" (default targets).
-Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\mods\mod-theme-rlyeh3\src\mod-theme-rlyeh3.vcxproj" (5) on node 1 (default targets).
+Done Building Project "C:\dev\git\llss\program\app.vcxproj" (default targets).
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (5) on node 1 (default targets).
 PrepareForBuild:
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
 InitializeBuildStatus:
@@ -129,7 +129,7 @@ Link:
 FinalizeBuildStatus:
   Deleting file "x64\Release\mod-theme-rlyeh3.tlog\unsuccessfulbuild".
   Touching "x64\Release\mod-theme-rlyeh3.tlog\mod-theme-rlyeh3.lastbuildstate".
-Done Building Project "C:\dev\git\llss\mods\mod-theme-rlyeh3\src\mod-theme-rlyeh3.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (default targets).
 Done Building Project "C:\dev\git\llss\app.sln" (default targets).
 
 Build succeeded.
@@ -145,8 +145,8 @@ Build started 12/15/2025 6:35:49 PM.
 Project "C:\dev\git\llss\app.sln" on node 1 (default targets).
 ValidateSolutionConfiguration:
   Building solution configuration "Debug|x64".
-Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\src\app.vcxproj" (2) on node 1 (default targets).
-Project "C:\dev\git\llss\src\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (3) on node 1 (default targets).
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\program\app.vcxproj" (2) on node 1 (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (3) on node 1 (default targets).
 PrepareForBuild:
   Creating directory "x64\Debug\".
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
@@ -165,7 +165,7 @@ FinalizeBuildStatus:
   Deleting file "x64\Debug\flecs.tlog\unsuccessfulbuild".
   Touching "x64\Debug\flecs.tlog\flecs.lastbuildstate".
 Done Building Project "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (default targets).
-Project "C:\dev\git\llss\src\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (4) on node 1 (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (4) on node 1 (default targets).
 PrepareForBuild:
   Creating directory "x64\Debug\".
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
@@ -237,8 +237,8 @@ Link:
 FinalizeBuildStatus:
   Deleting file "x64\Debug\app.tlog\unsuccessfulbuild".
   Touching "x64\Debug\app.tlog\app.lastbuildstate".
-Done Building Project "C:\dev\git\llss\src\app.vcxproj" (default targets).
-Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\mods\mod-theme-rlyeh3\src\mod-theme-rlyeh3.vcxproj" (5) on node 1 (default targets).
+Done Building Project "C:\dev\git\llss\program\app.vcxproj" (default targets).
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (5) on node 1 (default targets).
 PrepareForBuild:
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
 InitializeBuildStatus:
@@ -256,7 +256,7 @@ Link:
 FinalizeBuildStatus:
   Deleting file "x64\Debug\mod-theme-rlyeh3.tlog\unsuccessfulbuild".
   Touching "x64\Debug\mod-theme-rlyeh3.tlog\mod-theme-rlyeh3.lastbuildstate".
-Done Building Project "C:\dev\git\llss\mods\mod-theme-rlyeh3\src\mod-theme-rlyeh3.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (default targets).
 Done Building Project "C:\dev\git\llss\app.sln" (default targets).
 
 Build succeeded.
@@ -272,7 +272,7 @@ Build started 12/15/2025 6:35:54 PM.
 Project "C:\dev\git\llss\mod-template.sln" on node 1 (default targets).
 ValidateSolutionConfiguration:
   Building solution configuration "Release|x64".
-Project "C:\dev\git\llss\mod-template.sln" (1) is building "C:\dev\git\llss\mods\mod-template\src\mod-template.vcxproj" (2) on node 1 (default targets).
+Project "C:\dev\git\llss\mod-template.sln" (1) is building "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (2) on node 1 (default targets).
 PrepareForBuild:
   Creating directory "x64\Release\".
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
@@ -298,7 +298,7 @@ Link:
 FinalizeBuildStatus:
   Deleting file "x64\Release\mod-template.tlog\unsuccessfulbuild".
   Touching "x64\Release\mod-template.tlog\mod-template.lastbuildstate".
-Done Building Project "C:\dev\git\llss\mods\mod-template\src\mod-template.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (default targets).
 Done Building Project "C:\dev\git\llss\mod-template.sln" (default targets).
 
 Build succeeded.
@@ -314,7 +314,7 @@ Build started 12/15/2025 6:35:55 PM.
 Project "C:\dev\git\llss\mod-template.sln" on node 1 (default targets).
 ValidateSolutionConfiguration:
   Building solution configuration "Debug|x64".
-Project "C:\dev\git\llss\mod-template.sln" (1) is building "C:\dev\git\llss\mods\mod-template\src\mod-template.vcxproj" (2) on node 1 (default targets).
+Project "C:\dev\git\llss\mod-template.sln" (1) is building "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (2) on node 1 (default targets).
 PrepareForBuild:
   Creating directory "x64\Debug\".
   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
@@ -336,7 +336,7 @@ Link:
 FinalizeBuildStatus:
   Deleting file "x64\Debug\mod-template.tlog\unsuccessfulbuild".
   Touching "x64\Debug\mod-template.tlog\mod-template.lastbuildstate".
-Done Building Project "C:\dev\git\llss\mods\mod-template\src\mod-template.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (default targets).
 Done Building Project "C:\dev\git\llss\mod-template.sln" (default targets).
 
 Build succeeded.

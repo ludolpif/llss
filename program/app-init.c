@@ -16,7 +16,6 @@
 
 // Forward declarations
 void app_dummy_demo_code_init(appstate_t *appstate);
-void app_load_mods(appstate_t *appstate);
 
 // Implementations
 SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
@@ -196,7 +195,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// Extra tasks
 	app_dummy_demo_code_init(appstate);
-	app_load_mods(appstate);
+	mod_load_all(appstate);
 
 
 	// Memory allocation statistics
@@ -223,19 +222,6 @@ void app_dummy_demo_code_init(appstate_t *appstate) {
 	// (end of app-iterate handle SDL async IO events, to be drawn by ImGui then)
 	// https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/TexturedQuad.c
 	// https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
-}
-
-void app_load_mods(appstate_t *appstate) {
-	char *mods_basepath;
-	if (!SDL_asprintf(&mods_basepath, "%smods", SDL_GetBasePath())) {
-		app_error("%016"PRIu64" app_load_mods(): SDL_asprintf(&mods_basepath, ...) failed", SDL_GetTicksNS());
-		return;
-	}
-
-	if (!SDL_EnumerateDirectory(mods_basepath, mod_tryload, appstate)) {
-		app_error("%016"PRIu64" app_load_mods(): SDL_EnumerateDirectory(%s) failed", SDL_GetTicksNS(), mods_basepath);
-	}
-	// The module loading effectively happens in mods_tryload(void *_appstate) function/callback. See mod-host.c
 }
 
 void SDL_AppQuit(void *_appstate, SDL_AppResult result) {

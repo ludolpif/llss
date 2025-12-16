@@ -2,7 +2,7 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, Ubuntu 14.04.1 and Mac OS X
 #
-DIRS := $(patsubst %/src,%,$(wildcard */src))
+DIRS := $(patsubst %/program,%,$(wildcard */program))
 
 .PHONY: all clean $(DIRS)
 
@@ -13,7 +13,7 @@ DIRS := $(patsubst %/src,%,$(wildcard */src))
 all: $(DIRS)
 
 $(DIRS):
-	$(MAKE) -C $@/src
+	$(MAKE) -C $@/program
 
 clean:
-	for dir in $(DIRS); do $(MAKE) -C $$dir/src clean; done
+	for dir in $(DIRS); do $(MAKE) -C $$dir/program clean; done

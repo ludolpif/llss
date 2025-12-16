@@ -2,23 +2,22 @@
 # Cross Platform Makefile
 # Compatible with MSYS2/MINGW, GNU/Linux and Mac OS X
 #
-.PHONY: all clean symdump
+.PHONY: all clean run symdump
 
-# default value for command-line arguments (like make BUILD_TYPE=RelWithDebInfo)
+# default value for command-line arguments (like make BUILD_TYPE=Release)
 BUILD_TYPE ?= Debug
 
 ODIR := x64/$(BUILD_TYPE)/
 DEPDIR := $(ODIR).deps
-SolutionDir := ../../../
 
 CC := gcc
 #CPPFLAGS +=
 CFLAGS += `./get --cflags $(BUILD_TYPE)`
 LDFLAGS += $(shell ./get --ldflags $(BUILD_TYPE))
 LDLIBS += $(shell ./get --ldlibs $(BUILD_TYPE))
+EXE = $(ODIR)$(shell ./get --exename $(BUILD_TYPE))
 
-MOD_SO := $(ODIR)$(shell ./get --soname)
-# Makefile.autodeps needs $(SRCS), not easly compatible with sources in subfolders
+# Makefile.autodeps needs $(SRCS)
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:%.c=$(ODIR)%.o)
 
@@ -26,17 +25,20 @@ OBJS := $(SRCS:%.c=$(ODIR)%.o)
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-all: $(MOD_SO)
+all: $(EXE)
 
-$(MOD_SO): $(OBJS)
-	$(LINK.c) $^ $(LDLIBS) -o $@
+$(EXE): $(OBJS)
+	$(LINK.c) $(OBJS) ../lib/ecs/$(ODIR)flecs.o $(LDLIBS) -o $@
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 clean:
-	rm -f $(MOD_SO) $(OBJS)
+	rm -f $(EXE) $(OBJS)
 	rm -rf $(DEPDIR)
 
-symdump: $(MOD_SO)
-	objdump -T $(MOD_SO)
+symdump: $(EXE)
+	objdump -T $(EXE)
 
-include $(SolutionDir)Makefile.autodeps
+run: $(EXE)
+	SDL_LOGGING="program=trace,assert=warn,test=verbose,*=error" $(EXE) 2>&1 | ../dev/pretty-log.pl
+
+include ../Makefile.autodeps

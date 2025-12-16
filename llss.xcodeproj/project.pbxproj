@@ -78,7 +78,7 @@
 			);
 			target = 82F9F0202EEDA32600893084 /* flecs */;
 		};
-		82F9F03B2EEDAA2D00893084 /* Exceptions for "src" folder in "app" target */ = {
+		82F9F03B2EEDAA2D00893084 /* Exceptions for "program" folder in "app" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Makefile,
@@ -88,19 +88,19 @@
 		82F9F05A2EEDBBB100893084 /* Exceptions for "mod-theme-rlyeh3" folder in "mod-theme-rlyeh3" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"src/platform-specific/dllmain.c",
+				"program/platform-specific/dllmain.c",
 			);
 			target = 82F9F0402EEDAD0D00893084 /* mod-theme-rlyeh3 */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		82F9EEE12EED7C5200893084 /* src */ = {
+		82F9EEE12EED7C5200893084 /* program */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				82F9F03B2EEDAA2D00893084 /* Exceptions for "src" folder in "app" target */,
+				82F9F03B2EEDAA2D00893084 /* Exceptions for "program" folder in "app" target */,
 			);
-			path = src;
+			path = program;
 			sourceTree = "<group>";
 		};
 		82F9EF272EEDA20500893084 /* include */ = {
@@ -178,7 +178,7 @@
 				82F9F03C2EEDACBE00893084 /* mods */,
 				82F9EFA82EEDA29000893084 /* lib */,
 				82F9EF272EEDA20500893084 /* include */,
-				82F9EEE12EED7C5200893084 /* src */,
+				82F9EEE12EED7C5200893084 /* program */,
 				82F9EEF22EED7DAB00893084 /* Frameworks */,
 				82F9EEE02EED7C5200893084 /* Products */,
 			);
@@ -263,7 +263,7 @@
 				82F9F0382EEDA52600893084 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				82F9EEE12EED7C5200893084 /* src */,
+				82F9EEE12EED7C5200893084 /* program */,
 				82F9EF272EEDA20500893084 /* include */,
 			);
 			name = app;

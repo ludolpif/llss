@@ -24,6 +24,6 @@ ldflags() {
 case $1 in
 	--cflags) cflags $2 ;;
 	--ldflags) ldflags $2 ;;
-	*) echo "Usage $0 (--cflags|--ldflags) (Release|RelWithDebInfo|Debug)" >&2 ;;
+	*) echo "Usage $0 (--cflags|--ldflags) (Release|Debug)" >&2 ;;
 esac
 
