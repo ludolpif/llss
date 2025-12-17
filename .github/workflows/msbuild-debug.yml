@@ -3,11 +3,13 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: MSBuild Release
+name: MSBuild Debug
 
 on:
   push:
-    branches: [ "release" ]
+    branches: [ "ci" ]
+  pull_request:
+    branches: [ "main" ]
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -16,7 +18,7 @@ env:
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
+  BUILD_CONFIGURATION: Debug
 
 permissions:
   contents: read
@@ -49,6 +51,6 @@ jobs:
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
-        name: msbuild-release
+        name: msbuild-debug
         path: artifacts/
         retention-days: 5

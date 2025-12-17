@@ -1,15 +1,13 @@
-name: Linux build Debug
+name: Linux build Release
 on:
   push:
-    branches: [ "ci" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "release" ]
 
 env:
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Debug
+  BUILD_CONFIGURATION: Release
 
 jobs:
   build:
@@ -36,6 +34,6 @@ jobs:
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
-        name: linux-build-debug
+        name: linux-build-release
         path: artifacts/
         retention-days: 5
