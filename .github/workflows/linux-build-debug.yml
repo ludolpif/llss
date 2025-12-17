@@ -18,8 +18,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: configure
       run: ./configure
+      
     - name: make
       run: make -j BUILD_TYPE=${{env.BUILD_CONFIGURATION}}
   # - name: make check
@@ -27,5 +29,12 @@ jobs:
   # - name: make distcheck
   #   run: make distcheck
 
-   #- name: Produce artifacts
-   #  run: ./artifacts.sh ${{env.BUILD_CONFIGURATION}}
+    - name: Produce artifacts
+      run: ./artifacts.sh ${{env.BUILD_CONFIGURATION}}
+      
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-build-debug
+        path: artifacts/*.zip
+        retention-days: 5
