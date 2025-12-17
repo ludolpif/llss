@@ -18,6 +18,7 @@ CFLAGS += `./get --cflags $(BUILD_TYPE)`
 # targets: normal-prerequisites | order-only-prerequisites
 
 all: $(ODIR)flecs.o
+	@echo 'cd $(shell pwd) && `./get --cflags $(BUILD_TYPE)` result: '$(CFLAGS)
 
 $(ODIR)flecs.o: flecs/flecs.c | $(ODIR)
 	$(COMPILE.c) -o $@ $<

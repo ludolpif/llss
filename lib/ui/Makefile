@@ -29,6 +29,7 @@ VPATH := imgui:imgui/backends:dear_bindings_generated:dear_bindings_generated/ba
 # targets: normal-prerequisites | order-only-prerequisites
 
 all: $(ODIR)libdcimgui.a
+	@echo 'cd $(shell pwd) && `./get --cflags $(BUILD_TYPE)` result: '$(CXXFLAGS)
 
 # https://www.gnu.org/software/make/manual/html_node/Archive-Pitfalls.html
 (%): %	;
