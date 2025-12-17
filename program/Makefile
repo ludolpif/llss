@@ -39,6 +39,6 @@ symdump: $(EXE)
 	objdump -T $(EXE)
 
 run: $(EXE)
-	SDL_LOGGING="program=trace,assert=warn,test=verbose,*=error" $(EXE) 2>&1 | ../dev/pretty-log.pl
+	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" $(EXE) 2>&1 | ../dev/pretty-log.pl
 
 include ../Makefile.autodeps

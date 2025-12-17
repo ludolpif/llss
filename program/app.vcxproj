@@ -45,11 +45,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
-    <OutDir>..\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
-    <OutDir>..\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
