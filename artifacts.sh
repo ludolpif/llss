@@ -1,7 +1,7 @@
 #!/bin/sh
 copy_to() {
     mkdir -p "$1"
-    while IFS="\n" read -r path; do
+    while read -r path; do
 		mkdir -p "$1/$(dirname "$path")"
 		cp -r "$path" "$1/$path"
     done
@@ -22,3 +22,4 @@ case $1 in
 	;;
     *) echo "Usage $0 (Sources|Debug|Release)" >&2; exit 1 ;;
 esac
+exit 0
