@@ -1,4 +1,15 @@
 #!/bin/sh
+BUILDDEP_VERSION=0.2.0.0
+
+build_dep() {
+	set -xe
+	rm -rf lib
+	zipname=build-dep-${BUILDDEP_VERSION}-Linux-$1.zip
+	url=https://ludolpif.fr/pub/llss/artifacts/$zipname
+	[ -f $zipname ] || curl -o $zipname $url
+	unzip -q $zipname
+	rm -f $zipname
+}
 cflags() {
 	case "$1" in
 		Debug)          solution="-ggdb3 -O0 -D_DEBUG" ;;
@@ -34,11 +45,11 @@ version() {
 	grep "define APP_VERSION_STR" include/metadata.h | cut -d'"' -f2
 }
 case $1 in
+	--build-dep) build_dep $2 ;;
 	--cflags) cflags $2 ;;
 	--ldflags) ldflags $2 ;;
 	--name) name $2 ;;
 	--prettyos) prettyos $2 ;;
 	--version) version $2 ;;
-	*) echo "Usage $0 (--cflags|--ldflags|--prettyos|--name|--version) (Release|Debug)" >&2 ;;
+	*) echo "Usage $0 (--build-dep|--cflags|--ldflags|--prettyos|--name|--version) (Debug|Release)" >&2 ;;
 esac
-

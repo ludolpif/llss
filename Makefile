@@ -9,18 +9,11 @@ BUILD_TYPE ?= Debug
 
 all: program mods
 
-# ordering rule. if dependencies are expressed in subdirs Makefile then calling here a 
-# "make -j" can call $(MAKE) -C lib multiple times, concurrently and it will fail
-program mods: lib
-
 program:
 	$(MAKE) -C program BUILD_TYPE=$(BUILD_TYPE)
 
 mods:
 	$(MAKE) -C mods BUILD_TYPE=$(BUILD_TYPE)
-
-lib:
-	$(MAKE) -C lib BUILD_TYPE=$(BUILD_TYPE)
 
 clean:
 	$(MAKE) -C program clean BUILD_TYPE=$(BUILD_TYPE)

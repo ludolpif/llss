@@ -11,4 +11,5 @@ xcuserdata
 x64
 artifacts
 # program things
+/lib
 imgui.ini
