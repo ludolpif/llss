@@ -14,7 +14,7 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v4
@@ -22,9 +22,6 @@ jobs:
     - name: build-dep
       run: ./get --build-dep ${{env.BUILD_CONFIGURATION}}
      
-    - name: enable universe
-      run: sudo sed --in-place -e 's/main$/main universe/g' /etc/apt/sources.list && sudo apt update
-
     - name: install sdl3 system-wide
       run: sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb || true; sudo apt install -f && sudo apt install pkg-config
 
