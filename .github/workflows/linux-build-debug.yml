@@ -26,7 +26,7 @@ jobs:
       run: sudo sed --in-place -e 's/main$/main universe/g' /etc/apt/sources.list && sudo apt update
 
     - name: install sdl3 system-wide
-      run: sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb; sudo apt install -f pkg-config
+      run: sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb || true; sudo apt install -f pkg-config
 
     - name: configure
       run: ./configure
