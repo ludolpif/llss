@@ -12,6 +12,7 @@ check() {
 	fi
 	printf "%s%-72s FOUND\n" "$PS4" "$cmd"
 }
+check curl --version
 check git --version
 check make --version
 check gcc --version
