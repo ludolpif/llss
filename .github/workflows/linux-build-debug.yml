@@ -22,11 +22,8 @@ jobs:
     - name: build-dep
       run: ./get --build-dep ${{env.BUILD_CONFIGURATION}}
      
-    - name: apt update/upgrade
-      run: sudo apt update; sudo apt upgrade
-
     - name: install sdl3 system-wide
-      run: sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb || true; sudo apt install -f
+      run: sudo apt update; sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb || true; sudo apt install -f
 
     - name: configure
       run: ./configure
@@ -39,12 +36,12 @@ jobs:
   # - name: make distcheck
   #   run: make distcheck
 
-    - name: Produce artifacts
-      run: ./artifacts.sh ${{env.BUILD_CONFIGURATION}}
+    - name: produce artifact
+      run: ./artifacts.sh ${{env.BUILD_CONFIGURATION}} >> $GITHUB_ENV
       
-    - name: 'Upload Artifact'
+    - name: upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: linux-build-${{env.BUILD_CONFIGURATION}}
-        path: artifacts/
+        name: ${{env.artifact}}
+        path: artifacts/${{env.artifact}}
         retention-days: 5

@@ -7,18 +7,25 @@ copy_to() {
     done
 }
 
-name=$(./get --name)
+progname=$(./get --name)
 version=$(./get --version)
 prettyos=$(./get --prettyos)
 
 case $1 in
     Sources)
-		target=artifacts/$name-$version-Sources
-		git ls-files | copy_to "$target"
+		artifact=$progname-$version-Sources
+		git ls-files | copy_to artifacts/$artifact
+		echo artifact=$artifact
 	;;
     Debug|Release)
-		target=artifacts/$name-$version-$prettyos-$1
-		ls doc/user program/data program/x64/$1/$name mods/*/data mods/*/program/x64/$1/*.so | copy_to "$target"
+		artifact=$progname-$version-$prettyos-$1
+		files="doc/user-manual
+	       	program/data
+		program/x64/$1/$progname
+		mods/*/data mods/*/program/x64/$1/*.so
+		"
+		ls -d $files | copy_to artifacts/$artifact
+		echo artifact=$artifact
 	;;
     *) echo "Usage $0 (Sources|Debug|Release)" >&2; exit 1 ;;
 esac
