@@ -20,6 +20,9 @@ jobs:
     - name: build-dep
       run: ./get --build-dep ${{env.BUILD_CONFIGURATION}}
      
+    - name: apt update/upgrade
+      run: sudo apt update; sudo apt upgrade
+
     - name: install sdl3 system-wide
       run: sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb || true; sudo apt install -f
 
