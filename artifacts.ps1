@@ -54,17 +54,15 @@ function Copy-WithStructure {
     }
 }
 
-# Chemin vers metadata.h
 $metadata_h = "include/metadata.h"
 
-# Extraction des valeurs
 $version = Get-MetadataValue -FilePath $metadata_h -DefineName "APP_VERSION_STR"
-$name    = Get-MetadataValue -FilePath $metadata_h -DefineName "APP_METADATA_NAME_STRING"
-$prettyos  = "Windows"
-$target = "artifacts/$name-$version-$prettyos-$Configuration"
+$progname = Get-MetadataValue -FilePath $metadata_h -DefineName "APP_METADATA_NAME_STRING"
+$prettyos = "Windows"
+$artifact = "$progname-$version-$prettyos-$Configuration"
 
-Remove-Item $target -Recurse -Force -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force $target | Out-Null
+Remove-Item "artifacts/$artifact" -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force "artifacts/$artifact" | Out-Null
 
 $paths = @(
 	"doc/user",
@@ -76,4 +74,5 @@ Get-ChildItem "mods" -Directory | ForEach-Object {
 	$paths += "$($_.FullName)/data"
 	$paths += "$($_.FullName)/program/x64/$Configuration/*.dll"
 }
-Copy-WithStructure -Paths $paths -DestinationRoot $target
+Copy-WithStructure -Paths $paths -DestinationRoot "artifacts/$artifact"
+Write-Output "artifact=$artifact"
