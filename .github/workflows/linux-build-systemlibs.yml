@@ -1,15 +1,13 @@
-name: Linux build Release
+name: Linux build SystemLibs
 on:
   push:
-    branches: [ "rc" ]
-    tags:
-      - "v*.*.*"
+    branches: [ "systemlibs" ]
 
 env:
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
+  BUILD_CONFIGURATION: SystemLibs
 
 jobs:
   build:
@@ -22,25 +20,14 @@ jobs:
     - name: apt update
       run: sudo apt update
 
+    - name: show tree
+      run: ls -lR
+
     - name: build-dep
       run: ./get --build-dep ${{env.BUILD_CONFIGURATION}}
-     
-    - name: install sdl3 system-wide
-      run: sudo dpkg -i lib/platform/sdl3-deb/libsdl3-*.deb || true; sudo apt install -f
-
-    - name: configure
-      run: ./configure
-      
-    - name: make
-      run: make -j BUILD_TYPE=${{env.BUILD_CONFIGURATION}}
-
-  # - name: make check
-  #   run: make check
-  # - name: make distcheck
-  #   run: make distcheck
 
     - name: produce artifact
-      run: ./artifacts.sh ${{env.BUILD_CONFIGURATION}} >> $GITHUB_ENV
+      run: ./artifact.sh ${{env.BUILD_CONFIGURATION}} >> $GITHUB_ENV
       
     - name: upload artifact
       uses: actions/upload-artifact@v4

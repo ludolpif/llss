@@ -44,11 +44,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)lib\platform\sdl3-devel-vc\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\include;%SDL3_DIR%\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)lib\platform\sdl3-devel-vc\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -57,7 +57,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\platform\sdl3-devel-vc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -65,7 +65,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>app.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -77,7 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%SDL3_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\platform\sdl3-devel-vc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -87,7 +87,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);%SDL3_DIR%\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>app.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -97,10 +97,10 @@
     <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\include\app.h" />
     <ClInclude Include="$(SolutionDir)\include\imgui_config.h" />
     <ClInclude Include="$(SolutionDir)\include\mods-api.h" />
+    <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />
     <ClInclude Include="hello.h" />

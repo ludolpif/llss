@@ -13,8 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: show tree
+      run: ls -lR
+
+    - name: get sources
+      run: ./get --sources
+
     - name: produce artifact
-      run: ./artifacts.sh Sources >> $GITHUB_ENV
+      run: ./artifact.sh Sources >> $GITHUB_ENV
       
     - name: upload artifact
       uses: actions/upload-artifact@v4

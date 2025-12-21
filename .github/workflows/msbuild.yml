@@ -1,0 +1,46 @@
+name: MSBuild
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "ci" ]
+    tags:
+      - "v*.*.*"
+
+env:
+  BUILD_CONFIGURATION: Debug
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: set BUILD_CONFIGURATION to Release
+      run: echo BUILD_CONFIGURATION=Release >> $env:GITHUB_ENV
+      if: github.ref_type == 'tag'
+      
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: show tree
+      run: Get-ChildItem -Recurse
+
+    - name: build-dep
+      run: .\build-dep.ps1 ${{env.BUILD_CONFIGURATION}}
+
+    - name: build
+      run: .\build.ps1 ${{env.BUILD_CONFIGURATION}}
+
+    - name: produce artifact
+      run: .\artifact.ps1 ${{env.BUILD_CONFIGURATION}} >> $env:GITHUB_ENV
+      
+    - name: upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{env.artifact}}
+        path: artifacts/${{env.artifact}}
+        retention-days: 5

@@ -1,14 +1,13 @@
-name: Linux build Debug
+name: Linux build
 on:
-  push:
-    branches: [ "ci" ]
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "ci" ]
+    tags:
+      - "v*.*.*"
 
 env:
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   BUILD_CONFIGURATION: Debug
 
 jobs:
@@ -18,9 +17,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
+    - name: set BUILD_CONFIGURATION to Release
+      run: echo BUILD_CONFIGURATION=Release >> $GITHUB_ENV
+      if: github.ref_type == 'tag'
+      
     - name: apt update
       run: sudo apt update
+
+    - name: show tree
+      run: ls -lR
 
     - name: build-dep
       run: ./get --build-dep ${{env.BUILD_CONFIGURATION}}
@@ -34,13 +40,8 @@ jobs:
     - name: make
       run: make -j BUILD_TYPE=${{env.BUILD_CONFIGURATION}}
 
-  # - name: make check
-  #   run: make check
-  # - name: make distcheck
-  #   run: make distcheck
-
     - name: produce artifact
-      run: ./artifacts.sh ${{env.BUILD_CONFIGURATION}} >> $GITHUB_ENV
+      run: ./artifact.sh ${{env.BUILD_CONFIGURATION}} >> $GITHUB_ENV
       
     - name: upload artifact
       uses: actions/upload-artifact@v4
