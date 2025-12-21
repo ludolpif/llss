@@ -22,7 +22,6 @@ ldflags() {
 	case $(uname -s) in
 		Linux)      dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
 		Darwin)     dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
-		Windows_NT) dynload="" ;;
 		*)          echo "Unknown platform" >&2
 	esac
 	echo $solution $project $dynload
@@ -37,7 +36,6 @@ soname() {
 	case $(uname -s) in
 		Linux)      echo "$name$suffix.so" ;;
 		Darwin)     echo "$name$suffix.dylib" ;;
-		Windows_NT) echo "$name$suffix.dll" ;;
 		*)          echo "Unknown platform" >&2
 	esac
 }

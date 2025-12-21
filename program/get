@@ -22,13 +22,11 @@ ldflags() {
 	case $(uname -s) in
 		Linux)      project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic" ;;
 		Darwin)     project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic" ;;
-		Windows_NT) project="" ;;
 		*)          echo "Unknown platform" >&2
 	esac
 	case $(uname -s) in
 		Linux)      libdcimgui="-L${SolutionDir}lib/ui/${ODIR}" ;;
 		Darwin)     libdcimgui="-L${SolutionDir}lib/ui/${ODIR} -L/usr/local/lib -L/opt/local/lib" ;;
-		Windows_NT) libdcimgui="-L${SolutionDir}lib/ui/${ODIR}" ;;
 		*)          echo "Unknown platform" >&2
 	esac
 	echo $solution $project $libdcimgui
@@ -40,18 +38,12 @@ ldlibs() {
 	case $(uname -s) in
 		Linux)      imgui="-ldcimgui -lm -lstdc++";;
 		Darwin)     imgui="-framework ApplicationServices -framework Cocoa -framework IOKit -framework CoreVideo -ldcimgui" ;;
-		Windows_NT) flecs="-lwsock32 -lws2_32"; imgui="-lgdi32 -limm32 -ldcimgui -lstdc++" ; os="-ldbghelp" ;;
 		*)          echo "Unknown platform" >&2
 	esac
 	echo $flecs $imgui $sdl $os
 }
 exename() {
-	name="llss"
-	ext=""
-	case $(uname -s) in
-		Windows_NT) ext=".exe" ;;
-	esac
-	echo $name$ext
+	echo "llss"
 }
 case $1 in
 	--cflags) cflags $2 ;;
