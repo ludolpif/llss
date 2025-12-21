@@ -43,12 +43,14 @@
     <ClInclude Include="ui.h">
       <Filter>Internal Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\include\metadata.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h">
       <Filter>Internal Dependencies</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL_gpu.h">
       <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\metadata.h">
+      <Filter>Internal Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
