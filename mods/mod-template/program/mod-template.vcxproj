@@ -65,8 +65,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>app.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)lib\ecs\$(Platform)\$(Configuration);$(SolutionDir)lib\ui\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ImGuiLib.lib;flecs.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -87,8 +87,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>app.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)lib\ecs\$(Platform)\$(Configuration);$(SolutionDir)lib\ui\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ImGuiLib.lib;flecs.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

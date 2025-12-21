@@ -22,12 +22,6 @@
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h">
       <Filter>Internal Dependencies</Filter>
     </ClInclude>
-    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL.h">
-      <Filter>Internal Dependencies</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SDL3_DIR)\include\SDL3\SDL_gpu.h">
-      <Filter>Internal Dependencies</Filter>
-    </ClInclude>
     <ClInclude Include="$(SolutionDir)\include\app.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
@@ -49,8 +43,12 @@
     <ClInclude Include="ui.h">
       <Filter>Internal Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\version.h">
-      <Filter>Public Headers</Filter>
+    <ClInclude Include="$(SolutionDir)\include\metadata.h" />
+    <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL_gpu.h">
+      <Filter>Internal Dependencies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
