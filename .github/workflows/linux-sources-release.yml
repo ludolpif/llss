@@ -1,7 +1,9 @@
 name: Sources release
 on:
   push:
-    branches: [ "release" ]
+    branches: [ "rc" ]
+    tags:
+      - "v*.*.*"
 
 jobs:
   build:

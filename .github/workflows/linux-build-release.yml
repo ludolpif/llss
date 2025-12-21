@@ -1,7 +1,9 @@
 name: Linux build Release
 on:
   push:
-    branches: [ "release" ]
+    branches: [ "rc" ]
+    tags:
+      - "v*.*.*"
 
 env:
   # Configuration type to build.
