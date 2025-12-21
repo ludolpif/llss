@@ -6,6 +6,8 @@
 #define APP_RC_FILEVER    0,2,2,5
 #define APP_RC_PRODUCTVER 0,2,2,5
 
+#define BUILD_DEP_VERSION "0.2.0.1"
+
 #define APP_METADATA_NAME_STRING "llss"
 #define APP_METADATA_IDENTIFIER_STRING "fr.ludolpif.llss.app"
 #define APP_METADATA_CREATOR_STRING "ludolpif" // Also used as Windows prop "CompanyName"
