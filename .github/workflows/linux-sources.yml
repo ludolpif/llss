@@ -16,9 +16,6 @@ jobs:
     - name: show tree
       run: ls -lR
 
-    - name: get sources
-      run: ./get --sources
-
     - name: produce artifact
       run: ./artifact.sh Sources >> $GITHUB_ENV
       

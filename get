@@ -2,9 +2,9 @@
 BUILDDEP_VERSION=0.2.0.0
 
 build_dep() {
+	prettyos=$(prettyos)
 	set -xe
-	rm -rf lib
-	zipname=build-dep-${BUILDDEP_VERSION}-$(prettyos)-$1.zip
+	zipname=build-dep-${BUILDDEP_VERSION}-$prettyos-$1.zip
 	url=https://ludolpif.fr/pub/llss/artifacts/$zipname
 	[ -f $zipname ] || curl -o $zipname $url
 	unzip -q $zipname
