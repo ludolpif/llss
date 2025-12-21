@@ -8,7 +8,8 @@ xcuserdata
 *.vcxproj.user
 .vs
 # build-dep things
-build-dep-*.zip
+*.zip
+*.log
 # Output dirs
 x64
 artifacts

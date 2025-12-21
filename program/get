@@ -18,9 +18,14 @@
 SolutionDir="../"
 
 cflags() {
+	case "$1" in
+		Debug|Release) ;;
+		*) _usage ;;
+	esac
 	solution=`${SolutionDir}get --cflags $1`
 	project="-Wall -Wformat -std=c11 -fvisibility=hidden"
 	project="$project
+	-I${SolutionDir}lib/ui
 	-I${SolutionDir}lib/ui/dear_bindings_generated
 	-I${SolutionDir}lib/ui/imgui
 	-I${SolutionDir}lib/ui/dear_bindings_generated/backends
@@ -32,6 +37,10 @@ cflags() {
 	echo $solution $project $libsdl3
 }
 ldflags() {
+	case "$1" in
+		Debug|Release) ;;
+		*) _usage ;;
+	esac
 	ODIR=x64/$1
 
 	solution=`${SolutionDir}get --ldflags $1`
@@ -61,11 +70,15 @@ ldlibs() {
 exename() {
 	echo "llss"
 }
+_usage() {
+	echo "Usage $0 (--cflags|--exename|--ldflags|--ldlibs) [Debug|Release]" >&2
+	exit 1
+}
 case $1 in
-	--cflags) cflags $2 ;;
-	--ldflags) ldflags $2 ;;
-	--ldlibs) ldlibs $2 ;;
-	--exename) exename $2 ;;
-	*) echo "Usage $0 (--cflags|--ldflags|--ldlibs|--exename) (Release|Debug)" >&2 ;;
+	--cflags) cflags "$2" ;;
+	--exename) exename ;;
+	--ldflags) ldflags "$2" ;;
+	--ldlibs) ldlibs "$2" ;;
+	*) _usage ;;
 esac
 

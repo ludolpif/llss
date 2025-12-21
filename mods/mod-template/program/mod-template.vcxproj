@@ -44,11 +44,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)lib\platform\sdl3-devel-vc\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)lib\platform\sdl3-devel-vc\include;$(SolutionDir)lib\ui;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)lib\platform\sdl3-devel-vc\include;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)lib\platform\sdl3-devel-vc\include;$(SolutionDir)lib\ui;$(SolutionDir)lib\ui\imgui;$(SolutionDir)lib\ui\imgui\backends;$(SolutionDir)lib\ui\dear_bindings_generated;$(SolutionDir)lib\ui\dear_bindings_generated\backends;$(SolutionDir)lib\ecs\flecs;$(IncludePath)</IncludePath>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -98,11 +98,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app.h" />
-    <ClInclude Include="$(SolutionDir)\include\imgui_config.h" />
     <ClInclude Include="$(SolutionDir)\include\mods-api.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ui\imgui_config.h" />
     <ClInclude Include="hello.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

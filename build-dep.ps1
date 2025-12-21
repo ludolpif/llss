@@ -24,7 +24,7 @@ if ($Configuration -ne "Debug" -and $Configuration -ne "Release") {
     exit 1
 }
 
-$build_dep_version = "0.2.0.0"
+$build_dep_version = "0.2.0.1"
 $build_dep_zip = "build-dep-${build_dep_version}-Windows-$Configuration.zip"
 $build_dep_url = "https://ludolpif.fr/pub/llss/artifacts/$build_dep_zip"
 
