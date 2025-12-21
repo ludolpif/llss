@@ -1,7 +1,25 @@
 #!/bin/sh
+#
+# This file is part of LLSS.
+#
+# LLSS is free software: you can redistribute it and/or modify it under the terms of the
+# Affero GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with LLSS.
+# If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
+#
+# Copyright 2025 ludolpif <ludolpif@gmail.com>
+#
+LOG=configure.log
 check() {
 	cmd="$1"; shift
-	err=$($cmd $* 2>&1 >/dev/null)
+	echo "${PS4}$cmd $*" >>$LOG
+	err=$($cmd $* 2>&1 >>$LOG)
       	res=$?
 	if [ $res -eq 127 ]; then
 		echo "You need $cmd in PATH" >&2
@@ -12,6 +30,8 @@ check() {
 	fi
 	printf "%s%-72s FOUND\n" "$PS4" "$cmd"
 }
+date --rfc-3339=seconds > $LOG
+check uname --version
 check curl --version
 check git --version
 check make --version
@@ -28,4 +48,8 @@ On linux, you just need to install libsdl3-dev (debian) or sdl3-devel (redhat) p
 EOT
 fi
 
-# So far this ./configure output no files, it just make sanity checks for static Makefiles
+uname -a >> $LOG
+cat /etc/os-release >>$LOG
+/lib/x86_64-linux-gnu/libc.so.6 >> $LOG
+date --rfc-3339=seconds >> $LOG
+# So far this ./configure output no files, it just make sanity checks for 'make' step
