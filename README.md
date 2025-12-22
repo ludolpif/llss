@@ -14,8 +14,9 @@ I also leave public an unfiltered-yet dubious goals ideas: [GOALS-scratchpad.md]
 
 ## How to use it
 You barely can't yet.
+
+- Project current state: a fairly advanced "Hello World" with dynamic mod loading !
 - This software will never be production-ready while I am the (sole) developer. Jump in !
-- No releases exists at all. I want to do it early mostly for mod developers first
 - I want to find, reserve then change to a better project name if I feel it can really reach users one day
 
 ## How to write it, mod it
@@ -38,5 +39,6 @@ Code and other help/contribution instructions here: [CONTRIBUTING.md](doc/CONTRI
   - [FLECS](https://www.flecs.dev/flecs/): ECS are mind blowing building block for live-hackable data and behaviors
   - [Dear ImGui](https://github.com/ocornut/imgui) + [C bindings](https://github.com/dearimgui/dear_bindings): *enjoyable and simple* GUI crafting/modding
   - [SDL3](https://wiki.libsdl.org/SDL3/FrontPage): cross-platform development library handling platform-specific sadness for us
+  - [FFMPEG NUT](https://ffmpeg.org/nut.html): specific container format to pass audio+video+subtitles to a separate ffmpeg process for encoding
   - Help me choose the few next
 

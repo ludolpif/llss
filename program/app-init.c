@@ -70,7 +70,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, APP_METADATA_TYPE_STRING);
 
 	// Early log message to help troubleshoot application init and allow human readable timestamps later conversion
-	// Note SDL_Ticks should be a CLOCK_MONOTIC source, but some platforms may not provide it
+	// Note SDL_Ticks should be a CLOCK_MONOTONIC source, but some platforms may not provide it
 	// SDL_Time is real time, subject to system clock adjustment
 	SDL_Time tick0_wallclock;
 	if (!SDL_GetCurrentTime(&tick0_wallclock))
@@ -79,7 +79,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	Uint64 tick = SDL_GetTicksNS();
 	tick0_wallclock -= tick;
 	app_info("%016"PRIu64" SDL_AppInit(): tick0_wallclock==%"PRId64, tick, tick0_wallclock);
-    app_info("%016"PRIu64" SDL_GetBasePath(): %s", SDL_GetTicksNS(), SDL_GetBasePath());
+	app_info("%016"PRIu64" SDL_GetBasePath(): %s", SDL_GetTicksNS(), SDL_GetBasePath());
 
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_CAMERA))
 		app_failure("SDL_Init(): %s", SDL_GetError());
@@ -101,7 +101,46 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Claim window for GPU Device
 	if (!SDL_ClaimWindowForGPUDevice(gpu_device, window))
 		app_failure("SDL_ClaimWindowForGPUDevice(): %s", SDL_GetError());
-	SDL_SetGPUSwapchainParameters(gpu_device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_VSYNC);
+
+	// Try to apply a new SDL_GPUPresentMode, respecting this preference order : MAILBOX > IMMEDIATE > VSYNC
+	// VSYNC mode will always be supported. IMMEDIATE and MAILBOX modes may not be supported on certain systems.
+	// IMMEDIATE: Immediately presents. Lowest latency option, but tearing may occur.
+	// MAILBOX: Waits for vblank before presenting. No tearing is possible.
+	// If there is a pending image to present, the pending image is replaced by the new image.
+	// Similar to VSYNC, but with reduced visual latency.
+
+	SDL_GPUPresentMode present_mode = SDL_GPU_PRESENTMODE_VSYNC;
+	// API doc says: The swapchain will be created with SDL_GPU_SWAPCHAINCOMPOSITION_SDR and SDL_GPU_PRESENTMODE_VSYNC.
+
+	bool can_mailbox = SDL_WindowSupportsGPUPresentMode(gpu_device, window, SDL_GPU_PRESENTMODE_MAILBOX);
+	app_info("%016"PRIu64" SDL_WindowSupportsGPUPresentMode(..., MAILBOX): %s", SDL_GetTicksNS(), can_mailbox?"true":"false");
+
+	if ( present_mode != SDL_GPU_PRESENTMODE_MAILBOX ) {
+		// Switch to MAILBOX mode if avaiable
+		if (can_mailbox) {
+			if (!SDL_SetGPUSwapchainParameters(gpu_device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_MAILBOX)) {
+				app_warn("%016"PRIu64" SDL_SetGPUSwapchainParameters(..., SDR, MAILBOX) failed", SDL_GetTicksNS());
+			}
+			present_mode = SDL_GPU_PRESENTMODE_MAILBOX;
+		}
+	}
+	if ( present_mode != SDL_GPU_PRESENTMODE_MAILBOX ) {
+		// Fallback to IMMEDIATE mode if avaiable
+		bool can_immediate = SDL_WindowSupportsGPUPresentMode(gpu_device, window, SDL_GPU_PRESENTMODE_IMMEDIATE);
+		app_info("%016"PRIu64" SDL_WindowSupportsGPUPresentMode(..., IMMEDIATE): %s", SDL_GetTicksNS(), can_immediate?"true":"false");
+
+		if (can_immediate) {
+			if (!SDL_SetGPUSwapchainParameters(gpu_device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_IMMEDIATE)) {
+				app_warn("%016"PRIu64" SDL_SetGPUSwapchainParameters(..., SDR, IMMEDIATE) failed", SDL_GetTicksNS());
+			}
+			present_mode = SDL_GPU_PRESENTMODE_IMMEDIATE;
+		}
+	}
+	app_info("%016"PRIu64" Main window SDL_GPUPresentMode: %s", SDL_GetTicksNS(),
+			(present_mode==SDL_GPU_PRESENTMODE_MAILBOX)?"MAILBOX":(
+				(present_mode==SDL_GPU_PRESENTMODE_IMMEDIATE)?"IMMEDIATE":(
+					(present_mode==SDL_GPU_PRESENTMODE_VSYNC)?"VSYNC":"UNKNOWN")));
+
 
 	// Setup Dear ImGui context
 	CIMGUI_CHECKVERSION(); // This macro calls ImGui::DebugCheckVersionAndDataLayout() and try to detect ABI problems
@@ -150,7 +189,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(gpu_device, window);
 	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;                      // Only used in multi-viewports mode.
 	init_info.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;  // Only used in multi-viewports mode.
-	init_info.PresentMode = SDL_GPU_PRESENTMODE_VSYNC;
+	init_info.PresentMode = present_mode;
 	cImGui_ImplSDLGPU3_Init(&init_info);
 
 	// Load Fonts
