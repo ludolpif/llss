@@ -38,6 +38,7 @@ check make --version
 check gcc --version
 check ar --version
 check pkg-config --version
+check install --version
 
 [ -d lib ] || echo "lib/ folder absent, you need to call './get --build-dep (Debug|Release)' first" >&2
 
@@ -50,6 +51,6 @@ fi
 
 uname -a >> $LOG
 cat /etc/os-release >>$LOG
-/lib/x86_64-linux-gnu/libc.so.6 >> $LOG
+/lib/x86_64-linux-gnu/libc.so.? >> $LOG
 date --rfc-3339=seconds >> $LOG
 # So far this ./configure output no files, it just make sanity checks for 'make' step

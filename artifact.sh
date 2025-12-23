@@ -15,6 +15,9 @@
 #
 # Copyright 2025 ludolpif <ludolpif@gmail.com>
 #
+# TODO try to replace with make install with $(DESTDIR) see
+# https://www.gnu.org/prep/standards/html_node/DESTDIR.html
+# https://stackoverflow.com/questions/11307465/destdir-and-prefix-of-make
 copy_to() {
 	mkdir -p "$1"
 	while read -r path; do
@@ -27,20 +30,29 @@ progname=$(./get --name)
 version=$(./get --version)
 prettyos=$(./get --prettyos)
 
+compress=
+if [ "x$1" = "x--zip" ]; then compress=.zip; shift; fi
 case $1 in
 	Sources)
 		artifact=$progname-$version-Sources
+		rm -rf artifacts/$artifact artifacts/$artifact$compress
 		git ls-files | copy_to artifacts/$artifact
 	;;
 	Debug|Release)
 		artifact=$progname-$version-$prettyos-$1
-		files="doc/user-manual
+		files="
+		doc/user-manual
 		program/data
 		program/x64/$1/$progname
 		mods/*/data mods/*/program/x64/$1/*.so
 		"
+		rm -rf artifacts/$artifact artifacts/$artifact$compress
 		ls -d $files | copy_to artifacts/$artifact
 	;;
-	*) echo "Usage $0 (Sources|Debug|Release)" >&2; exit 1 ;;
+	*) echo "Usage $0 [--zip] ((Sources|Debug|Release)" >&2; exit 1 ;;
 esac
-echo artifact=$artifact
+case $compress in
+	.zip) ( cd artifacts/$artifact && zip -r ../$artifact.zip . && cd ../.. && rm -rf artifacts/$artifact );;
+	"") ls -d artifacts/$artifact/* >/dev/null # check if at least one file was installed as zip do
+esac
+echo artifact=$artifact$compress
