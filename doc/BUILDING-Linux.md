@@ -5,7 +5,7 @@ I currently use GNU/Linux Debian 13 (trixie) for early development cycles. It ha
 - A working system-wide SDL3 shared lib and headers that pkg-config can find.
   - ArchLinux : `pacman -S sdl3`
   - Debian like : `apt install libsdl3-dev`
-  - Ubuntu 24.04 (LTS) : not available, but we have build them in `llss-build-dep` project
+  - Ubuntu 24.04 (LTS) : not available, but we have prebuilt them in `llss-build-dep` project
   - Redhat like : `dnf install libsdl3-devel`
 - A GNU make and gcc-based build environnement
   - ArchLinux : `pacman -S base-devel git`
@@ -45,19 +45,17 @@ program/x64/Debug/llss
 ```
 
 ### Other Debian-like linux
-
-- You should have a libsdl3-dev package in your main distro repository, so:
-```
-apt install libsdl3-dev
-```
+See Prerequisites section first.
 
 TODO: explain details about getting or generating llss-build-dep artifacts in llss git
 
 ### ArchLinux
+See Prerequisites section first.
 
 TODO
 
 ### RedHat-like linux
+See Prerequisites section first.
 
 TODO
 
