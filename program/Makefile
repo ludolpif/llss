@@ -39,7 +39,6 @@ OBJS := $(SRCS:%.c=$(ODIR)%.o)
 ##---------------------------------------------------------------------
 
 all: $(EXE)
-	@echo 'cd $(shell pwd) && `./get --cflags $(BUILD_TYPE)` result: '$(CFLAGS)
 
 $(EXE): $(OBJS)
 	$(LINK.c) $(OBJS) ../lib/ecs/$(ODIR)flecs.o $(LDLIBS) -o $@

@@ -40,7 +40,6 @@ OBJS := $(SRCS:%.c=$(ODIR)%.o)
 ##---------------------------------------------------------------------
 
 all: $(MOD_SO)
-	@echo 'cd $(shell pwd) && `./get --cflags $(BUILD_TYPE)` result: '$(CFLAGS)
 
 $(MOD_SO): $(OBJS)
 	$(LINK.c) $^ $(LDLIBS) -o $@

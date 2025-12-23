@@ -32,5 +32,5 @@ clean:
 	$(MAKE) -C program clean BUILD_TYPE=$(BUILD_TYPE)
 	$(MAKE) -C mods clean BUILD_TYPE=$(BUILD_TYPE)
 
-run: all
+run:
 	$(MAKE) -C program run BUILD_TYPE=$(BUILD_TYPE)
