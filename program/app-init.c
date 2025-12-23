@@ -60,7 +60,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// Set metadata before SDL_Init because it will print it if loglevel is high enough
 	// We don't check return value, we don't want to abort the app startup if this fails anyway.
-	app_warn("Starting %s %s", APP_METADATA_NAME_STRING, APP_VERSION_STR);
+	app_warn("Starting %s %s with log priority %d for app", APP_METADATA_NAME_STRING, APP_VERSION_STR, logpriority_earlyskip);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, APP_METADATA_NAME_STRING);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, APP_VERSION_STR);
 	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, APP_METADATA_IDENTIFIER_STRING);
@@ -223,6 +223,10 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// ECS initialization
 	ecs_world_t *world = ecs_init();
 
+	// appinternal_t initialisation
+	internal->framerate.num = 60;
+	internal->framerate.den = 1;
+
 	// appstate_t initialisation
 	appstate->running_app_version = APP_VERSION_INT;
 	appstate->internal = internal;
@@ -256,6 +260,9 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	// Memory allocation statistics
 	alloc_count_dump_counters(appstate->frameid, "end of SDL_AppInit()");
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
+
+	//TODO tmp work around throttling
+	internal->video_ts_origin = SDL_GetTicksNS();
 
 	return SDL_APP_CONTINUE;
 }

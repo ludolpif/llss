@@ -17,8 +17,18 @@
  */
 #include "mod-host.h"
 
+// Same as in FFMPEG libavcodec, manually imported
+// We aim to pipe data to ffmpeg program without linking to libav* using "ffmpeg -f nut -i -"
+typedef struct AVRational {
+	int num;
+	int den;
+} AVRational;
+
 typedef struct appinternal {
 	appmods_t mods;	
+	AVRational framerate;
+	Uint64 video_ts_origin;
+	Uint64 video_frameid_origin;
 	//TODO remove this dummy demo code, will be in the ECS
 	bool show_demo_window;
 	bool show_another_window;

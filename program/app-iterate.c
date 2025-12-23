@@ -29,11 +29,14 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	SDL_Window *window = appstate->window;
 	SDL_GPUDevice* gpu_device = appstate->gpu_device;
 	ImGuiIO *imgui_io = appstate->imgui_io;
-	Sint32 frameid = appstate->frameid;
+	Uint32 frameid = appstate->frameid;
 	SDL_AsyncIOQueue *sdl_io_queue = appstate->sdl_io_queue;
+	AVRational *framerate = &appstate->internal->framerate;
+	Uint64 video_ts_origin = appstate->internal->video_ts_origin;
+	Uint64 video_frameid_origin = appstate->internal->video_frameid_origin;
 	ImVec4 clear_color = appstate->internal->clear_color;
 
-	app_trace("%016"PRIu64" SDL_AppIterate(%d)", SDL_GetTicksNS(), frameid);
+	app_trace("%016"PRIu64" SDL_AppIterate(%"PRIu32")", SDL_GetTicksNS(), frameid);
 
 	if ( frameid == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
 
@@ -111,7 +114,24 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 		// } SDL_AsyncIOOutcome;
 	}
 
-	appstate->frameid++;
 
+	// Throttle in a way that try to get clean CFR video stream (Constant Framerate)
+	// We want to snap PTS (Presentation Timestamps) for video frame N to video_ts_origin + N/framerate
+	// Video editing software needs CFR, streaming could be VFR but audio/video desync seems harder with VFR
+	Uint64 ts_next = video_ts_origin + (frameid+1-video_frameid_origin)*1e9/framerate->num*framerate->den;
+	Uint64 ts_now = SDL_GetTicksNS();
+	if ( ts_next < ts_now ) {
+		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIu32"): late frame (ts_next==%"PRIu64")", ts_now, frameid, ts_next);
+	} else if ( ts_next - ts_now >= 1e9 ) {
+		// Never hang for more than 1 sec, something is bad elsewhere
+		app_warn("%016"PRIu64" SDL_AppIterate(%"PRIu32"): bad timestamps (ts_next==%"PRIu64")", ts_now, frameid, ts_next);
+	} else {
+		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIu32"): to_wait==%"PRIu64")", ts_now, frameid, ts_next - ts_now);
+		SDL_DelayNS(ts_next - ts_now);
+	}
+
+	//TODO send video frame now ?
+
+	appstate->frameid++;
 	return then;
 }
