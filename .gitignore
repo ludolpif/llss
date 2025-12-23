@@ -7,6 +7,8 @@ xcuserdata
 *.aps
 *.vcxproj.user
 .vs
+# renderdoc things
+*.cap
 # build-dep things
 *.zip
 *.log

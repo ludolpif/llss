@@ -15,10 +15,16 @@
 # Copyright 2025 ludolpif <ludolpif@gmail.com>
 #
 # For now, build for Windows and Mac uses VSCode MSBuild and XCode tools
-.PHONY: all clean program mods run
+.PHONY: all clean program mods renderdoc run seergdb
 
 # default value for command-line arguments (like make BUILD_TYPE=Release)
 BUILD_TYPE ?= Debug
+RUN_ARGS ?= 
+SDL_LOGGING ?= app=trace,assert=warn,test=verbose,*=error
+GDB_BREAKFUNC ?= SDL_AppIterate
+
+ODIR := program/x64/$(BUILD_TYPE)/
+EXE := $(ODIR)llss
 
 all: program mods
 
@@ -32,5 +38,11 @@ clean:
 	$(MAKE) -C program clean BUILD_TYPE=$(BUILD_TYPE)
 	$(MAKE) -C mods clean BUILD_TYPE=$(BUILD_TYPE)
 
+renderdoc:
+	SDL_LOGGING="$(SDL_LOGGING)" dev/renderdoc.sh `realpath .` $(EXE)
+
 run:
-	$(MAKE) -C program run BUILD_TYPE=$(BUILD_TYPE)
+	SDL_LOGGING="$(SDL_LOGGING)" $(EXE) $(RUN_ARGS) 2>&1 | dev/pretty-log.pl
+
+seergdb:
+	SDL_LOGGING="$(SDL_LOGGING)" seergdb --bf $(GDB_BREAKFUNC) --cwd . --run $(EXE) $(RUN_ARGS)

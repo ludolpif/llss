@@ -28,7 +28,7 @@ CC := gcc
 CFLAGS += `./get --cflags $(BUILD_TYPE)`
 LDFLAGS += $(shell ./get --ldflags $(BUILD_TYPE))
 LDLIBS += $(shell ./get --ldlibs $(BUILD_TYPE))
-EXE = $(ODIR)$(shell ./get --exename $(BUILD_TYPE))
+EXE = $(ODIR)llss
 
 # Makefile.autodeps needs $(SRCS)
 SRCS := $(wildcard *.c)
@@ -50,8 +50,5 @@ clean:
 
 symdump: $(EXE)
 	objdump -T $(EXE)
-
-run: $(EXE)
-	SDL_LOGGING="app=trace,assert=warn,test=verbose,*=error" $(EXE) 2>&1 | ../dev/pretty-log.pl
 
 include ../Makefile.autodeps

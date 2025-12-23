@@ -67,16 +67,12 @@ ldlibs() {
 	esac
 	echo $flecs $imgui $sdl $os
 }
-exename() {
-	echo "llss"
-}
 _usage() {
-	echo "Usage $0 (--cflags|--exename|--ldflags|--ldlibs) [Debug|Release]" >&2
+	echo "Usage $0 (--cflags|-ldflags|--ldlibs) [Debug|Release]" >&2
 	exit 1
 }
 case $1 in
 	--cflags) cflags "$2" ;;
-	--exename) exename ;;
 	--ldflags) ldflags "$2" ;;
 	--ldlibs) ldlibs "$2" ;;
 	*) _usage ;;
