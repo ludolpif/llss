@@ -222,6 +222,10 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// ECS initialization
 	ecs_world_t *world = ecs_init();
+	// Optional, gather statistics for explorer
+	ECS_IMPORT(world, FlecsStats);
+	// Creates REST server on default port (27750)
+	ecs_singleton_set(world, EcsRest, {0});
 
 	// appinternal_t initialisation
 	internal->framerate.num = 60;
