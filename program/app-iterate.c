@@ -31,20 +31,17 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	ImGuiIO *imgui_io = appstate->imgui_io;
 	Uint32 frameid = appstate->frameid;
 	SDL_AsyncIOQueue *sdl_io_queue = appstate->sdl_io_queue;
+	ecs_world_t *world = appstate->world;
+
 	AVRational *framerate = &appstate->internal->framerate;
 	Uint64 video_ts_origin = appstate->internal->video_ts_origin;
 	Uint64 video_frameid_origin = appstate->internal->video_frameid_origin;
 	ImVec4 clear_color = appstate->internal->clear_color;
 
-	app_trace("%016"PRIu64" SDL_AppIterate(%"PRIu32")", SDL_GetTicksNS(), frameid);
+	//app_trace("%016"PRIu64" SDL_AppIterate(%"PRIu32")", SDL_GetTicksNS(), frameid);
+	ecs_progress(world, 0.0f);
 
 	if ( frameid == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
-
-	if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)
-	{
-		SDL_Delay(10);
-		return then;
-	}
 
 	// Start the Dear ImGui frame
 	cImGui_ImplSDLGPU3_NewFrame();
@@ -118,20 +115,28 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	// Throttle in a way that try to get clean CFR video stream (Constant Framerate)
 	// We want to snap PTS (Presentation Timestamps) for video frame N to video_ts_origin + N/framerate
 	// Video editing software needs CFR, streaming could be VFR but audio/video desync seems harder with VFR
-	Uint64 ts_next = video_ts_origin + (frameid+1-video_frameid_origin)*1e9/framerate->num*framerate->den;
 	Uint64 ts_now = SDL_GetTicksNS();
-	if ( ts_next < ts_now ) {
-		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIu32"): late frame (ts_next==%"PRIu64")", ts_now, frameid, ts_next);
-	} else if ( ts_next - ts_now >= 1e9 ) {
+	Uint64 ts_next;
+	Uint32 prev_frameid = frameid;
+	do {
+		//TODO send video frame now (generate dups if we are in late)
+		frameid++;
+		ts_next = video_ts_origin + (frameid-video_frameid_origin)*1e9/framerate->num*framerate->den;
+	} while (ts_next < ts_now);
+
+	if ( frameid - prev_frameid  > 1 ) {
+		//TODO replace by by a perf counter
+		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIu32"): skipped %"PRIu32" frames (ts_next==%"PRIu64")",
+				SDL_GetTicksNS(), frameid, frameid-prev_frameid-1, ts_next);
+	}
+	if ( ts_next - ts_now >= 1e9 ) {
 		// Never hang for more than 1 sec, something is bad elsewhere
 		app_warn("%016"PRIu64" SDL_AppIterate(%"PRIu32"): bad timestamps (ts_next==%"PRIu64")", ts_now, frameid, ts_next);
+		SDL_DelayNS(1e9/framerate->num*framerate->den); // 1/FPS as safeguard guess with no valid timestamps
 	} else {
-		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIu32"): to_wait==%"PRIu64")", ts_now, frameid, ts_next - ts_now);
 		SDL_DelayNS(ts_next - ts_now);
 	}
 
-	//TODO send video frame now ?
-
-	appstate->frameid++;
+	appstate->frameid = frameid;
 	return then;
 }

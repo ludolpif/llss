@@ -256,6 +256,8 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	app_dummy_demo_code_init(appstate);
 	mod_load_all(appstate);
 
+	// ECS First frame. This runs both the Startup and Update systems
+	ecs_progress(world, 0.0f);
 
 	// Memory allocation statistics
 	alloc_count_dump_counters(appstate->frameid, "end of SDL_AppInit()");
@@ -267,11 +269,24 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	return SDL_APP_CONTINUE;
 }
 
+// ECS System
+void LogDeltaTime(ecs_iter_t *it) {
+	SDL_LogPriority logpriority_earlyskip = SDL_LOG_PRIORITY_TRACE; // TODO get it from ECS, ditto for frameid
+	// Print delta_time. The same value is passed to all systems.
+	app_trace("%016"PRIu64" ecs_iter_t it->delta_time: %f, it->delta_system_time: %f\n",
+			SDL_GetTicksNS(), (double)it->delta_time, (double)it->delta_system_time);
+}
+
 void app_dummy_demo_code_init(appstate_t *appstate) {
 	ecs_world_t *world = appstate->world;
 
 	ecs_entity_t e = ecs_entity(world, { .name = "Bob" });
 	app_info("%016"PRIu64" ECS world initialized, first entity name: %s\n", SDL_GetTicksNS(), ecs_get_name(world, e));
+
+	// Create system that prints delta_time. This system doesn't query for any
+	// components which means it won't match any entities, but will still be ran
+	// once for each call to ecs_progress.
+	ECS_SYSTEM(world, LogDeltaTime, EcsOnUpdate, 0);
 
 	appstate->internal->show_demo_window = true;
 	appstate->internal->show_another_window = false;

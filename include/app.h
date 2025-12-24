@@ -41,6 +41,7 @@
  * - Regular C functions use snake_case()
  * - API types use snake_case_t
  * - struct that are used as ECS Component names (like 'Position') use PascalCase
+ * - functions that are used as ECS System (like 'Move') use PascalCase
  */
 
 //-----------------------------------------------------------------------------
@@ -76,9 +77,9 @@ typedef enum app_logcategory {
 //TODO define a general way to count events and let mods to add custom counters, let user display them, some are absolution values, some DERIVATIVE as in RRD
 
 // Convention: do not use app_info(), app_warn() for messages that can happen at each frame and flood the log, use app_debug() or counters
-#define app_trace(...)    if (SDL_LOG_PRIORITY_TRACE   > logpriority_earlyskip) SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
-#define app_verbose(...)  if (SDL_LOG_PRIORITY_VERBOSE > logpriority_earlyskip) SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
-#define app_debug(...)    if (SDL_LOG_PRIORITY_DEBUG   > logpriority_earlyskip) SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_trace(...)    if (logpriority_earlyskip <= SDL_LOG_PRIORITY_TRACE) SDL_LogTrace(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_verbose(...)  if (logpriority_earlyskip <= SDL_LOG_PRIORITY_VERBOSE) SDL_LogVerbose(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+#define app_debug(...)    if (logpriority_earlyskip <= SDL_LOG_PRIORITY_DEBUG) SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_info(...)     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_warn(...)     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_error(...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
