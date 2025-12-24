@@ -9,7 +9,7 @@ What programming languages is available for modding ?
 
 What APIs are available for modding ?
 - UI: whole API of Dear ImGuiSDL v1.92.5-docking, through C bindings
-  - you can add menu, windows, custom widgets, for the streamer faceing UI or in-stream (chatboxes, mini-games...)
+  - you can add menu, windows, custom widgets, for the streamer facing UI or in-stream (chatboxes, mini-games...)
   - you can add controls at the bottom of every existing window, menus even if it came from another plugin
 - platform and graphics: whole API of SDL 3.2.10
   - rendering is done with `SDL_gpu.h` so we can have mini-games, any kind of shaders

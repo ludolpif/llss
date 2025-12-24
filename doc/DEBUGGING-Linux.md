@@ -1,15 +1,15 @@
 
 ## Debugging tools
 
-### CPU-side code debbugging
+### CPU-side code debugging
 
 - You can use your favorite GDB frontend (like `ddd` or `seergdb`)
 - I didn't tried VSCode but it should work
   - please contribute some instructions for it here if you try
-- To have source-display without manual configuration, you need pay attention of current working directoty
+- To have source-display without manual configuration, you need pay attention of current working directory
   - bad ones : where the executable is, `program/` subfolder
   - good one : the root of llss git repository
-- The main entry point typically shown in the fronted before `run` is in SDL headers
+- The main entry point typically shown by the frontend before `run` is in SDL headers
   - because we use `#define SDL_MAIN_USE_CALLBACKS` and `#include <SDL3/SDL_main.h>` in `program/main.c`
   - if you have GDB shell, you just can `break SDL_AppIterate` then `run`
   - otherwise your tool should have a "Break in" field where you can give a bare function name like `SDL_AppIterate`
@@ -39,19 +39,19 @@ You can change the logging string with:
 make seergdb SDL_LOGGING="*=info"
 ```
 
-### GPU-side render steps debbugging
+### GPU-side render steps debugging
 
 - On https://renderdoc.org, use the Download (Linux) button
-- uncompress the tarbal either in /usr/local or a dedicated folder
+- extract the tarball either in /usr/local or a dedicated folder
 ```
 $ su -
-# tar xvf ~youruser/Downloads/renderdoc_1.42.tar.gz -C /usr/local/
+# tar xvf ~youruser/Downloads/renderdoc_1.42.tar.gz -C /usr/local/ --strip-components=1
 ```
 alternative:
 ```
 $ su -
 # mkdir /opt/renderdoc
-# tar xvf ~youruser/Downloads/renderdoc_1.42.tar.gz -C /opt/renderdoc/
+# tar xvf ~youruser/Downloads/renderdoc_1.42.tar.gz -C /opt/
 # exit
 $ mkdir ~/bin
 $ cd ~/bin
@@ -66,8 +66,8 @@ $ ln -s /opt/renderdoc_1.42/bin/renderdoccmd
 - start renderdoc from a user shell with `qrenderdoc` commmand without arguments
 - when the main UI show, hit Ctrl+N to have the "Launch Application" dock/tab in foreground if not already the case
 - in "Launch Application" dock/tab
-  - Executable path: /home/youruser/git/llss/program/x64/Debug/llss
-  - Working directory path: /home/youruser/git/llss/
+  - Executable path: `/home/youruser/git/llss/program/x64/Debug/llss`
+  - Working directory path: `/home/youruser/git/llss/`
   - click on "Launch" button
 
 I have made a make target for automatically do those starting steps:
@@ -77,9 +77,9 @@ make renderdoc
 ```
 
 - llss should display it's main window with renderdoc overlay text saying you can capture with F12
-- try make one or two frame capture with F12
+- make one or two frame capture with F12
 - close llss entierly
 - you should have a new tab/dock in RenderDoc titled "llss [PID xyz]"
 - double-click on one of the frames screenshots to open it
-- in the event browser dock, you can click on the clock icon to have duration of each step
-- warning: it is a debbugging tool for bad renders and not for bad performance
+- in the "Event browser" dock, you can click on the clock icon to have duration of each step
+- warning: it is a debugging tool for bad renders and not for bad performance
