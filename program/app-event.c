@@ -58,6 +58,7 @@ SDL_AppResult SDL_AppEvent(void *_appstate, SDL_Event *event) {
 			break;
 		default:
 			//TODO pass to ECS
+			break;
 	}
 	return then;
 }

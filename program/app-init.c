@@ -263,7 +263,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->main_framerate_den = fr_den;
 	appstate->main_delta_time = fr_den/fr_num; // Arbitrary delta_time since last frame for the first one
 	appstate->main_frame_ticks_ns = SDL_GetTicksNS();
-	appstate->main_frameid = appstate->main_frame_ticks_ns/1e9*fr_num/fr_den;
+	appstate->main_frameid = appstate->main_frame_ticks_ns/1000000000*fr_num/fr_den;
 
 	// Memory allocation statistics
 	alloc_count_dump_counters(0, "end of SDL_AppInit()");

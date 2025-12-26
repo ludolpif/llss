@@ -38,13 +38,13 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	Sint32 prev_frameid = appstate->main_frameid;
 	Sint32 frameid = prev_frameid;
 	Uint64 origin = appstate->main_frame_ticks_ns;
-	Uint64 max_delay = 1e9/6; // Delay for a minimum of 6 FPS
+	Uint64 max_delay = 1000000000/6; // Delay for a minimum of 6 FPS
 	Uint64 now, next;
 	// Send current frame to encoder(s), duplicate if we are in late, but stop if we go beyond max_delay to not freeze the UI too much
 	do {
 		//TODO send video frame now
 		frameid++;
-		next = frameid*1e9/fr_num*fr_den;
+		next = frameid*1000000000/fr_num*fr_den;
 		now = SDL_GetTicksNS();
 	} while (next < now || ((now-origin) > max_delay));
 
@@ -54,10 +54,10 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIi32"): skipped %"PRIi32" frame(s) (origin:%"PRIu64", next:%"PRIu64")",
 				now, frameid, skipped, origin, next);
 	}
-	if ( next-now >= 1e9 ) {
+	if ( next-now >= 1000000000 ) {
 		// Never hang for more than 1 sec, something is bad elsewhere
 		app_warn("%016"PRIu64" SDL_AppIterate(%"PRIi32"): bad timestamps (next==%"PRIu64")", now, frameid, next);
-		SDL_DelayNS(1e9/fr_num*fr_den); // delay by 1/FPS as safeguard guess with no valid time references
+		SDL_DelayNS(1000000000/fr_num*fr_den); // delay by 1/FPS as safeguard guess with no valid time references
 	} else {
 		SDL_DelayNS(next-now);
 		//app_trace("%016"PRIu64" SDL_AppIterate(%"PRIi32"): sleeping %"PRIu64" ns (origin:%"PRIu64", next:%"PRIu64")",

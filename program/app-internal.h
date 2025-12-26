@@ -16,5 +16,6 @@
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
 typedef struct appinternal {
+	Sint32 microsoft_compiler_cant_cope_with_empty_structs;
 	//...
 } appinternal_t;
