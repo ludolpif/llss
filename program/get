@@ -1,0 +1,80 @@
+#!/bin/sh
+#
+# This file is part of LLSS.
+#
+# LLSS is free software: you can redistribute it and/or modify it under the terms of the
+# Affero GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with LLSS.
+# If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
+#
+# Copyright 2025 ludolpif <ludolpif@gmail.com>
+#
+SolutionDir="../"
+
+cflags() {
+	case "$1" in
+		Debug|Release) ;;
+		*) _usage ;;
+	esac
+	solution=`${SolutionDir}get --cflags $1`
+	project="-Wall -Wformat -std=c11 -fvisibility=hidden"
+	project="$project
+	-I${SolutionDir}lib/ui
+	-I${SolutionDir}lib/ui/dear_bindings_generated
+	-I${SolutionDir}lib/ui/imgui
+	-I${SolutionDir}lib/ui/dear_bindings_generated/backends
+	-I${SolutionDir}lib/ui/imgui/backends
+	-I${SolutionDir}lib/ecs/flecs
+	-I${SolutionDir}include
+	"
+	libsdl3=`pkg-config --cflags sdl3`
+	echo $solution $project $libsdl3
+}
+ldflags() {
+	case "$1" in
+		Debug|Release) ;;
+		*) _usage ;;
+	esac
+	ODIR=x64/$1
+
+	solution=`${SolutionDir}get --ldflags $1`
+	case $(uname -s) in
+		Linux)      project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic" ;;
+		Darwin)     project="-Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+	case $(uname -s) in
+		Linux)      libdcimgui="-L${SolutionDir}lib/ui/${ODIR}" ;;
+		Darwin)     libdcimgui="-L${SolutionDir}lib/ui/${ODIR} -L/usr/local/lib -L/opt/local/lib" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+	echo $solution $project $libdcimgui
+}
+ldlibs() {
+	sdl=`pkg-config --libs sdl3`
+	os=""
+	flecs=""
+	case $(uname -s) in
+		Linux)      imgui="-ldcimgui -lm -lstdc++";;
+		Darwin)     imgui="-framework ApplicationServices -framework Cocoa -framework IOKit -framework CoreVideo -ldcimgui" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+	echo $flecs $imgui $sdl $os
+}
+_usage() {
+	echo "Usage $0 (--cflags|-ldflags|--ldlibs) [Debug|Release]" >&2
+	exit 1
+}
+case $1 in
+	--cflags) cflags "$2" ;;
+	--ldflags) ldflags "$2" ;;
+	--ldlibs) ldlibs "$2" ;;
+	*) _usage ;;
+esac
+

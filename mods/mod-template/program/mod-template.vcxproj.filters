@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="hello.c" />
+    <ClCompile Include="mod.c" />
+    <ClCompile Include="platform-specific\dllmain.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hello.h" />
+    <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\ui\imgui_config.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h">
+      <Filter>Internal Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\app.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\mods-api.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Internal Dependencies">
+      <UniqueIdentifier>{d77c0b00-ce08-4223-a4be-4547c756d611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public Headers">
+      <UniqueIdentifier>{662f05d7-44db-4a94-bc0a-7b8ce6a3f7a7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

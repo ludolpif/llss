@@ -1,0 +1,20 @@
+# Apple things
+.DS_Store
+# XCode things
+project.xcworkspace
+xcuserdata
+# VisualStudio things
+*.aps
+*.vcxproj.user
+.vs
+# renderdoc things
+*.cap
+# build-dep things
+*.zip
+*.log
+# Output dirs
+x64
+artifacts
+# program things
+/lib
+imgui.ini

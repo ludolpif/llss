@@ -1,0 +1,20 @@
+# https://www.gnu.org/software/make/manual/make.html §4.3 Types of Prerequisites
+# https://www.gnu.org/software/make/manual/make.html#Catalogue-of-Rules
+# https://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#tldr
+ODIR ?=
+DEPDIR ?= $(ODIR).deps
+DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
+
+# Display normal $(COMPILE.c) for readability but run with $(DEPFLAGS) added
+%.o: %.c
+$(ODIR)%.o : %.c $(DEPDIR)/%.d | $(DEPDIR)
+	@echo '$(COMPILE.c) $(OUTPUT_OPTION) $<'
+	@$(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c $(OUTPUT_OPTION) $<
+
+$(DEPDIR):
+	@mkdir -p $@
+
+DEPFILES := $(SRCS:%.c=$(DEPDIR)/%.d)
+$(DEPFILES):
+
+include $(wildcard $(DEPFILES))

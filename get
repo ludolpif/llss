@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# This file is part of LLSS.
+#
+# LLSS is free software: you can redistribute it and/or modify it under the terms of the
+# Affero GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with LLSS.
+# If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
+#
+# Copyright 2025 ludolpif <ludolpif@gmail.com>
+#
+build_dep() {
+	case "$1" in
+		Debug|Release|SystemLibs) ;;
+		*) _usage ;;
+	esac
+	build_dep_version=$(build_dep_version)
+	prettyos=$(prettyos)
+	set -xe
+	zipname=build-dep-$build_dep_version-$prettyos-$1.zip
+	url=https://ludolpif.fr/pub/llss/artifacts/$zipname
+	[ -f $zipname ] || curl -Lfo $zipname $url
+	unzip -q $zipname
+	rm -f $zipname
+}
+build_dep_version() {
+	grep "define BUILD_DEP_VERSION" include/metadata.h | cut -d'"' -f2
+}
+cflags() {
+	case "$1" in
+		Debug) solution="-ggdb3 -O0 -D_DEBUG" ;;
+		Release) solution="-g -O2 -DNDEBUG" ;;
+		*) _usage ;;
+	esac
+	echo $solution # -flto=auto (is very slow)
+}
+ldflags() {
+	solution=""
+	echo $solution
+}
+name() {
+	grep "define APP_METADATA_NAME_STRING" include/metadata.h | cut -d'"' -f2
+}
+prettyos() {
+	case $(uname -s) in
+		Linux) os="$( . /etc/os-release && echo $ID-$VERSION_CODENAME )" ;;
+		Darwin) os="MacOS" ;;
+		*) echo "Unknown platform" >&2
+	esac
+	echo $os
+}
+version() {
+	grep "define APP_VERSION_STR" include/metadata.h | cut -d'"' -f2
+}
+_usage() {
+	echo "Usage $0 (--build-dep|--build-dep-version|--cflags|--ldflags|--prettyos|--name|--version) [Debug|Release|SystemLibs]" >&2
+	exit 1
+}
+case "$1" in
+	--build-dep) build_dep "$2" ;;
+	--build-dep-version) build_dep_version ;;
+	--cflags) cflags "$2" ;;
+	--ldflags) ldflags "$2" ;;
+	--name) name ;;
+	--prettyos) prettyos ;;
+	--version) version ;;
+	*) _usage ;;
+esac

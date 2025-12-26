@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "program", "program\app.vcxproj", "{4E4536B5-7943-4153-B43A-1D196B9FC220}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-template", "mods\mod-template\program\mod-template.vcxproj", "{ABCDEF01-2345-6789-ABCD-EF0123456789}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-theme-rlyeh3", "mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Debug|x64.ActiveCfg = Debug|x64
+		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Debug|x64.Build.0 = Debug|x64
+		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Release|x64.ActiveCfg = Release|x64
+		{4E4536B5-7943-4153-B43A-1D196B9FC220}.Release|x64.Build.0 = Release|x64
+		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Debug|x64.ActiveCfg = Debug|x64
+		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Debug|x64.Build.0 = Debug|x64
+		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Release|x64.ActiveCfg = Release|x64
+		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Release|x64.Build.0 = Release|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Debug|x64.ActiveCfg = Debug|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Debug|x64.Build.0 = Debug|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Release|x64.ActiveCfg = Release|x64
+		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {88DEFE5B-B058-4369-93B3-CE6673CE4F46}
+	EndGlobalSection
+EndGlobal

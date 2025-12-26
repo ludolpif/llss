@@ -1,0 +1,26 @@
+name: Sources
+on:
+  push:
+    branches: [ "ci" ]
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: show tree
+      run: ls -lR
+
+    - name: produce artifact
+      run: ./artifact.sh Sources >> $GITHUB_ENV
+      
+    - name: upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{env.artifact}}
+        path: artifacts/${{env.artifact}}
