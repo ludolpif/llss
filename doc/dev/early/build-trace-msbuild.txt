@@ -1,0 +1,349 @@
+ludolpif@DESKTOP-TS9RFT7 MINGW64 /c/dev/git/llss (main)
+$ ./make.cmd
+
+C:\dev\git\llss>set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
+
+C:\dev\git\llss>"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" app.sln -p:Configuration=Release
+MSBuild version 17.10.4+10fbfbf2e for .NET Framework
+Build started 12/15/2025 6:35:34 PM.
+
+Project "C:\dev\git\llss\app.sln" on node 1 (default targets).
+ValidateSolutionConfiguration:
+  Building solution configuration "Release|x64".
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\program\app.vcxproj" (2) on node 1 (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (3) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\dev\git\llss\x64\Release\".
+  Creating directory "x64\Release\flecs.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Release\flecs.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\flecs.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /Zi /nologo /W3 /WX- /diagnostics:column /sdl /MP /O2 /Oi /GL /D NDEBUG /D _LIB /D flecs_EXPORTS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"x64\Release\\" /Fd"C:\dev\git\llss\x64\Release\flecs.pdb" /external:W3 /Gd /TC /FC /errorReport:queue flecs/flecs.c
+  flecs.c
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\Lib.exe /OUT:"C:\dev\git\llss\x64\Release\flecs.lib" /NOLOGO /MACHINE:X64 /LTCG x64\Release\flecs.obj
+  flecs.vcxproj -> C:\dev\git\llss\x64\Release\flecs.lib
+FinalizeBuildStatus:
+  Deleting file "x64\Release\flecs.tlog\unsuccessfulbuild".
+  Touching "x64\Release\flecs.tlog\flecs.lastbuildstate".
+Done Building Project "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (4) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Release\ImGuiLib.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Release\ImGuiLib.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\ImGuiLib.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /I"C:\dev\libs\SDL3-3.2.26\include" /Zi /nologo /W3 /WX- /diagnostics:column /sdl /MP /O2 /Oi /GL /D NDEBUG /D _LIB /D imgui_EXPORTS /D "IMGUI_USER_CONFIG=\"..\..\..\include\imgui_config.h\"" /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"x64\Release\\" /Fd"C:\dev\git\llss\x64\Release\ImGuiLib.pdb" /external:W3 /Gd /TP /FC /errorReport:queue imgui\imgui.cpp imgui\imgui_demo.cpp imgui\imgui_draw.cpp imgui\imgui_tables.cpp imgui\imgui_widgets.cpp imgui\backends\imgui_impl_sdl3.cpp imgui\backends\imgui_impl_sdlgpu3.cpp dear_bindings_generated\dcimgui.cpp dear_bindings_generated\dcimgui_internal.cpp dear_bindings_generated\backends\dcimgui_impl_sdl3.cpp dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  imgui_impl_sdl3.cpp
+  imgui_impl_sdlgpu3.cpp
+  dcimgui.cpp
+  dcimgui_internal.cpp
+  dcimgui_impl_sdl3.cpp
+  dcimgui_impl_sdlgpu3.cpp
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\Lib.exe /OUT:"C:\dev\git\llss\x64\Release\ImGuiLib.lib" /NOLOGO /MACHINE:X64 /LTCG x64\Release\imgui.obj
+  x64\Release\imgui_demo.obj
+  x64\Release\imgui_draw.obj
+  x64\Release\imgui_tables.obj
+  x64\Release\imgui_widgets.obj
+  x64\Release\imgui_impl_sdl3.obj
+  x64\Release\imgui_impl_sdlgpu3.obj
+  x64\Release\dcimgui.obj
+  x64\Release\dcimgui_internal.obj
+  x64\Release\dcimgui_impl_sdl3.obj
+  x64\Release\dcimgui_impl_sdlgpu3.obj
+  ImGuiLib.vcxproj -> C:\dev\git\llss\x64\Release\ImGuiLib.lib
+FinalizeBuildStatus:
+  Deleting file "x64\Release\ImGuiLib.tlog\unsuccessfulbuild".
+  Touching "x64\Release\ImGuiLib.tlog\ImGuiLib.lastbuildstate".
+Done Building Project "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "x64\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Release\app.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Release\app.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\app.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /I"C:\dev\libs\SDL3-3.2.26\include" /Zi /nologo /W3 /WX- /diagnostics:column /sdl /MP /O2 /Oi /GL /D NDEBUG /D _WINDOWS /D flecs_EXPORTS /D imgui_EXPORTS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c11 /permissive- /Fo"x64\Release\\" /Fd"x64\Release\vc143.pdb" /external:W3 /Gd /TC /FC /errorReport:queue alloc.c "app-event.c" "app-init.c" "app-iterate.c" main.c "mod-host.c" "ui-main.c"
+  alloc.c
+  app-event.c
+  app-init.c
+  app-iterate.c
+  main.c
+  mod-host.c
+  ui-main.c
+ResourceCompile:
+  C:\Program Files (x86)\Windows Kits\10\bin\10.0.20348.0\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /Iinclude /nologo /fo"x64\Release\app.res" app.rc
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"..\app.exe" /NOLOGO /LIBPATH:"C:\dev\libs\SDL3-3.2.26\lib\x64" opengl32.lib SDL3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\app.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG:incremental /LTCGOUT:"x64\Release\app.iobj" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\app.lib" /MACHINE:X64 x64\Release\app.res
+  x64\Release\alloc.obj
+  "x64\Release\app-event.obj"
+  "x64\Release\app-init.obj"
+  "x64\Release\app-iterate.obj"
+  x64\Release\main.obj
+  "x64\Release\mod-host.obj"
+  "x64\Release\ui-main.obj"
+  C:\dev\git\llss\x64\Release\flecs.lib
+  C:\dev\git\llss\x64\Release\ImGuiLib.lib
+     Creating library ..\app.lib and object ..\app.exp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 6434 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  app.vcxproj -> C:\dev\git\llss\app.exe
+FinalizeBuildStatus:
+  Deleting file "x64\Release\app.tlog\unsuccessfulbuild".
+  Touching "x64\Release\app.tlog\app.lastbuildstate".
+Done Building Project "C:\dev\git\llss\program\app.vcxproj" (default targets).
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (5) on node 1 (default targets).
+PrepareForBuild:
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+InitializeBuildStatus:
+  Creating "x64\Release\mod-theme-rlyeh3.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\mod-theme-rlyeh3.tlog\unsuccessfulbuild".
+ClCompile:
+  All outputs are up-to-date.
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"..\mod-theme-rlyeh3.dll" /NOLOGO /LIBPATH:C:\dev\git\llss\ /LIBPATH:"C:\dev\libs\SDL3-3.2.26\lib\x64" app.lib opengl32.lib SDL3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:NO /manifest:embed /DEBUG /PDB:"..\mod-theme-rlyeh3.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG:incremental /LTCGOUT:"x64\Release\mod-theme-rlyeh3.iobj" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\mod-theme-rlyeh3.lib" /MACHINE:X64 /DLL "x64\Release\ui-theming.obj"
+  x64\Release\mod.obj
+  x64\Release\dllmain.obj
+     Creating library ..\mod-theme-rlyeh3.lib and object ..\mod-theme-rlyeh3.exp
+  Generating code
+  0 of 6 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  mod-theme-rlyeh3.vcxproj -> C:\dev\git\llss\mods\mod-theme-rlyeh3\mod-theme-rlyeh3.dll
+FinalizeBuildStatus:
+  Deleting file "x64\Release\mod-theme-rlyeh3.tlog\unsuccessfulbuild".
+  Touching "x64\Release\mod-theme-rlyeh3.tlog\mod-theme-rlyeh3.lastbuildstate".
+Done Building Project "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\app.sln" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:14.77
+
+C:\dev\git\llss>"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" app.sln -p:Configuration=Debug
+MSBuild version 17.10.4+10fbfbf2e for .NET Framework
+Build started 12/15/2025 6:35:49 PM.
+
+Project "C:\dev\git\llss\app.sln" on node 1 (default targets).
+ValidateSolutionConfiguration:
+  Building solution configuration "Debug|x64".
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\program\app.vcxproj" (2) on node 1 (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (3) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "C:\dev\git\llss\x64\Debug\".
+  Creating directory "x64\Debug\flecs.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Debug\flecs.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\flecs.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /ZI /JMC /nologo /W3 /WX- /diagnostics:column /sdl /MP /Od /D _DEBUG /D _LIB /D flecs_EXPORTS /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"x64\Debug\\" /Fd"C:\dev\git\llss\x64\Debug\flecs.pdb" /external:W3 /Gd /TC /FC /errorReport:queue flecs/flecs.c
+  flecs.c
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\Lib.exe /OUT:"C:\dev\git\llss\x64\Debug\flecs.lib" /NOLOGO /MACHINE:X64 x64\Debug\flecs.obj
+  flecs.vcxproj -> C:\dev\git\llss\x64\Debug\flecs.lib
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\flecs.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\flecs.tlog\flecs.lastbuildstate".
+Done Building Project "C:\dev\git\llss\lib\ecs\flecs.vcxproj" (default targets).
+Project "C:\dev\git\llss\program\app.vcxproj" (2) is building "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (4) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Debug\ImGuiLib.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Debug\ImGuiLib.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\ImGuiLib.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /I"C:\dev\libs\SDL3-3.2.26\include" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /sdl /MP /Od /D _DEBUG /D _LIB /D imgui_EXPORTS /D "IMGUI_USER_CONFIG=\"..\..\..\include\imgui_config.h\"" /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /permissive- /Fo"x64\Debug\\" /Fd"C:\dev\git\llss\x64\Debug\ImGuiLib.pdb" /external:W3 /Gd /TP /FC /errorReport:queue imgui\imgui.cpp imgui\imgui_demo.cpp imgui\imgui_draw.cpp imgui\imgui_tables.cpp imgui\imgui_widgets.cpp imgui\backends\imgui_impl_sdl3.cpp imgui\backends\imgui_impl_sdlgpu3.cpp dear_bindings_generated\dcimgui.cpp dear_bindings_generated\dcimgui_internal.cpp dear_bindings_generated\backends\dcimgui_impl_sdl3.cpp dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  imgui_impl_sdl3.cpp
+  imgui_impl_sdlgpu3.cpp
+  dcimgui.cpp
+  dcimgui_internal.cpp
+  dcimgui_impl_sdl3.cpp
+  dcimgui_impl_sdlgpu3.cpp
+Lib:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\Lib.exe /OUT:"C:\dev\git\llss\x64\Debug\ImGuiLib.lib" /NOLOGO /MACHINE:X64 x64\Debug\imgui.obj
+  x64\Debug\imgui_demo.obj
+  x64\Debug\imgui_draw.obj
+  x64\Debug\imgui_tables.obj
+  x64\Debug\imgui_widgets.obj
+  x64\Debug\imgui_impl_sdl3.obj
+  x64\Debug\imgui_impl_sdlgpu3.obj
+  x64\Debug\dcimgui.obj
+  x64\Debug\dcimgui_internal.obj
+  x64\Debug\dcimgui_impl_sdl3.obj
+  x64\Debug\dcimgui_impl_sdlgpu3.obj
+  ImGuiLib.vcxproj -> C:\dev\git\llss\x64\Debug\ImGuiLib.lib
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\ImGuiLib.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\ImGuiLib.tlog\ImGuiLib.lastbuildstate".
+Done Building Project "C:\dev\git\llss\lib\ui\ImGuiLib.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Debug\app.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Debug\app.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\app.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /I"C:\dev\libs\SDL3-3.2.26\include" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /sdl /MP /Od /D _DEBUG /D _WINDOWS /D flecs_EXPORTS /D imgui_EXPORTS /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c11 /permissive- /Fo"x64\Debug\\" /Fd"x64\Debug\vc143.pdb" /external:W3 /Gd /TC /FC /errorReport:queue alloc.c "app-event.c" "app-init.c" "app-iterate.c" main.c "mod-host.c" "ui-main.c"
+  alloc.c
+  app-event.c
+  app-init.c
+  app-iterate.c
+  main.c
+  mod-host.c
+  ui-main.c
+ResourceCompile:
+  C:\Program Files (x86)\Windows Kits\10\bin\10.0.20348.0\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /Iinclude /nologo /fo"x64\Debug\app.res" app.rc
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"..\app.exe" /INCREMENTAL /ILK:"x64\Debug\app.ilk" /NOLOGO /LIBPATH:"C:\dev\libs\SDL3-3.2.26\lib\x64" opengl32.lib SDL3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\app.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\app.lib" /MACHINE:X64 x64\Debug\app.res
+  x64\Debug\alloc.obj
+  "x64\Debug\app-event.obj"
+  "x64\Debug\app-init.obj"
+  "x64\Debug\app-iterate.obj"
+  x64\Debug\main.obj
+  "x64\Debug\mod-host.obj"
+  "x64\Debug\ui-main.obj"
+  C:\dev\git\llss\x64\Debug\flecs.lib
+  C:\dev\git\llss\x64\Debug\ImGuiLib.lib
+     Creating library ..\app.lib and object ..\app.exp
+  app.vcxproj -> C:\dev\git\llss\app.exe
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\app.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\app.tlog\app.lastbuildstate".
+Done Building Project "C:\dev\git\llss\program\app.vcxproj" (default targets).
+Project "C:\dev\git\llss\app.sln" (1) is building "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (5) on node 1 (default targets).
+PrepareForBuild:
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+InitializeBuildStatus:
+  Creating "x64\Debug\mod-theme-rlyeh3.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\mod-theme-rlyeh3.tlog\unsuccessfulbuild".
+ClCompile:
+  All outputs are up-to-date.
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"..\mod-theme-rlyeh3.dll" /INCREMENTAL /ILK:"x64\Debug\mod-theme-rlyeh3.ilk" /NOLOGO /LIBPATH:C:\dev\git\llss\ /LIBPATH:"C:\dev\libs\SDL3-3.2.26\lib\x64" app.lib opengl32.lib SDL3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:NO /manifest:embed /DEBUG /PDB:"..\mod-theme-rlyeh3.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\mod-theme-rlyeh3.lib" /MACHINE:X64 /DLL "x64\Debug\ui-theming.obj"
+  x64\Debug\mod.obj
+  x64\Debug\dllmain.obj
+  LINK : ..\mod-theme-rlyeh3.dll not found or not built by the last incremental link; performing full link
+     Creating library ..\mod-theme-rlyeh3.lib and object ..\mod-theme-rlyeh3.exp
+  mod-theme-rlyeh3.vcxproj -> C:\dev\git\llss\mods\mod-theme-rlyeh3\mod-theme-rlyeh3.dll
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\mod-theme-rlyeh3.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\mod-theme-rlyeh3.tlog\mod-theme-rlyeh3.lastbuildstate".
+Done Building Project "C:\dev\git\llss\mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\app.sln" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.08
+
+C:\dev\git\llss>"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" mod-template.sln -p:Configuration=Release
+MSBuild version 17.10.4+10fbfbf2e for .NET Framework
+Build started 12/15/2025 6:35:54 PM.
+
+Project "C:\dev\git\llss\mod-template.sln" on node 1 (default targets).
+ValidateSolutionConfiguration:
+  Building solution configuration "Release|x64".
+Project "C:\dev\git\llss\mod-template.sln" (1) is building "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Release\mod-template.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Release\mod-template.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\mod-template.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /I"C:\dev\libs\SDL3-3.2.26\include" /Zi /nologo /W3 /WX- /diagnostics:column /sdl /MP /O2 /Oi /GL /D NDEBUG /D DLL1_EXPORTS /D _WINDOWS /D _USRDLL /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c11 /permissive- /Fo"x64\Release\\" /Fd"x64\Release\vc143.pdb" /external:W3 /Gd /TC /FC /errorReport:queue hello.c mod.c "platform-specific\dllmain.c"
+  hello.c
+  mod.c
+  dllmain.c
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"..\mod-template.dll" /NOLOGO /LIBPATH:C:\dev\git\llss\ /LIBPATH:"C:\dev\libs\SDL3-3.2.26\lib\x64" app.lib opengl32.lib SDL3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:NO /manifest:embed /DEBUG /PDB:"..\mod-template.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG:incremental /LTCGOUT:"x64\Release\mod-template.iobj" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\mod-template.lib" /MACHINE:X64 /DLL x64\Release\hello.obj
+  x64\Release\mod.obj
+  x64\Release\dllmain.obj
+     Creating library ..\mod-template.lib and object ..\mod-template.exp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 6 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  mod-template.vcxproj -> C:\dev\git\llss\mods\mod-template\mod-template.dll
+FinalizeBuildStatus:
+  Deleting file "x64\Release\mod-template.tlog\unsuccessfulbuild".
+  Touching "x64\Release\mod-template.tlog\mod-template.lastbuildstate".
+Done Building Project "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\mod-template.sln" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.00
+
+C:\dev\git\llss>"C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" mod-template.sln -p:Configuration=Debug
+MSBuild version 17.10.4+10fbfbf2e for .NET Framework
+Build started 12/15/2025 6:35:55 PM.
+
+Project "C:\dev\git\llss\mod-template.sln" on node 1 (default targets).
+ValidateSolutionConfiguration:
+  Building solution configuration "Debug|x64".
+Project "C:\dev\git\llss\mod-template.sln" (1) is building "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Debug\mod-template.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Debug\mod-template.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Debug\mod-template.tlog\unsuccessfulbuild".
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\CL.exe /c /I"C:\dev\libs\SDL3-3.2.26\include" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /sdl /MP /Od /D _DEBUG /D DLL1_EXPORTS /D _WINDOWS /D _USRDLL /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c11 /permissive- /Fo"x64\Debug\\" /Fd"x64\Debug\vc143.pdb" /external:W3 /Gd /TC /FC /errorReport:queue hello.c mod.c "platform-specific\dllmain.c"
+  hello.c
+  mod.c
+  dllmain.c
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.40.33807\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"..\mod-template.dll" /INCREMENTAL /ILK:"x64\Debug\mod-template.ilk" /NOLOGO /LIBPATH:C:\dev\git\llss\ /LIBPATH:"C:\dev\libs\SDL3-3.2.26\lib\x64" app.lib opengl32.lib SDL3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:NO /manifest:embed /DEBUG /PDB:"..\mod-template.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\mod-template.lib" /MACHINE:X64 /DLL x64\Debug\hello.obj
+  x64\Debug\mod.obj
+  x64\Debug\dllmain.obj
+     Creating library ..\mod-template.lib and object ..\mod-template.exp
+  mod-template.vcxproj -> C:\dev\git\llss\mods\mod-template\mod-template.dll
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\mod-template.tlog\unsuccessfulbuild".
+  Touching "x64\Debug\mod-template.tlog\mod-template.lastbuildstate".
+Done Building Project "C:\dev\git\llss\mods\mod-template\program\mod-template.vcxproj" (default targets).
+Done Building Project "C:\dev\git\llss\mod-template.sln" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.04
+
+ludolpif@DESKTOP-TS9RFT7 MINGW64 /c/dev/git/llss (main)
+$

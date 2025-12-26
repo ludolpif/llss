@@ -1,0 +1,86 @@
+ludolpif@lud-5490:~/git$ git clone https://github.com/ludolpif/llss.git llss
+Cloning into 'llss'...
+remote: Enumerating objects: 1510, done.
+remote: Counting objects: 100% (156/156), done.
+remote: Compressing objects: 100% (72/72), done.
+remote: Total 1510 (delta 103), reused 119 (delta 76), pack-reused 1354 (from 1)
+Receiving objects: 100% (1510/1510), 1.56 MiB | 5.66 MiB/s, done.
+Resolving deltas: 100% (878/878), done.
+ludolpif@lud-5490:~/git$ cd llss
+ludolpif@lud-5490:~/git/llss$ ./configure 
++ uname                                                                    FOUND
++ curl                                                                     FOUND
++ git                                                                      FOUND
++ make                                                                     FOUND
++ gcc                                                                      FOUND
++ ar                                                                       FOUND
++ pkg-config                                                               FOUND
++ install                                                                  FOUND
+lib/ folder absent, you need to call './get --build-dep (Debug|Release)' first
+ludolpif@lud-5490:~/git/llss$ ./get --build-dep Debug
++ zipname=build-dep-0.2.0.1-debian-trixie-Debug.zip
++ url=https://ludolpif.fr/pub/llss/artifacts/build-dep-0.2.0.1-debian-trixie-Debug.zip
++ [ -f build-dep-0.2.0.1-debian-trixie-Debug.zip ]
++ curl -Lfo build-dep-0.2.0.1-debian-trixie-Debug.zip https://ludolpif.fr/pub/llss/artifacts/build-dep-0.2.0.1-debian-trixie-Debug.zip
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 5543k  100 5543k    0     0  3640k      0  0:00:01  0:00:01 --:--:-- 3642k
++ unzip -q build-dep-0.2.0.1-debian-trixie-Debug.zip
++ rm -f build-dep-0.2.0.1-debian-trixie-Debug.zip
+ludolpif@lud-5490:~/git/llss$ ./configure 
++ uname                                                                    FOUND
++ curl                                                                     FOUND
++ git                                                                      FOUND
++ make                                                                     FOUND
++ gcc                                                                      FOUND
++ ar                                                                       FOUND
++ pkg-config                                                               FOUND
++ install                                                                  FOUND
+ludolpif@lud-5490:~/git/llss$ make -j
+make -C program BUILD_TYPE=Debug
+make -C mods BUILD_TYPE=Debug
+make[1]: Entering directory '/home/ludolpif/git/llss/mods'
+make -C mod-template/program
+make -C mod-theme-rlyeh3/program
+make[1]: Entering directory '/home/ludolpif/git/llss/program'
+make[2]: Entering directory '/home/ludolpif/git/llss/mods/mod-template/program'
+make[2]: Entering directory '/home/ludolpif/git/llss/mods/mod-theme-rlyeh3/program'
+gcc `./get --cflags Debug`   -c -o x64/Debug/alloc.o alloc.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/app-event.o app-event.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/app-init.o app-init.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/app-iterate.o app-iterate.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/main.o main.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/mod-host.o mod-host.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/ui-main.o ui-main.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/ui-theming.o ui-theming.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/mod.o mod.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/hello.o hello.c
+gcc `./get --cflags Debug`   -c -o x64/Debug/mod.o mod.c
+gcc `./get --cflags Debug`  -Wl,--default-symver -Wl,-soname,mod-theme-rlyeh3.so -shared -Wl,-rpath=.:.. -Wl,-Bsymbolic  x64/Debug/mod.o x64/Debug/ui-theming.o  -o x64/Debug/mod-theme-rlyeh3.so
+make[2]: Leaving directory '/home/ludolpif/git/llss/mods/mod-theme-rlyeh3/program'
+gcc `./get --cflags Debug`  -Wl,--default-symver -Wl,-soname,mod-template.so -shared -Wl,-rpath=.:.. -Wl,-Bsymbolic  x64/Debug/hello.o x64/Debug/mod.o  -o x64/Debug/mod-template.so
+make[2]: Leaving directory '/home/ludolpif/git/llss/mods/mod-template/program'
+make[1]: Leaving directory '/home/ludolpif/git/llss/mods'
+gcc `./get --cflags Debug`  -Wl,-rpath=.:.. -Wl,--export-dynamic -Wl,-Bsymbolic -L../lib/ui/x64/Debug  x64/Debug/alloc.o x64/Debug/app-event.o x64/Debug/app-init.o x64/Debug/app-iterate.o x64/Debug/main.o x64/Debug/mod-host.o x64/Debug/ui-main.o ../lib/ecs/x64/Debug/flecs.o -ldcimgui -lm -lstdc++ -lSDL3 -o x64/Debug/llss
+make[1]: Leaving directory '/home/ludolpif/git/llss/program'
+ludolpif@lud-5490:~/git/llss$ ls program/x64/Debug/
+alloc.o  app-event.o  app-init.o  app-iterate.o  llss  main.o  mod-host.o  ui-main.o
+ludolpif@lud-5490:~/git/llss$ program/x64/Debug/llss 
+WARN  Starting llss 0.2.2.5 with log priority 4 for app
+INFO  0000000000000137 SDL_AppInit(): tick0_wallclock==1766524163276688860
+INFO  0000000000087280 SDL_GetBasePath(): /home/ludolpif/git/llss/program/x64/Debug/
+INFO  0000000292444649 SDL_WindowSupportsGPUPresentMode(..., MAILBOX): true
+INFO  0000000294758326 Main window SDL_GPUPresentMode: MAILBOX
+INFO  0000000334129291 ECS world initialized, first entity name: Bob
+WARN  0000000334205221 mod_tryload(): /home/ludolpif/git/llss/program/x64/Debug/../../../mods/mod-template/program/x64/Debug/mod-template.so
+WARN  0000000334345461 mod_tryload(): /home/ludolpif/git/llss/program/x64/Debug/../../../mods/mod-theme-rlyeh3/program/x64/Debug/mod-theme-rlyeh3.so
+INFO  0000000334431248 heap allocation at end of SDL_AppInit() (only SDL_*alloc/SDL_free calls)
+INFO  [      0 frames] ctxt   malloc   calloc  realloc     free (+diff)
+INFO       STARTUP_SHUTDOWN     1828      336       47      487 (+1677)
+INFO           FIRST_FRAMES        0        0        0        0 (+0)
+INFO              RENDERING        0        0        0        0 (+0)
+INFO  0000002455919409 heap allocation at begin of SDL_AppInit() (only SDL_*alloc/SDL_free calls)
+INFO  [    125 frames] ctxt   malloc   calloc  realloc     free (+diff)
+INFO       STARTUP_SHUTDOWN     1875      336       48      986 (+1225)
+INFO           FIRST_FRAMES      575       57       55      447 (+185)
+INFO              RENDERING       57       15        2       73 (-1)
