@@ -2,6 +2,10 @@
 
 - Licence requirement about the program distribute it's sources
 
+- try https://wiki.libsdl.org/SDL3/README-highdpi
+- read https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/Latency.c (SDL_SetGPUAllowedFramesInFlight)
+
+
 - Artifact naming with commit hash when it is not a build from a tagged commit ?
   - Update metadata.h on the fly ?
 
