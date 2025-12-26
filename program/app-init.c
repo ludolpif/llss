@@ -141,6 +141,22 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 				(present_mode==SDL_GPU_PRESENTMODE_IMMEDIATE)?"IMMEDIATE":(
 					(present_mode==SDL_GPU_PRESENTMODE_VSYNC)?"VSYNC":"UNKNOWN")));
 
+	// Create a layered render target texture for stream outputs and preview, allowing alpha-blend in linear color-space
+	const SDL_GPUTextureCreateInfo createinfo = {
+		.type = SDL_GPU_TEXTURETYPE_2D,
+		.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT,
+		.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET,
+		.width = 1920,
+		.height = 1080,
+		.layer_count_or_depth = 4,
+		.num_levels = 1,
+		.sample_count = SDL_GPU_SAMPLECOUNT_1,
+		.props = 0
+	};
+	SDL_GPUTexture *render_targets = SDL_CreateGPUTexture(gpu_device, &createinfo);
+	if (!render_targets) {
+		app_failure("SDL_CreateGPUTexture() for render_targets: %s", SDL_GetError());
+	}
 
 	// Setup Dear ImGui context
 	CIMGUI_CHECKVERSION(); // This macro calls ImGui::DebugCheckVersionAndDataLayout() and try to detect ABI problems
@@ -250,6 +266,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	appstate->window = window;
 	appstate->gpu_device = gpu_device;
+	appstate->render_targets = render_targets;
 	appstate->imgui_context = imgui_context;
 	appstate->imgui_io = imgui_io;
 
@@ -314,6 +331,7 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	cImGui_ImplSDLGPU3_Shutdown();
 	ImGui_DestroyContext(NULL);
 
+	SDL_ReleaseGPUTexture(appstate->gpu_device, appstate->render_targets);
 	SDL_ReleaseWindowFromGPUDevice(appstate->gpu_device, appstate->window);
 	SDL_DestroyGPUDevice(appstate->gpu_device);
 	SDL_DestroyWindow(appstate->window);

@@ -118,6 +118,7 @@ typedef struct appstate {
 
 	SDL_Window *window;
 	SDL_GPUDevice *gpu_device;
+	SDL_GPUTexture *render_targets;
 	ImGuiContext* imgui_context;
 	ImGuiIO *imgui_io;
 

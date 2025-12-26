@@ -28,6 +28,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	SDL_LogPriority logpriority_earlyskip = appstate->logpriority_earlyskip;
 	SDL_Window *window = appstate->window;
 	SDL_GPUDevice* gpu_device = appstate->gpu_device;
+	SDL_GPUTexture *render_targets = appstate->render_targets;
 	ImGuiIO *imgui_io = appstate->imgui_io;
 	Uint32 frameid = appstate->frameid;
 	SDL_AsyncIOQueue *sdl_io_queue = appstate->sdl_io_queue;
@@ -54,32 +55,61 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	// Rendering
 	ImGui_Render();
 	ImDrawData* draw_data = ImGui_GetDrawData();
+	SDL_FColor sdl_clear_color = { clear_color.x, clear_color.y, clear_color.z, clear_color.w };
 	const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f);
 
 	SDL_GPUCommandBuffer* command_buffer = SDL_AcquireGPUCommandBuffer(gpu_device); // Acquire a GPU command buffer
 
-	SDL_GPUTexture* swapchain_texture;
-	SDL_WaitAndAcquireGPUSwapchainTexture(command_buffer, window, &swapchain_texture, NULL, NULL); // Acquire a swapchain texture
-
-	if (swapchain_texture != NULL && !is_minimized)
+	if (render_targets != NULL)
 	{
 		// This is mandatory: call ImGui_ImplSDLGPU3_PrepareDrawData() to upload the vertex/index buffer!
 		cImGui_ImplSDLGPU3_PrepareDrawData(draw_data, command_buffer);
 
 		// Setup and start a render pass
 		SDL_GPUColorTargetInfo target_info = {};
-		target_info.texture = swapchain_texture;
-		SDL_FColor sdl_clear_color = { clear_color.x, clear_color.y, clear_color.z, clear_color.w };
+		target_info.texture = render_targets;
 		target_info.clear_color = sdl_clear_color;
 		target_info.load_op = SDL_GPU_LOADOP_CLEAR;
 		target_info.store_op = SDL_GPU_STOREOP_STORE;
 		target_info.mip_level = 0;
 		target_info.layer_or_depth_plane = 0;
 		target_info.cycle = false;
-		SDL_GPURenderPass* render_pass = SDL_BeginGPURenderPass(command_buffer, &target_info, 1, NULL);
 
+		SDL_GPURenderPass* render_pass = SDL_BeginGPURenderPass(command_buffer, &target_info, 1, NULL);
 		// Render ImGui
 		cImGui_ImplSDLGPU3_RenderDrawData(draw_data, command_buffer, render_pass);
+
+		SDL_EndGPURenderPass(render_pass);
+	}
+	
+	SDL_GPUTexture* swapchain_texture;
+	SDL_WaitAndAcquireGPUSwapchainTexture(command_buffer, window, &swapchain_texture, NULL, NULL); // Acquire a swapchain texture
+
+	if (swapchain_texture != NULL && !is_minimized) {
+		//TODO read https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/TexturedQuad.c
+		//and ../../llss-build-dep/lib/ui/imgui/backends/imgui_impl_sdlgpu3.cpp:218
+
+		//TODO upload the vertex/index buffer for a fullscreen rect
+
+		// Setup and start a render pass for transfer render_targets to swapchain_texture
+		SDL_GPUColorTargetInfo target_info = { 0 };
+		target_info.texture = swapchain_texture;
+		target_info.clear_color = sdl_clear_color;
+		target_info.load_op = SDL_GPU_LOADOP_CLEAR;
+		target_info.store_op = SDL_GPU_STOREOP_STORE;
+		target_info.mip_level = 0;
+		target_info.layer_or_depth_plane = 0;
+		target_info.cycle = false;
+
+		SDL_GPURenderPass* render_pass = SDL_BeginGPURenderPass(command_buffer, &target_info, 1, NULL);
+
+		// TODO Render textured rectangle
+		SDL_BindGPUGraphicsPipeline(render_pass, Pipeline);
+		SDL_BindGPUVertexBuffers(render_pass, 0, &(SDL_GPUBufferBinding){ .buffer = VertexBuffer, .offset = 0 }, 1);
+		SDL_BindGPUIndexBuffer(render_pass, &(SDL_GPUBufferBinding){ .buffer = IndexBuffer, .offset = 0 }, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+		SDL_BindGPUFragmentSamplers(render_pass, 0, &(SDL_GPUTextureSamplerBinding){ .texture = SourceTexture, .sampler = Sampler }, 1);
+		SDL_DrawGPUIndexedPrimitives(render_pass, 6, 1, 0, 0, 0);
+
 
 		SDL_EndGPURenderPass(render_pass);
 	}
