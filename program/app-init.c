@@ -339,5 +339,5 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	ecs_fini(appstate->world);
 	SDL_free(appstate);
 
-	alloc_count_dump_counters(appstate->frameid, "begin of SDL_AppInit()");
+	alloc_count_dump_counters(appstate->frameid, "end of SDL_AppQuit()");
 }

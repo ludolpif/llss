@@ -40,7 +40,7 @@ check ar --version
 check pkg-config --version
 check install --version
 
-[ -d lib ] || echo "lib/ folder absent, you need to call './get --build-dep (Debug|Release)' first" >&2
+[ -d lib ] || echo "lib/ folder absent, you need to call './get --build-dep Debug' or ./get --build-dep  Release' first" >&2
 
 if ! pkg-config sdl3 --cflags > /dev/null; then
 	cat <<"EOT"

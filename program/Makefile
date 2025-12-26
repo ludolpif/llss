@@ -15,7 +15,7 @@
 # Copyright 2025 ludolpif <ludolpif@gmail.com>
 #
 # For now, build for Windows and Mac uses VSCode MSBuild and XCode tools
-.PHONY: all clean run symdump
+.PHONY: all clean symdump
 
 # default value for command-line arguments (like make BUILD_TYPE=Release)
 BUILD_TYPE ?= Debug
