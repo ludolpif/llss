@@ -112,6 +112,7 @@ typedef struct appstate {
 	ImGuiMemFreeFunc imgui_free_func;
 	void* imgui_allocator_functions_user_data;
 
+	SDL_AppResult app_result;
 	SDL_Window *main_window;
 	SDL_GPUDevice *gpu_device;
 	SDL_AsyncIOQueue *sdl_io_queue;
@@ -123,9 +124,7 @@ typedef struct appstate {
 
 	Sint32 main_framerate_num;  // AVRational framerate numerator
 	Sint32 main_framerate_den;  // AVRational framerate denominator
-	float main_delta_time;      // Time in seconds since last frame and current frame
-	Uint64 main_frame_ticks_ns; // SDL_GetTicksNS() at the start of current frame
-	Sint32 main_frameid;        // auto-incremented, even if framedrops occurs
+	Uint64 main_frame_start_ts; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
 } appstate_t;
 
 //-----------------------------------------------------------------------------

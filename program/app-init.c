@@ -220,7 +220,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	os_api.free_    = alloc_count_free_ecs;
 	os_api.realloc_ = alloc_count_realloc_ecs;
 	os_api.log_     = flecs_to_sdl_log_adapter;
-	//os_api.abort_ = my_abort;
+	//os_api.abort_ = my_abort; TODO plug in sdl abort as for ImGui
 	ecs_os_set_api(&os_api);
 
 	ecs_world_t *world = ecs_init();
@@ -233,8 +233,6 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	ECS_COMPONENT_DEFINE(world, AppIterateGlobalFrameCounters);
 	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#singletons
  	ecs_singleton_set(world, AppIterateGlobalFrameCounters, {0});
-	// ECS First frame. This runs both the Startup and Update systems
-	ecs_progress(world, 0.0f);
 
 	// appstate_t initialisation
 	appstate->running_app_version = APP_VERSION_INT;
@@ -250,6 +248,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->imgui_free_func = alloc_count_free_userptr;
 	appstate->imgui_allocator_functions_user_data = NULL;
 
+	appstate->app_result = SDL_APP_CONTINUE;
 	appstate->main_window = main_window;
 	appstate->gpu_device = gpu_device;
 	appstate->sdl_io_queue = sdl_io_queue;
@@ -257,22 +256,20 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	appstate->imgui_context = imgui_context;
 	appstate->imgui_io = imgui_io;
 
-	appstate->world = world;
+	appstate->world = world; // ECS world
 
 	appstate->main_framerate_num = fr_num;
 	appstate->main_framerate_den = fr_den;
-	appstate->main_delta_time = (float) fr_den/fr_num; // Arbitrary delta_time since last frame for the first one
-	appstate->main_frame_ticks_ns = SDL_GetTicksNS();
-	appstate->main_frameid = (Sint32) (appstate->main_frame_ticks_ns*fr_num/fr_den/1000000000);
+	appstate->main_frame_start_ts = 0;
 
 	// Memory allocation statistics
 	alloc_count_dump_counters(0, "end of SDL_AppInit()");
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
-	// Seed frameid to a value that allow app-iterate.c frame throttling code to converge quickly
-	app_debug("%016"PRIu64" SDL_AppInit: seeding main_frameid to:%"PRIi32, SDL_GetTicksNS(), appstate->main_frameid);
+	// ECS First frame. This runs both the Startup and Update systems
+	ecs_progress(world, 0.0f);
 
-	return SDL_APP_CONTINUE;
+	return appstate->app_result;
 }
 
 void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
