@@ -105,11 +105,13 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="mod-host.c" />
     <ClCompile Include="ui-main.c" />
+    <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app.h" />
     <ClInclude Include="$(SolutionDir)\include\metadata.h" />
     <ClInclude Include="$(SolutionDir)\include\mods-api.h" />
+    <ClInclude Include="$(SolutionDir)\include\utils.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL_gpu.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
