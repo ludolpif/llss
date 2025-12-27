@@ -43,10 +43,11 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	// Send current frame to encoder(s), duplicate if we are in late, but stop if we go beyond max_delay to not freeze the UI too much
 	do {
 		//TODO send video frame now
+		// TODO there is logic errors here to debug SDL_Delay(20);
 		frameid++;
-		next = frameid*1000000000/fr_num*fr_den;
+		next = ( (Uint64)frameid )*1000000000/fr_num*fr_den;
 		now = SDL_GetTicksNS();
-	} while (next < now || ((now-origin) > max_delay));
+	} while (next < now && ((now-origin) <= max_delay));
 
 	if ( frameid - prev_frameid  > 1 ) {
 		Sint32 skipped = frameid-prev_frameid-1;
@@ -54,14 +55,19 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 		app_debug("%016"PRIu64" SDL_AppIterate(%"PRIi32"): skipped %"PRIi32" frame(s) (origin:%"PRIu64", next:%"PRIu64")",
 				now, frameid, skipped, origin, next);
 	}
-	if ( next-now >= 1000000000 ) {
-		// Never hang for more than 1 sec, something is bad elsewhere
-		app_warn("%016"PRIu64" SDL_AppIterate(%"PRIi32"): bad timestamps (next==%"PRIu64")", now, frameid, next);
-		SDL_DelayNS(1000000000/fr_num*fr_den); // delay by 1/FPS as safeguard guess with no valid time references
+	if ( (now-origin) <= max_delay ) {
+		if ( next-now < 1000000000 ) {
+			SDL_DelayNS(next-now);
+			//app_trace("%016"PRIu64" SDL_AppIterate(%"PRIi32"): sleeping %"PRIu64" ns (origin:%"PRIu64", next:%"PRIu64")",
+			//		now, frameid, next-now, origin, next);
+		} else {
+			// Never hang for more than 1 sec, something is bad elsewhere
+			app_warn("%016"PRIu64" SDL_AppIterate(%"PRIi32"): bad timestamps (origin:%"PRIu64", next:%"PRIu64")", now, frameid, origin, next);
+			SDL_DelayNS(1000000000/fr_num*fr_den); // delay by 1/FPS as safeguard guess with no valid time references
+		}
 	} else {
-		SDL_DelayNS(next-now);
-		//app_trace("%016"PRIu64" SDL_AppIterate(%"PRIi32"): sleeping %"PRIu64" ns (origin:%"PRIu64", next:%"PRIu64")",
-		//		now, frameid, next-now, origin, next);
+		app_warn("%016"PRIu64" SDL_AppIterate(%"PRIi32"): force UI render even if in late (origin:%"PRIu64", next:%"PRIu64")", now, frameid, origin, next);
+		// No sleep at all, hurry up
 	}
 
 	appstate->main_frameid = frameid;
