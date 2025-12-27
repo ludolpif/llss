@@ -38,9 +38,9 @@ void alloc_count_install_hooks(void) {
 	ImGui_SetAllocatorFunctions(alloc_count_malloc_userptr, alloc_count_free_userptr, NULL);
 }
 
-void alloc_count_dump_counters(Sint32 frames, char *when) {
+void alloc_count_dump_counters(Uint32 loops, char *when) {
 	if (when) app_info("%016"PRIu64" heap allocation at %s (only SDL_*alloc/SDL_free calls)", SDL_GetTicksNS(), when);
-	app_info("[%7d frames] ctxt   malloc   calloc  realloc     free (+diff)", frames);
+	app_info("[%7"PRIu32" loops]  ctxt   malloc   calloc  realloc     free (+diff)", loops);
 	for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
 		int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);
 		int calloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][1]);

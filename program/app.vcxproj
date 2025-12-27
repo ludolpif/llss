@@ -102,6 +102,7 @@
     <ClCompile Include="app-event.c" />
     <ClCompile Include="app-init.c" />
     <ClCompile Include="app-iterate.c" />
+    <ClCompile Include="ecs-module1.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mod-host.c" />
     <ClCompile Include="ui-main.c" />

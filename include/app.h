@@ -122,6 +122,7 @@ typedef struct appstate {
 
 	ecs_world_t *world;
 
+	Uint32 app_iterate_count;
 	Sint32 main_framerate_num;  // AVRational framerate numerator
 	Sint32 main_framerate_den;  // AVRational framerate denominator
 	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
@@ -131,11 +132,20 @@ typedef struct appstate {
 //-----------------------------------------------------------------------------
 // [SECTION] ECS Core components definitions
 //-----------------------------------------------------------------------------
+// ecs-module1.h
 typedef struct {
     int32_t frameid;
     int32_t skipped;
     int32_t total;
 } AppIterateGlobalFrameCounters;
-
 extern ECS_COMPONENT_DECLARE(AppIterateGlobalFrameCounters);
 
+typedef struct {
+	float x,y;
+} Position;
+extern ECS_COMPONENT_DECLARE(Position);
+
+void Module1Import(ecs_world_t *world);
+
+// ecs-module2.h
+// ...

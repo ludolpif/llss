@@ -14,19 +14,16 @@
  *
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
+#include "alloc.h"
 #include "app.h"
 #include "app-internal.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
-#include "alloc.h"
 
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
 #define APP_UI_DEFAULT_WIDTH 1280
 #define APP_UI_DEFAULT_HEIGHT 720
-
-// Forward declarations
-ECS_COMPONENT_DECLARE(AppIterateGlobalFrameCounters);
 
 //typedef void(* ecs_os_api_log_t) (int32_t level, const char *file, int32_t line, const char *msg)
 void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg) {
@@ -220,19 +217,17 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	os_api.free_    = alloc_count_free_ecs;
 	os_api.realloc_ = alloc_count_realloc_ecs;
 	os_api.log_     = flecs_to_sdl_log_adapter;
-	//os_api.abort_ = my_abort; TODO plug in sdl abort as for ImGui
+	//os_api.strdup_  = SDL_strdup; // FIXME already wired to alloc_count_malloc_ecs but crashes app
+	os_api.now_     = SDL_GetTicksNS; // Hopefully less confusing to use the same everywhere
 	ecs_os_set_api(&os_api);
 
 	ecs_world_t *world = ecs_init();
-	ECS_IMPORT(world, FlecsStats);          // Optional, gather statistics for explorer
+	ECS_IMPORT(world, FlecsStats); // Optional, gather statistics for explorer
 
-	ecs_log_set_level(0);
+	ecs_log_set_level(0); // Increase verbosity level
 	ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
-	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
-	ECS_COMPONENT_DEFINE(world, AppIterateGlobalFrameCounters);
-	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#singletons
- 	ecs_singleton_set(world, AppIterateGlobalFrameCounters, {0});
+	ECS_IMPORT(world, Module1); // from ecs-module1.c
 
 	// appstate_t initialisation
 	appstate->running_app_version = APP_VERSION_INT;
@@ -258,13 +253,14 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	appstate->world = world; // ECS world
 
+	appstate->app_iterate_count = 0;
 	appstate->main_framerate_num = fr_num;
 	appstate->main_framerate_den = fr_den;
 	appstate->main_frame_start_ns = 0;
 	appstate->main_frameid = 0;
 
 	// Memory allocation statistics
-	alloc_count_dump_counters(0, "end of SDL_AppInit()");
+	alloc_count_dump_counters(appstate->app_iterate_count, "end of SDL_AppInit()");
 	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
 	// ECS First frame. This runs both the Startup and Update systems
@@ -276,7 +272,6 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	appstate_t *appstate = (appstate_t *)_appstate;
 	alloc_count_set_context(APP_CONTEXT_STARTUP_SHUTDOWN);
-	Sint32 frames = 0; // TODO get it from ECS before destruction
 
 	// TODO Set flags to the ECS to stop and release everything
 	
@@ -296,5 +291,5 @@ void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
 	ecs_fini(appstate->world);
 	SDL_free(appstate);
 
-	alloc_count_dump_counters(frames, "end of SDL_AppQuit()");
+	alloc_count_dump_counters(appstate->app_iterate_count, "end of SDL_AppQuit()");
 }

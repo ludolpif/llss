@@ -74,6 +74,8 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 
 	prev_framerate_num = framerate_num;
 	prev_framerate_den = framerate_den;
+	appstate->app_iterate_count++;
+	if ( appstate->app_iterate_count == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
 	appstate->main_frameid = next_frameid;
 	appstate->main_frame_start_ns = next_ns;
 
