@@ -124,7 +124,8 @@ typedef struct appstate {
 
 	Sint32 main_framerate_num;  // AVRational framerate numerator
 	Sint32 main_framerate_den;  // AVRational framerate denominator
-	Uint64 main_frame_start_ts; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
+	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
+	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
 } appstate_t;
 
 //-----------------------------------------------------------------------------

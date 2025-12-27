@@ -260,7 +260,8 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	appstate->main_framerate_num = fr_num;
 	appstate->main_framerate_den = fr_den;
-	appstate->main_frame_start_ts = 0;
+	appstate->main_frame_start_ns = 0;
+	appstate->main_frameid = 0;
 
 	// Memory allocation statistics
 	alloc_count_dump_counters(0, "end of SDL_AppInit()");
