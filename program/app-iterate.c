@@ -51,10 +51,10 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	// If main_framerate just have changed we may have negative jumps, and it cannnot fit in Uint64
 	if ( prev_framerate_num == framerate_num && prev_framerate_den == framerate_den ) {
 		sleep_ns = next_ns - now_ns;
+		// If unsigned arithmetics goes wrong, never hang the program more than 1/FPS seconds
+		if ( sleep_ns > sleep_max ) sleep_ns = sleep_max;
 		// If main_framerate have changed 1 iteration ago, last_frameid may be greated than now_frameid
 		skipped = (now_frameid > last_frameid)?(now_frameid - last_frameid):0;
-		// If maths goes wrong, never hang the program more than 1/FPS seconds
-		if ( sleep_ns > sleep_max ) sleep_ns = sleep_max;
 	} else {
 		app_warn("%016"PRIu64" SDL_AppIterate(), framerate changed from %"PRIi32"/%"PRIi32" to %"PRIi32"/%"PRIi32,
 				now_ns, prev_framerate_num, prev_framerate_den, framerate_num, framerate_den);
@@ -64,12 +64,12 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	}
 
 	app_trace("%016"PRIu64" SDL_AppIterate()"
-			", last_frameid:%08"PRIu64
-			", now_frameid:%08"PRIu64
+			", last_frameid:%09"PRIu64
+			", now_frameid:%09"PRIu64
 			", next_ns:%016"PRIu64
-			", sleep_ns:%016"PRIu64
-			", skipped:%02"PRIu64
-			, now_ns, last_frameid, now_frameid, next_ns, sleep_ns, skipped);
+			", sleep_ns:%09"PRIu64
+			", skipped:%"PRIu64
+			,now_ns, last_frameid, now_frameid, next_ns, sleep_ns, skipped);
 	SDL_DelayNS(sleep_ns);
 
 	prev_framerate_num = framerate_num;
