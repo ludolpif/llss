@@ -15,7 +15,7 @@
 # Copyright 2025 ludolpif <ludolpif@gmail.com>
 #
 # For now, build for Windows and Mac uses VSCode MSBuild and XCode tools
-.PHONY: all clean program mods renderdoc run run-pretty-log seergdb valgrind
+.PHONY: all clean program mods renderdoc run run-ecs run-pretty-log seergdb valgrind
 
 # default value for command-line arguments (like make BUILD_TYPE=Release)
 BUILD_TYPE ?= Debug
@@ -42,7 +42,11 @@ renderdoc:
 	SDL_LOGGING="$(SDL_LOGGING)" dev/renderdoc.sh `realpath .` $(EXE)
 
 run:
-	SDL_LOGGING="$(SDL_LOGGING)" $(EXE) $(RUN_ARGS) 2>&1
+	SDL_LOGGING="$(SDL_LOGGING)" $(EXE) $(RUN_ARGS)
+
+run-ecs:
+	xdg-open 'https://www.flecs.dev/explorer/?host=localhost'
+	SDL_LOGGING="$(SDL_LOGGING)" $(EXE) $(RUN_ARGS)
 
 run-pretty-log:
 	SDL_LOGGING="$(SDL_LOGGING)" $(EXE) $(RUN_ARGS) 2>&1 | dev/pretty-log.pl
