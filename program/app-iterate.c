@@ -21,62 +21,66 @@
 #include "alloc.h"
 #include "utils.h"
 
-SDL_AppResult SDL_AppIterate(void *_appstate) {
-	static Sint32 prev_framerate_num = 60;
-	static Sint32 prev_framerate_den = 1;
+SDL_AppResult SDL_AppIterate(void *appstate) {
+	static Sint32 prev_fr_num = 60;
+	static Sint32 prev_fr_den = 1;
 	static Uint64 sleep_max = CONVERT_FRAMEID_TO_NS(1, 60, 1);
 
-	appstate_t *appstate = (appstate_t *) _appstate;
-	SDL_LogPriority logpriority_earlyskip = appstate->logpriority_earlyskip;
-	
+	ecs_world_t *world = (ecs_world_t *)appstate;
+
 	// Make most of the work from ECS pipeline as it allow dynamic scheduling without recompiling this program
-	ecs_progress(appstate->world, 0.0f);
+	ecs_progress(world, 0.0f);
 
 	// Throttle in a way that try to get clean CFR video stream (Constant Frame Rate)
 	// External video editing software needs CFR, streaming could be VFR but audio/video desync seems harder with VFR
 	// We want to snap PTS (Presentation TimeStamps) for all video streams to a multiple of the framerate
 	// Here we throttle to snap to SDL ticks so video code can just to have PTS = ticks - offset with offset = N/framerate.
-	Sint32 framerate_num = appstate->main_framerate_num;
-	Sint32 framerate_den = appstate->main_framerate_den;
+	AppMainTimingContext *app_main_timing_context = ecs_singleton_get_mut(world, AppMainTimingContext);
+	Sint32 fr_num = app_main_timing_context->main_framerate_num;
+	Sint32 fr_den = app_main_timing_context->main_framerate_den;
 
-	Uint64 last_frameid = appstate->main_frameid;
+	Uint64 last_frameid = app_main_timing_context->main_frameid;
 	Uint64 now_ns = SDL_GetTicksNS();
-	Uint64 now_frameid = convert_ns_to_frameid(now_ns, framerate_num, framerate_den);
+	Uint64 now_frameid = convert_ns_to_frameid(now_ns, fr_num, fr_den);
 	Uint64 next_frameid = now_frameid + 1;
-	Uint64 next_ns = convert_frameid_to_ns(next_frameid, framerate_num, framerate_den);
+	Uint64 next_ns = convert_frameid_to_ns(next_frameid, fr_num, fr_den);
 
 	Uint64 sleep_ns;
-	Uint64 skipped;
+	Uint32 skipped;
 	// If main_framerate just have changed we may have negative jumps, and it cannnot fit in Uint64
-	if ( prev_framerate_num == framerate_num && prev_framerate_den == framerate_den ) {
+	if ( prev_fr_num == fr_num && prev_fr_den == fr_den ) {
 		sleep_ns = next_ns - now_ns;
 		// If unsigned arithmetics goes wrong, never hang the program more than 1/FPS seconds
 		if ( sleep_ns > sleep_max ) sleep_ns = sleep_max;
 		// If main_framerate have changed 1 iteration ago, last_frameid may be greated than now_frameid
-		skipped = (now_frameid > last_frameid)?(now_frameid - last_frameid):0;
+		skipped = (Uint32)(now_frameid > last_frameid)?(now_frameid - last_frameid):0;
 	} else {
 		app_warn("%016"PRIu64" SDL_AppIterate(), framerate changed from %"PRIi32"/%"PRIi32" to %"PRIi32"/%"PRIi32,
-				now_ns, prev_framerate_num, prev_framerate_den, framerate_num, framerate_den);
-		sleep_max = convert_frameid_to_ns(1, framerate_num, framerate_den);
+				now_ns, prev_fr_num, prev_fr_den, fr_num, fr_den);
+		sleep_max = convert_frameid_to_ns(1, fr_num, fr_den);
 		sleep_ns = sleep_max;
 		skipped = 0;
 	}
 
+#if DEBUG_TIMING
 	app_trace("%016"PRIu64" SDL_AppIterate()"
 			", last_frameid:%09"PRIu64
 			", now_frameid:%09"PRIu64
 			", next_ns:%016"PRIu64
 			", sleep_ns:%09"PRIu64
-			", skipped:%"PRIu64
+			", skipped:%"PRIu32
 			,now_ns, last_frameid, now_frameid, next_ns, sleep_ns, skipped);
+#endif
 	SDL_DelayNS(sleep_ns);
 
-	prev_framerate_num = framerate_num;
-	prev_framerate_den = framerate_den;
-	appstate->app_iterate_count++;
-	if ( appstate->app_iterate_count == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
-	appstate->main_frameid = next_frameid;
-	appstate->main_frame_start_ns = next_ns;
+	prev_fr_num = fr_num;
+	prev_fr_den = fr_den;
+	app_main_timing_context->app_iterate_count++;
+	app_main_timing_context->total_skipped += skipped;
+	if ( app_main_timing_context->app_iterate_count == 5 ) alloc_count_set_context(APP_CONTEXT_RENDERING);
+	app_main_timing_context->main_frameid = next_frameid;
+	app_main_timing_context->main_frame_start_ns = next_ns;
 
-	return appstate->app_result;
+	// TODO trigger QUIT here depending on an info from the ECS
+	return SDL_APP_CONTINUE;
 }

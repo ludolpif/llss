@@ -6,7 +6,11 @@
 // Phases for pipelines
 ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
-ECS_COMPONENT_DECLARE(AppState);
+ECS_COMPONENT_DECLARE(AppVersion);
+ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+ECS_COMPONENT_DECLARE(AppSDLContext);
+ECS_COMPONENT_DECLARE(AppImGuiContext);
+ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // ECS Systems forward declarations
 void ImGuiPrepareForNewFrame(ecs_iter_t *it);
@@ -36,27 +40,33 @@ void Module1Import(ecs_world_t *world) {
 			});
 	ecs_add_pair(world, RenderingPostImGui, EcsDependsOn, RenderingOnImGui);
 
-	ECS_COMPONENT_DEFINE(world, AppState);
+	ECS_COMPONENT_DEFINE(world, AppVersion);
+	ECS_COMPONENT_DEFINE(world, AppMemoryFuncs);
+	ECS_COMPONENT_DEFINE(world, AppSDLContext);
+	ECS_COMPONENT_DEFINE(world, AppImGuiContext);
+	ECS_COMPONENT_DEFINE(world, AppMainTimingContext);
 
-	ECS_SYSTEM(world, ImGuiPrepareForNewFrame, RenderingPreImGui, [in] AppState);
-	ECS_SYSTEM(world, UIMain, RenderingOnImGui, [in] AppState);
-	ECS_SYSTEM(world, ImGuiRenderAndSubmit, RenderingPostImGui, [in] AppState);
+	ECS_SYSTEM(world, ImGuiPrepareForNewFrame, RenderingPreImGui, 0);
+	ECS_SYSTEM(world, UIMain, RenderingOnImGui, 0);
+	ECS_SYSTEM(world, ImGuiRenderAndSubmit, RenderingPostImGui, 0);
 }
 
+// Task, run once per frame
 void ImGuiPrepareForNewFrame(ecs_iter_t *it) {
 	cImGui_ImplSDLGPU3_NewFrame();
 	cImGui_ImplSDL3_NewFrame();
 	ImGui_NewFrame();
 }
 
+// Task, ran once per frame
 void ImGuiRenderAndSubmit(ecs_iter_t *it) {
-	// Get fields from system query
-	AppState *_appstate = ecs_field(it, AppState, 0);
-	appstate_t *appstate = _appstate[0].appstate;
-	SDL_GPUDevice *gpu_device = appstate->gpu_device;
-	SDL_Window *main_window = appstate->main_window;
+	const AppSDLContext *app_sdl_context = ecs_singleton_get(it->world, AppSDLContext);
+	const AppImGuiContext *app_imgui_context = ecs_singleton_get(it->world, AppImGuiContext);
+
+	SDL_GPUDevice *gpu_device = app_sdl_context->gpu_device;
+	SDL_Window *main_window = app_sdl_context->main_window;
 	SDL_FColor sdl_clear_color = { 0.7, 0.7, 0.7, 1.0 };
-	ImGuiIO *imgui_io = appstate->imgui_io;
+	ImGuiIO *imgui_io = app_imgui_context->imgui_io;
 
 	ImGui_Render();
 	ImDrawData* draw_data = ImGui_GetDrawData();

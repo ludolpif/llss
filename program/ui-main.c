@@ -16,11 +16,10 @@
  */
 #include "ui-main.h"
 
+// Task, ran once per frame
 void UIMain(ecs_iter_t *it) {
-	// Get fields from system query
-	AppState *_appstate = ecs_field(it, AppState, 0);
-	appstate_t *appstate = _appstate[0].appstate;
-	float framerate = appstate->imgui_io->Framerate;
+	const AppImGuiContext *app_imgui_context = ecs_singleton_get(it->world, AppImGuiContext);
+	float fr_float = app_imgui_context->imgui_io->Framerate;
 
 	// TODO rewire this data to ECS when ready
 	static bool show_demo_window;
@@ -51,7 +50,7 @@ void UIMain(ecs_iter_t *it) {
 		ImGui_Text("counter = %d", counter);
 
 		ImGui_Text("Application average %.3f ms/frame (%.1f FPS)",
-				1000.0f / framerate, framerate);
+				1000.0f / fr_float, fr_float);
 
 		ImGui_End();
 	}

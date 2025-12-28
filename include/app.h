@@ -84,49 +84,13 @@ typedef enum app_logcategory {
 #define app_error(...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_critical(...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 
+extern SDL_LogPriority logpriority_earlyskip;
 //-----------------------------------------------------------------------------
 // [SECTION] Structures for global-like plain old data
 //-----------------------------------------------------------------------------
-// User-defined data and most of human-readable data should go in the ECS, not here.
-// Technical data needed during early app init should be here.
-// Global variables are used in very last resort as various OS makes various things with mod dynamic loading.
-
-// We define an opaque type for internal states that are subject to change without breaking mods ABI.
-// We want to hide a minimal set of data, but it let room for work-in-progress core things.
-struct appinternal;
-
-// App state, used by the app and exposed to mods, should only extended by adding fields at the end
-//  Don't use bitfields members as binary layout isn't specification defined (can vary between compilers)
-//  Use fixed-size types like Sint32 and not int
 typedef struct {
-	Sint32 running_app_version;
-	struct appinternal *internal;
-	SDL_LogPriority logpriority_earlyskip;
-
-	SDL_malloc_func sdl_malloc_func;
-	SDL_calloc_func sdl_calloc_func;
-	SDL_realloc_func sdl_realloc_func;
-	SDL_free_func sdl_free_func;
-
-	ImGuiMemAllocFunc imgui_malloc_func;
-	ImGuiMemFreeFunc imgui_free_func;
-	void* imgui_allocator_functions_user_data;
-
-	SDL_AppResult app_result;
-	SDL_Window *main_window;
-	SDL_GPUDevice *gpu_device;
-	SDL_AsyncIOQueue *sdl_io_queue;
-
-	ImGuiContext* imgui_context;
-	ImGuiIO *imgui_io;
-
 	ecs_world_t *world;
-
-	Uint32 app_iterate_count;
-	Sint32 main_framerate_num;  // AVRational framerate numerator
-	Sint32 main_framerate_den;  // AVRational framerate denominator
-	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
-	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
+	SDL_LogPriority *logpriority_earlyskip;
 } appstate_t;
 
 //-----------------------------------------------------------------------------
@@ -139,10 +103,43 @@ extern ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
 // Components
 typedef struct {
-	// For now, just wrap plain old legacy struct
-	appstate_t *appstate;
-} AppState;
-extern ECS_COMPONENT_DECLARE(AppState);
+	Sint32 running_app_version;
+} AppVersion;
+extern ECS_COMPONENT_DECLARE(AppVersion);
+
+typedef struct {
+	SDL_malloc_func sdl_malloc_func;
+	SDL_calloc_func sdl_calloc_func;
+	SDL_realloc_func sdl_realloc_func;
+	SDL_free_func sdl_free_func;
+	ImGuiMemAllocFunc imgui_malloc_func;
+	ImGuiMemFreeFunc imgui_free_func;
+	void* imgui_allocator_functions_user_data;
+} AppMemoryFuncs;
+extern ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+
+typedef struct {
+	SDL_Window *main_window;
+	SDL_GPUDevice *gpu_device;
+	SDL_AsyncIOQueue *sdl_io_queue;
+} AppSDLContext;
+extern ECS_COMPONENT_DECLARE(AppSDLContext);
+
+typedef struct {
+	ImGuiContext* imgui_context;
+	ImGuiIO *imgui_io;
+} AppImGuiContext;
+extern ECS_COMPONENT_DECLARE(AppImGuiContext);
+
+typedef struct {
+	Uint32 app_iterate_count;
+	Uint32 total_skipped;
+	Sint32 main_framerate_num;  // AVRational framerate numerator
+	Sint32 main_framerate_den;  // AVRational framerate denominator
+	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
+	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
+} AppMainTimingContext;
+extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // helper called from app-init.c ECS_IMPORT(world, Module1)
 void Module1Import(ecs_world_t *world);

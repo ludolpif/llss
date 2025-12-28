@@ -20,6 +20,7 @@
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 
+SDL_DECLSPEC SDL_LogPriority logpriority_earlyskip;
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
 #define APP_UI_DEFAULT_WIDTH 1280
@@ -27,7 +28,6 @@
 
 //typedef void(* ecs_os_api_log_t) (int32_t level, const char *file, int32_t line, const char *msg)
 void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg) {
-	SDL_LogPriority logpriority_earlyskip = SDL_LOG_PRIORITY_TRACE; //FIXME unavailable here
 	/* The level should be interpreted as:
 	 * >0: Debug tracing. Only enabled in debug builds.
 	 *  0: Tracing. Enabled in debug/release builds.
@@ -47,22 +47,12 @@ void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, con
 }
 
 // Implementations
-SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
+SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
 	alloc_count_install_hooks();
 
-	// Allocate on heap applications state structures
-	*_appstate = SDL_calloc(1,sizeof(appstate_t));
-	if (!*_appstate)
-		app_failure("SDL_calloc(1,sizeof(appstate_t))");
-	appstate_t *appstate = *_appstate;
-
-	appinternal_t *internal = SDL_calloc(1,sizeof(appinternal_t));
-	if (!internal)
-		app_failure("SDL_calloc(1,sizeof(appinternal_t))");
-
 	// Configure logging
-	SDL_LogPriority logpriority_earlyskip = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
+	logpriority_earlyskip = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_TRACE,    "TRACE ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE,  "VERB  ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG,    "DEBUG ");
@@ -70,17 +60,6 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN,     "WARN  ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR,    "ERROR ");
 	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRIT  ");
-
-	// Set metadata before SDL_Init because it will print it if loglevel is high enough
-	// We don't check return value, we don't want to abort the app startup if this fails anyway.
-	app_warn("Starting %s %s with log priority %d for app", APP_METADATA_NAME_STRING, APP_VERSION_STR, logpriority_earlyskip);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, APP_METADATA_NAME_STRING);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, APP_VERSION_STR);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, APP_METADATA_IDENTIFIER_STRING);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING, APP_METADATA_CREATOR_STRING);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING, APP_METADATA_COPYRIGHT_STRING);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING, APP_METADATA_URL_STRING);
-	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, APP_METADATA_TYPE_STRING);
 
 	// Early log message to help troubleshoot application init and allow human readable timestamps later conversion
 	// Note SDL_Ticks should be a CLOCK_MONOTONIC source, but some platforms may not provide it
@@ -90,8 +69,18 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	Uint64 tick = SDL_GetTicksNS();
 	tick0_wallclock -= tick;
-	app_info("%016"PRIu64" SDL_AppInit(): tick0_wallclock==%"PRId64, tick, tick0_wallclock);
-	app_info("%016"PRIu64" SDL_GetBasePath(): %s", SDL_GetTicksNS(), SDL_GetBasePath());
+	app_warn("Starting %s %s with log priority %d, tick0_wallclock==%"PRId64,
+			APP_METADATA_NAME_STRING, APP_VERSION_STR, logpriority_earlyskip, tick0_wallclock);
+
+	// Set metadata before SDL_Init because it will print it if loglevel is high enough
+	// We don't check return value, we don't want to abort the app startup if this fails anyway.
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, APP_METADATA_NAME_STRING);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, APP_VERSION_STR);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, APP_METADATA_IDENTIFIER_STRING);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING, APP_METADATA_CREATOR_STRING);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING, APP_METADATA_COPYRIGHT_STRING);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING, APP_METADATA_URL_STRING);
+	(void) SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, APP_METADATA_TYPE_STRING);
 
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_CAMERA))
 		app_failure("SDL_Init(): %s", SDL_GetError());
@@ -106,13 +95,12 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	if (main_window == NULL)
 		app_failure("SDL_CreateWindow(): %s", SDL_GetError());
 	SDL_SetWindowPosition(main_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-	SDL_ShowWindow(main_window);
 
 	// Assume this app will run on a single GPU and need to be restarted to change it
 	bool gpu_device_debug_mode = true;
 	SDL_GPUDevice* gpu_device = SDL_CreateGPUDevice(
 			SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_METALLIB,
-		       	gpu_device_debug_mode, NULL);
+			gpu_device_debug_mode, NULL);
 	if (gpu_device == NULL)
 		app_failure("SDL_CreateGPUDevice(): %s", SDL_GetError());
 
@@ -197,13 +185,13 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 
 	// Setup Platform/Renderer backends
 	cImGui_ImplSDL3_InitForSDLGPU(main_window);
-	ImGui_ImplSDLGPU3_InitInfo init_info;
-	SDL_memset(&init_info, 0, sizeof(init_info));
-	init_info.Device = gpu_device;
-	init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(gpu_device, main_window);
-	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;                      // Only used in multi-viewports mode.
-	init_info.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR;  // Only used in multi-viewports mode.
-	init_info.PresentMode = present_mode;
+	ImGui_ImplSDLGPU3_InitInfo init_info = {
+		.Device = gpu_device,
+		.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(gpu_device, main_window),
+		.MSAASamples = SDL_GPU_SAMPLECOUNT_1,                      // Only used in multi-viewports mode.
+		.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR,  // Only used in multi-viewports mode.
+		.PresentMode = present_mode
+		};
 	cImGui_ImplSDLGPU3_Init(&init_info);
 
 	//TODO load from config
@@ -230,69 +218,71 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
 	ECS_IMPORT(world, Module1); // Will call Module1Import(world) from ecs-module1.c
-	ecs_singleton_set(world, AppState, { .appstate = appstate });
+	ecs_singleton_set(world, AppVersion, {
+			.running_app_version = APP_VERSION_INT
+			});
+	ecs_singleton_set(world, AppMemoryFuncs, {
+		.sdl_malloc_func = alloc_count_malloc,
+		.sdl_calloc_func = alloc_count_calloc,
+		.sdl_realloc_func = alloc_count_realloc,
+		.sdl_free_func = alloc_count_free,
+		.imgui_malloc_func = alloc_count_malloc_userptr,
+		.imgui_free_func = alloc_count_free_userptr,
+		.imgui_allocator_functions_user_data = NULL,
+		}),
+	ecs_singleton_set(world, AppSDLContext, {
+		.main_window = main_window,
+		.gpu_device = gpu_device,
+		.sdl_io_queue = sdl_io_queue,
+		}),
+	ecs_singleton_set(world, AppImGuiContext, {
+		.imgui_context = imgui_context,
+		.imgui_io = imgui_io,
+		});
+	ecs_singleton_set(world, AppMainTimingContext, {
+		.app_iterate_count = 0,
+		.total_skipped = 0,
+		.main_framerate_num = fr_num,
+		.main_framerate_den = fr_den,
+		.main_frame_start_ns = 0,
+		.main_frameid = 0,
+		});
 
-	// appstate_t initialisation
-	appstate->running_app_version = APP_VERSION_INT;
-	appstate->internal = internal;
-	appstate->logpriority_earlyskip = logpriority_earlyskip;
-
-	appstate->sdl_malloc_func = alloc_count_malloc;
-	appstate->sdl_calloc_func = alloc_count_calloc;
-	appstate->sdl_realloc_func = alloc_count_realloc;
-	appstate->sdl_free_func = alloc_count_free;
-
-	appstate->imgui_malloc_func = alloc_count_malloc_userptr;
-	appstate->imgui_free_func = alloc_count_free_userptr;
-	appstate->imgui_allocator_functions_user_data = NULL;
-
-	appstate->app_result = SDL_APP_CONTINUE;
-	appstate->main_window = main_window;
-	appstate->gpu_device = gpu_device;
-	appstate->sdl_io_queue = sdl_io_queue;
-
-	appstate->imgui_context = imgui_context;
-	appstate->imgui_io = imgui_io;
-
-	appstate->world = world; // ECS world
-
-	appstate->app_iterate_count = 0;
-	appstate->main_framerate_num = fr_num;
-	appstate->main_framerate_den = fr_den;
-	appstate->main_frame_start_ns = 0;
-	appstate->main_frameid = 0;
-
-	// Memory allocation statistics
-	alloc_count_dump_counters(appstate->app_iterate_count, "end of SDL_AppInit()");
-	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
-
-	// ECS First frame. This runs both the Startup and Update systems
+	// ECS First frame. This runs both the Startup, Update and user-defined systems
 	ecs_progress(world, 0.0f);
 
-	return appstate->app_result;
+	// Show window now we have a valid first image to display
+	SDL_ShowWindow(main_window);
+
+	// Memory allocation statistics
+	alloc_count_dump_counters(0, "end of SDL_AppInit()");
+	alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
+
+	// SDL main give us the opportunity to have a *userdata-like pointer for futher callbacks
+	*appstate = world;
+
+	return SDL_APP_CONTINUE;
 }
 
-void SDL_AppQuit(void *_appstate, SDL_AppResult result) {
-	appstate_t *appstate = (appstate_t *)_appstate;
+void SDL_AppQuit(void *appstate, SDL_AppResult result) {
+	ecs_world_t *world = (ecs_world_t *)appstate;
 	alloc_count_set_context(APP_CONTEXT_STARTUP_SHUTDOWN);
 
-	// TODO Set flags to the ECS to stop and release everything
+	const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
+	const AppMainTimingContext *app_main_timing_context = ecs_singleton_get(world, AppMainTimingContext);
+	Uint32 app_iterate_count = app_main_timing_context->app_iterate_count;
 	
-	// Make a last ECS iteration
-	ecs_progress(appstate->world, 0.0f);
-
-	SDL_WaitForGPUIdle(appstate->gpu_device);
+	SDL_WaitForGPUIdle(app_sdl_context->gpu_device);
 	cImGui_ImplSDL3_Shutdown();
 	cImGui_ImplSDLGPU3_Shutdown();
 	ImGui_DestroyContext(NULL);
 
-	SDL_ReleaseWindowFromGPUDevice(appstate->gpu_device, appstate->main_window);
-	SDL_DestroyGPUDevice(appstate->gpu_device);
-	SDL_DestroyWindow(appstate->main_window);
+	SDL_ReleaseWindowFromGPUDevice(app_sdl_context->gpu_device, app_sdl_context->main_window);
+	SDL_DestroyGPUDevice(app_sdl_context->gpu_device);
+	SDL_DestroyWindow(app_sdl_context->main_window);
 
 	ecs_log_set_level(-1);
-	ecs_fini(appstate->world);
-	SDL_free(appstate);
+	ecs_fini(world);
 
-	alloc_count_dump_counters(appstate->app_iterate_count, "end of SDL_AppQuit()");
+	alloc_count_dump_counters(app_iterate_count, "end of SDL_AppQuit()");
 }

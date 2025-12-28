@@ -17,10 +17,13 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 
-SDL_AppResult SDL_AppEvent(void *_appstate, SDL_Event *event) {
-	appstate_t *appstate = (appstate_t *) _appstate;
-	//SDL_Window *window = appstate->window;
-	ImGuiIO *imgui_io = appstate->imgui_io;
+SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
+	ecs_world_t *world = (ecs_world_t *)appstate;
+
+	const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
+	const AppImGuiContext *app_imgui_context = ecs_singleton_get(world, AppImGuiContext);
+	SDL_Window *main_window = app_sdl_context->main_window;
+	ImGuiIO *imgui_io = app_imgui_context->imgui_io;
 
 	SDL_AppResult then = SDL_APP_CONTINUE;
 	// Poll and handle events (inputs, window resize, etc.)
@@ -32,11 +35,13 @@ SDL_AppResult SDL_AppEvent(void *_appstate, SDL_Event *event) {
 	switch (event->type) {
 		case SDL_EVENT_QUIT:
 			then = SDL_APP_SUCCESS;
+			//TODO pass to ECS
 			break;
 		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-		       	/* if ( event->window.windowID == SDL_GetWindowID(window) ) { */
-			then = SDL_APP_SUCCESS;
-			/* } */
+			if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
+				 then = SDL_APP_SUCCESS;
+				 //TODO pass to ECS
+			 }
 			break;
 		case SDL_EVENT_MOUSE_MOTION:
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
