@@ -18,13 +18,22 @@ void Module1Import(ecs_world_t *world) {
 	ECS_MODULE(world, Module1);
 
 	// Phases for pipelines
-	ecs_entity_t RenderingPreImGui = ecs_new_w_id(world, EcsPhase);
+	ecs_entity_t RenderingPreImGui = ecs_entity_init(world, &(ecs_entity_desc_t){
+			.name = "RenderingPreImGui",
+			.add = ecs_ids(EcsPhase)
+			});
 	ecs_add_pair(world, RenderingPreImGui, EcsDependsOn, EcsPostUpdate);
 
-	ecs_entity_t RenderingOnImGui = ecs_new_w_id(world, EcsPhase);
+	ecs_entity_t RenderingOnImGui = ecs_entity_init(world, &(ecs_entity_desc_t){
+			.name = "RenderingOnImGui",
+			.add = ecs_ids(EcsPhase)
+			});
 	ecs_add_pair(world, RenderingOnImGui, EcsDependsOn, RenderingPreImGui);
 
-	ecs_entity_t RenderingPostImGui = ecs_new_w_id(world, EcsPhase);
+	ecs_entity_t RenderingPostImGui = ecs_entity_init(world, &(ecs_entity_desc_t){
+			.name = "RenderingPostImGui",
+			.add = ecs_ids(EcsPhase)
+			});
 	ecs_add_pair(world, RenderingPostImGui, EcsDependsOn, RenderingOnImGui);
 
 	ECS_COMPONENT_DEFINE(world, AppState);
