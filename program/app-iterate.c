@@ -19,7 +19,6 @@
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 #include "alloc.h"
-#include "ui.h"
 #include "utils.h"
 
 SDL_AppResult SDL_AppIterate(void *_appstate) {
@@ -58,7 +57,7 @@ SDL_AppResult SDL_AppIterate(void *_appstate) {
 	} else {
 		app_warn("%016"PRIu64" SDL_AppIterate(), framerate changed from %"PRIi32"/%"PRIi32" to %"PRIi32"/%"PRIi32,
 				now_ns, prev_framerate_num, prev_framerate_den, framerate_num, framerate_den);
-		sleep_max = convert_frameid_to_ns(((Uint64)1), framerate_num, framerate_den);
+		sleep_max = convert_frameid_to_ns(1, framerate_num, framerate_den);
 		sleep_ns = sleep_max;
 		skipped = 0;
 	}

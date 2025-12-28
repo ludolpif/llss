@@ -14,11 +14,14 @@
  *
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
-#include "ui.h"
-#include "app-internal.h"
+#include "ui-main.h"
 
-SDL_AppResult ui_main(appstate_t *appstate) {
-	SDL_AppResult then = SDL_APP_CONTINUE;
+void UIMain(ecs_iter_t *it) {
+	// Get fields from system query
+	AppState *_appstate = ecs_field(it, AppState, 0);
+	appstate_t *appstate = _appstate[0].appstate;
+	float framerate = appstate->imgui_io->Framerate;
+
 	// TODO rewire this data to ECS when ready
 	static bool show_demo_window;
 	static bool show_another_window;
@@ -48,10 +51,8 @@ SDL_AppResult ui_main(appstate_t *appstate) {
 		ImGui_Text("counter = %d", counter);
 
 		ImGui_Text("Application average %.3f ms/frame (%.1f FPS)",
-				1000.0f / appstate->imgui_io->Framerate, appstate->imgui_io->Framerate);
+				1000.0f / framerate, framerate);
 
 		ImGui_End();
 	}
-
-	return then;
 }

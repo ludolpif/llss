@@ -40,7 +40,7 @@
     <ClInclude Include="mod-host.h">
       <Filter>Internal Headers</Filter>
     </ClInclude>
-    <ClInclude Include="ui.h">
+    <ClInclude Include="ui-main.h">
       <Filter>Internal Headers</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h">

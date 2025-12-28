@@ -98,7 +98,7 @@ struct appinternal;
 // App state, used by the app and exposed to mods, should only extended by adding fields at the end
 //  Don't use bitfields members as binary layout isn't specification defined (can vary between compilers)
 //  Use fixed-size types like Sint32 and not int
-typedef struct appstate {
+typedef struct {
 	Sint32 running_app_version;
 	struct appinternal *internal;
 	SDL_LogPriority logpriority_earlyskip;
@@ -130,21 +130,21 @@ typedef struct appstate {
 } appstate_t;
 
 //-----------------------------------------------------------------------------
-// [SECTION] ECS Core components definitions
+// [SECTION] ECS Core definitions
 //-----------------------------------------------------------------------------
 // ecs-module1.h
-typedef struct {
-    int32_t frameid;
-    int32_t skipped;
-    int32_t total;
-} AppIterateGlobalFrameCounters;
-extern ECS_COMPONENT_DECLARE(AppIterateGlobalFrameCounters);
 
-typedef struct {
-	float x,y;
-} Position;
-extern ECS_COMPONENT_DECLARE(Position);
+// Phases for pipelines
+extern ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
+// Components
+typedef struct {
+	// For now, just wrap plain old legacy struct
+	appstate_t *appstate;
+} AppState;
+extern ECS_COMPONENT_DECLARE(AppState);
+
+// helper called from app-init.c ECS_IMPORT(world, Module1)
 void Module1Import(ecs_world_t *world);
 
 // ecs-module2.h

@@ -209,6 +209,7 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	//TODO load from config
 	Sint32 fr_num = 60;
 	Sint32 fr_den = 1;
+	int32_t ecs_worker_threads_count = 4;
 
 	// ECS early minimal init
 	ecs_os_set_api_defaults();
@@ -222,12 +223,14 @@ SDL_AppResult SDL_AppInit(void **_appstate, int argc, char **argv) {
 	ecs_os_set_api(&os_api);
 
 	ecs_world_t *world = ecs_init();
+	ecs_set_threads(world, ecs_worker_threads_count);
 	ECS_IMPORT(world, FlecsStats); // Optional, gather statistics for explorer
 
 	ecs_log_set_level(0); // Increase verbosity level
 	ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
-	ECS_IMPORT(world, Module1); // from ecs-module1.c
+	ECS_IMPORT(world, Module1); // Will call Module1Import(world) from ecs-module1.c
+	ecs_singleton_set(world, AppState, { .appstate = appstate });
 
 	// appstate_t initialisation
 	appstate->running_app_version = APP_VERSION_INT;

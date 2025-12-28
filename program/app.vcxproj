@@ -123,7 +123,7 @@
     <ClInclude Include="app-internal.h" />
     <ClInclude Include="mod-host.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="ui.h" />
+    <ClInclude Include="ui-main.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />

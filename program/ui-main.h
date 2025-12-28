@@ -23,4 +23,4 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
-SDL_AppResult ui_main(appstate_t *appstate);
+void UIMain(ecs_iter_t *it);
