@@ -24,7 +24,14 @@ if ($Configuration -ne "Debug" -and $Configuration -ne "Release") {
     exit 1
 }
 
-$build_dep_version = "0.2.0.1"
+function Get-BuildDepVersion {
+    $match = Select-String -Path "include\metadata.h" -Pattern '^#define\s+BUILD_DEP_VERSION\s+"([^"]+)"'
+    if ($match) {
+        $match.Matches[0].Groups[1].Value
+    }
+}
+
+$build_dep_version = Get-BuildDepVersion;
 $build_dep_zip = "build-dep-${build_dep_version}-Windows-$Configuration.zip"
 $build_dep_url = "https://ludolpif.fr/pub/llss/artifacts/$build_dep_zip"
 
