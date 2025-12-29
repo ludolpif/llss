@@ -53,7 +53,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 		// If unsigned arithmetics goes wrong, never hang the program more than 1/FPS seconds
 		if ( sleep_ns > sleep_max ) sleep_ns = sleep_max;
 		// If main_framerate have changed 1 iteration ago, last_frameid may be greated than now_frameid
-		skipped = (Uint32)(now_frameid > last_frameid)?(now_frameid - last_frameid):0;
+		skipped = (now_frameid > last_frameid)?(Uint32)(now_frameid - last_frameid):0;
 	} else {
 		app_warn("%016"PRIu64" SDL_AppIterate(), framerate changed from %"PRIi32"/%"PRIi32" to %"PRIi32"/%"PRIi32,
 				now_ns, prev_fr_num, prev_fr_den, fr_num, fr_den);

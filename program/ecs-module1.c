@@ -65,7 +65,7 @@ void ImGuiRenderAndSubmit(ecs_iter_t *it) {
 
 	SDL_GPUDevice *gpu_device = app_sdl_context->gpu_device;
 	SDL_Window *main_window = app_sdl_context->main_window;
-	SDL_FColor sdl_clear_color = { 0.7, 0.7, 0.7, 1.0 };
+	SDL_FColor sdl_clear_color = { 0.4f, 0.4f, 0.4f, 1.0f };
 	ImGuiIO *imgui_io = app_imgui_context->imgui_io;
 
 	ImGui_Render();
