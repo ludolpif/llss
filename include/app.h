@@ -108,6 +108,7 @@ typedef struct {
 extern ECS_COMPONENT_DECLARE(AppVersion);
 
 typedef struct {
+	// TODO this approach don't cover per-thread arena
 	SDL_malloc_func sdl_malloc_func;
 	SDL_calloc_func sdl_calloc_func;
 	SDL_realloc_func sdl_realloc_func;
@@ -115,6 +116,7 @@ typedef struct {
 	ImGuiMemAllocFunc imgui_malloc_func;
 	ImGuiMemFreeFunc imgui_free_func;
 	void* imgui_allocator_functions_user_data;
+	// flecs alloc_funcs can always be retreived with ecs_os_get_api()
 } AppMemoryFuncs;
 extern ECS_COMPONENT_DECLARE(AppMemoryFuncs);
 

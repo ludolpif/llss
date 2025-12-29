@@ -24,18 +24,26 @@ SDL_calloc_func orig_calloc_func;
 SDL_realloc_func orig_realloc_func;
 SDL_free_func orig_free_func;
 
-
 const char app_alloc_count_contexts_str[APP_CONTEXT_COUNT][20] = {
 	"STARTUP_SHUTDOWN",
 	"FIRST_FRAMES",
 	"RENDERING"
 };
 
-
 void alloc_count_install_hooks(void) {
 	SDL_GetOriginalMemoryFunctions(&orig_malloc_func, &orig_calloc_func, &orig_realloc_func, &orig_free_func);
 	SDL_SetMemoryFunctions(alloc_count_malloc, alloc_count_calloc, alloc_count_realloc, alloc_count_free);
+
 	ImGui_SetAllocatorFunctions(alloc_count_malloc_userptr, alloc_count_free_userptr, NULL);
+
+	ecs_os_set_api_defaults();
+	ecs_os_api_t os_api = ecs_os_get_api();
+	os_api.malloc_  = alloc_count_malloc_ecs;
+	os_api.free_    = alloc_count_free_ecs;
+	os_api.realloc_ = alloc_count_realloc_ecs;
+	os_api.calloc_  = alloc_count_calloc_ecs;
+	os_api.strdup_  = alloc_count_strdup_ecs;
+	ecs_os_set_api(&os_api);
 }
 
 void alloc_count_dump_counters(Uint32 loops, char *when) {
@@ -80,6 +88,11 @@ void * SDLCALL alloc_count_calloc(size_t nmemb, size_t size) {
 	return orig_calloc_func(nmemb, size);
 }
 
+void * SDLCALL alloc_count_calloc_ecs(ecs_size_t size) {
+	SDL_AtomicIncRef(alloc_count_current_context+1);
+	return orig_calloc_func(1, size);
+}
+
 void * SDLCALL alloc_count_realloc(void *mem, size_t size) {
 	SDL_AtomicIncRef(alloc_count_current_context+2);
 	return orig_realloc_func(mem, size);
@@ -104,4 +117,10 @@ void   SDLCALL alloc_count_free_userptr(void *mem, void *userptr) {
     (void) userptr;
     SDL_AtomicIncRef(alloc_count_current_context+3);
 	orig_free_func(mem);
+}
+
+char * SDLCALL alloc_count_strdup_ecs(const char *s) {
+	// SDL_strdup uses SDL_malloc, accounting already done
+	return s?SDL_strdup(s):NULL;
+	// return SDL_strdup(s); // WILL CRASH in ecs_init()
 }

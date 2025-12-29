@@ -46,6 +46,12 @@ void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, con
 #undef FLECS_LOG_VAARGS
 }
 
+char *my_flecs_strdup(const char *s) {
+	if ( s ) return SDL_strdup(s);
+	app_warn("flecs_strdup(NULL) called");
+	return NULL;
+}
+
 // Implementations
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
@@ -199,15 +205,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	Sint32 fr_den = 1;
 	int32_t ecs_worker_threads_count = 4;
 
-	// ECS early minimal init
-	ecs_os_set_api_defaults();
+	// ECS init
+	// ecs_os_set_api_defaults(); // already done then tweaked in alloc_count_install_hooks();
 	ecs_os_api_t os_api = ecs_os_get_api();
-	os_api.malloc_  = alloc_count_malloc_ecs;
-	os_api.free_    = alloc_count_free_ecs;
-	os_api.realloc_ = alloc_count_realloc_ecs;
-	os_api.log_     = flecs_to_sdl_log_adapter;
-	//os_api.strdup_  = SDL_strdup; // FIXME already wired to alloc_count_malloc_ecs but crashes app
-	os_api.now_     = SDL_GetTicksNS; // Hopefully less confusing to use the same everywhere
+	os_api.log_ = flecs_to_sdl_log_adapter;
+	os_api.now_ = SDL_GetTicksNS; // Hopefully less confusing to use the same everywhere
 	ecs_os_set_api(&os_api);
 
 	ecs_world_t *world = ecs_init();
@@ -222,31 +224,31 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 			.running_app_version = APP_VERSION_INT
 			});
 	ecs_singleton_set(world, AppMemoryFuncs, {
-		.sdl_malloc_func = alloc_count_malloc,
-		.sdl_calloc_func = alloc_count_calloc,
-		.sdl_realloc_func = alloc_count_realloc,
-		.sdl_free_func = alloc_count_free,
-		.imgui_malloc_func = alloc_count_malloc_userptr,
-		.imgui_free_func = alloc_count_free_userptr,
-		.imgui_allocator_functions_user_data = NULL,
-		}),
+			.sdl_malloc_func = alloc_count_malloc,
+			.sdl_calloc_func = alloc_count_calloc,
+			.sdl_realloc_func = alloc_count_realloc,
+			.sdl_free_func = alloc_count_free,
+			.imgui_malloc_func = alloc_count_malloc_userptr,
+			.imgui_free_func = alloc_count_free_userptr,
+			.imgui_allocator_functions_user_data = NULL,
+			});
 	ecs_singleton_set(world, AppSDLContext, {
-		.main_window = main_window,
-		.gpu_device = gpu_device,
-		.sdl_io_queue = sdl_io_queue,
-		}),
+			.main_window = main_window,
+			.gpu_device = gpu_device,
+			.sdl_io_queue = sdl_io_queue,
+			});
 	ecs_singleton_set(world, AppImGuiContext, {
-		.imgui_context = imgui_context,
-		.imgui_io = imgui_io,
-		});
+			.imgui_context = imgui_context,
+			.imgui_io = imgui_io,
+			});
 	ecs_singleton_set(world, AppMainTimingContext, {
-		.app_iterate_count = 0,
-		.total_skipped = 0,
-		.main_framerate_num = fr_num,
-		.main_framerate_den = fr_den,
-		.main_frame_start_ns = 0,
-		.main_frameid = 0,
-		});
+			.app_iterate_count = 0,
+			.total_skipped = 0,
+			.main_framerate_num = fr_num,
+			.main_framerate_den = fr_den,
+			.main_frame_start_ns = 0,
+			.main_frameid = 0,
+			});
 
 	// ECS First frame. This runs both the Startup, Update and user-defined systems
 	ecs_progress(world, 0.0f);
