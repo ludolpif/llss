@@ -1,3 +1,4 @@
+#define DLL_EXPORT
 #include "app.h" // No "ecs-module1.h", embeded in app.h
 #include "ui-main.h"
 #include "dcimgui_impl_sdl3.h"

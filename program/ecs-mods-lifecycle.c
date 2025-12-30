@@ -1,3 +1,4 @@
+#define DLL_EXPORT
 #include "app.h" // No "ecs-mods-lifecycle.h", embeded in app.h
 
 #define APP_MOD_PATH_FROM_BASEPATH "%s../../../mods/"
