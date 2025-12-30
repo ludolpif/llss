@@ -105,7 +105,6 @@
     <ClCompile Include="ecs-app-core.c" />
     <ClCompile Include="ecs-mods-lifecycle.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="mod-host.c" />
     <ClCompile Include="ui-main.c" />
     <ClCompile Include="utils.c" />
   </ItemGroup>
@@ -121,6 +120,7 @@
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\imgui_config.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="alloc.h" />
     <ClInclude Include="ui-main.h" />
   </ItemGroup>
   <ItemGroup>
