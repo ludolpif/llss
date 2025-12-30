@@ -5,8 +5,9 @@
     <ClCompile Include="app-event.c" />
     <ClCompile Include="app-init.c" />
     <ClCompile Include="app-iterate.c" />
+    <ClCompile Include="ecs-app-core.c" />
+    <ClCompile Include="ecs-mods-lifecycle.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="mod-host.c" />
     <ClCompile Include="ui-main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -33,12 +34,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="app-internal.h">
-      <Filter>Internal Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="mod-host.h">
-      <Filter>Internal Headers</Filter>
     </ClInclude>
     <ClInclude Include="ui-main.h">
       <Filter>Internal Headers</Filter>

@@ -17,13 +17,12 @@
 #define DLL_EXPORT
 #define MOD_USES_IMGUI
 #include "app.h"
-#include "mods-api.h"
 #include "hello.h"
 
 /*
  * mod writer quickstart: no main(), no global variables.
  * You have to implement a few mandatory hooks, export them. The app will call them.
- * The full list of available hooks are in "mods-api.h", with extensive details.
+ * You get access to the main app ecs_world_t *world, you can register Entities, Components, Systems, and others
  *
  * Windows : macro DLL_EXPORT must be defined before inclusion of SDL.h (here through app.h) to have a non empty SDL_DECLSPEC
  * SDL_DECLSPEC macro purpose: tag something to be exported as a dynamic symbol. Build system hide symbols by default.
@@ -32,27 +31,27 @@
  * Parameters
  * void *userptr:
  *  from the app point of view: opaque data defined by the mod, and managed by the mod only.
- *  from the mod: void * to SDL_calloc() private mod data in substitution of global variables
+ *  from the mod: points to a struct for private mod data in substitution of global variables.
  *   It's important because Windows, Mac, Linux have different behaviors about heap and
- *    namespace separation of dynamically loaded shared objects.
+ *    namespace separation of dynamically loaded shared objects. Allow also some mod reload features.
  *   It's allocation/deallocation have to be done in mod_init_v1/mod_fini_v1 and optionnally in mod_reload_v1
+ *   using SDL_calloc()
  *
- * appstate_t *appstate:
- *  contains all core app informations that must be defined only once in the whole app
- *  contains ecs_world_t *world that allow the mod to create, modify and delete dynamic data and types
+ * ecs_world_t *world:
+ *  contains all core app and others mods informations and behaviors
+ *  FLECS API allow the mod to create, modify and delete dynamic data and types
  *   and uses data defined by the core app or the other mods.
  */
 
 typedef struct mod_main_data {
 	Sint32 running_struct_size;
-	appstate_t *appstate;
+	ecs_world_t *world;
 	/*
-	 * Try to put a maximum of data in ECS (appstate->world) instead of here.
+	 * Try to put a maximum of data in ECS (*world) instead of below.
 	 *  ECS should contain *all* human-readable data (for the user and others mods).
 	 * The remaining of this struct should be reserved only for pointers
 	 *  and things that your mod dependencies needs to have internally.
 	 */
-	bool show_another_window;
 	//lib_something_internal_data_t lib_something;
 	//Sint32 some_fixed_size_typed_data_for_the_mod1;
 	//mod_template_something_t *list_of_something;
@@ -65,55 +64,57 @@ typedef struct mod_main_data {
 	 *  - SDL_realloc()ing the data
 	 *  - initializing the bottom of the struct with zeros
 	 *  - put some useful default value to fields that equals to 0
+	 *  - decide to reset some values
 	 */
 } mod_main_data_t;
 
 SDL_DECLSPEC Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
-	// Plugin can bail out if it know that it doesn't meant to be used with app version below APP_VERSION_TO_INT(major,minor,patch)
-	if ( running_app_version < APP_VERSION_TO_INT(0,1,0) ) return -1;
+	// Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
+	if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
 	// Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not
-	return APP_VERSION_INT;
+	return BUILD_DEP_VERSION_INT;
 }
 
-SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(appstate_t *appstate, void **userptr) {
+SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 #ifdef MOD_USES_IMGUI
 	// As ImGui use a notion of global context for it's API calls, use heap to process data
 	// and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
-	ImGui_SetCurrentContext(appstate->imgui_context);
-	ImGui_SetAllocatorFunctions(appstate->imgui_malloc_func, appstate->imgui_free_func, appstate->imgui_allocator_functions_user_data);
+	const AppImGuiContext *imgui = ecs_singleton_get(world, AppImGuiContext);
+	ImGui_SetCurrentContext(imgui->imgui_context);
+	const AppMemoryFuncs *mem = ecs_singleton_get(world, AppMemoryFuncs);
+	ImGui_SetAllocatorFunctions(mem->imgui_malloc_func, mem->imgui_free_func, mem->imgui_allocator_functions_user_data);
 #endif
 	// TODO check if https://wiki.libsdl.org/SDL3/SDL_GetMemoryFunctions return the custom ones on linux and Windows. I think the mod have nothing to do but, unsure.
 
 	// Allocate our mod private state
 	*userptr = SDL_calloc(1, sizeof(mod_main_data_t));
-	if (!*userptr) return MOD_RESULT_FAILURE;
+	if (!*userptr) return InitFailed;
 
 	mod_main_data_t *data = (mod_main_data_t *) userptr;
-	data->show_another_window = true;
+	data->world = world;
 
-	return MOD_RESULT_CONTINUE;
+	return Running;
 }
 
 // Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-SDL_DECLSPEC mod_result_t SDLCALL mod_fini_v1(void *userptr) {
+SDL_DECLSPEC ecs_entity_t SDLCALL mod_fini_v1(void *userptr) {
+	// may need calls here to your mod's dependancies deinit functions
+
 	SDL_free(userptr);
-	return MOD_RESULT_CONTINUE;
+	return Terminated;
 }
 
 // Optionnal mod_reload hook
-SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) {
-	// for users: allow to disable a mod to check performance changes or reset things
+SDL_DECLSPEC ecs_entity_t SDLCALL mod_reload_v1(void **userptr) {
 	// for mod devs: can be used to hot-reload the mod, even with keeping previous data
-	//  if mod private data struct definitions matches or if only some members added at end of structs
-	//  you may need to check member could be a nice thing to have
+	//  if mod private data struct definitions matches or if only some members added at end of struct
 	//
-	// FIXME try it and make the sequence works (both version in memory ? how to not fuck up ? :D)
+	// FIXME try it and make the sequence works
 	// TODO define what is mandatory to implement on the mod side
-	// like check if data structure is the same size or version before going on ?
-	return MOD_RESULT_CONTINUE;
+	return Running;
 }
 
-// Optionnal hooks
+/* TODO convert that to ECS module and MODULE_IMPORT it in init hook
 SDL_DECLSPEC mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
 	mod_main_data_t *data = (mod_main_data_t *) userptr;
 	mod_result_t then = MOD_RESULT_CONTINUE;
@@ -130,7 +131,7 @@ SDL_DECLSPEC mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
 	//TODO see if we can have ImGui and ECS share the same data copy (&data->show_another_window is not correctly shared for now)
 	return then;
 }
-
+*/
 
 // This function will not be an exported dynamic symbol because SDL_DECLSPEC is absent
 Sint32 some_private_func(Sint32 a) {

@@ -30,7 +30,7 @@ build_dep() {
 	rm -f $zipname
 }
 build_dep_version() {
-	grep "define BUILD_DEP_VERSION" include/metadata.h | cut -d'"' -f2
+	grep "define BUILD_DEP_VERSION_STR" include/metadata.h | cut -d'"' -f2
 }
 cflags() {
 	case "$1" in

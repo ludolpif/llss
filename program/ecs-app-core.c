@@ -6,20 +6,20 @@
 // Phases for pipelines
 ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
-ECS_COMPONENT_DECLARE(AppVersion);
-ECS_COMPONENT_DECLARE(AppMemoryFuncs);
-ECS_COMPONENT_DECLARE(AppSDLContext);
-ECS_COMPONENT_DECLARE(AppImGuiContext);
-ECS_COMPONENT_DECLARE(AppMainTimingContext);
+SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppVersion);
+SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppSDLContext);
+SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppImGuiContext);
+SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // ECS Systems forward declarations
-void ImGuiPrepareForNewFrame(ecs_iter_t *it);
-void ImGuiRenderAndSubmit(ecs_iter_t *it);
+SDL_DECLSPEC void ImGuiPrepareForNewFrame(ecs_iter_t *it);
+SDL_DECLSPEC void ImGuiRenderAndSubmit(ecs_iter_t *it);
 
-void Module1Import(ecs_world_t *world) {
+void AppCoreImport(ecs_world_t *world) {
 	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
 	// See the "modules" example
-	ECS_MODULE(world, Module1);
+	ECS_MODULE(world, AppCore);
 
 	// Phases for pipelines
 	ecs_entity_t RenderingPreImGui = ecs_entity_init(world, &(ecs_entity_desc_t){

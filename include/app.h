@@ -25,6 +25,7 @@
  * [SECTION] General and metadata macros definitions
  * [SECTION] Logging helpers and counters definitions
  * [SECTION] Structures for global-like plain old data
+ * [SECTION] Mods API definition
  * [SECTION] ECS core components definitions
  */
 
@@ -48,9 +49,13 @@
 // [SECTION] Libraries directly usable from mods
 //-----------------------------------------------------------------------------
 #include <SDL3/SDL.h>
+//
 //TODO consider #define IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_USER_CONFIG "imgui_config.h"
 #include "dcimgui.h"
+
+//TODO in build-dep first
+//#define ecs_ftime_t double //Change to double precision for processes that can run for a long time (e.g. longer than a day).
 #include "flecs.h"
 
 //-----------------------------------------------------------------------------
@@ -58,12 +63,13 @@
 //-----------------------------------------------------------------------------
 #include "metadata.h"
 // Following macros can't be in metadata.h as Microsoft res.exe can't cope with it (app.rc includes metadata.h)
-#define APP_VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
-#define	APP_VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
-#define	APP_VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
-#define	APP_VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
+#define VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
+#define	VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
+#define	VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
+#define	VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
 
-#define APP_VERSION_INT APP_VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
+#define APP_VERSION_INT VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
+#define BUILD_DEP_VERSION_INT VERSION_TO_INT(BUILD_DEP_VERSION_MAJOR,BUILD_DEP_VERSION_MINOR,BUILD_DEP_VERSION_PATCH)
 
 //-----------------------------------------------------------------------------
 // [SECTION] Logging helpers and counters definitions
@@ -84,18 +90,66 @@ typedef enum app_logcategory {
 #define app_error(...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_critical(...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 
-extern SDL_LogPriority logpriority_earlyskip;
 //-----------------------------------------------------------------------------
 // [SECTION] Structures for global-like plain old data
 //-----------------------------------------------------------------------------
-typedef struct {
-	ecs_world_t *world;
-	SDL_LogPriority *logpriority_earlyskip;
-} appstate_t;
+extern SDL_LogPriority logpriority_earlyskip;
+
+//-----------------------------------------------------------------------------
+// [SECTION] Mods API definition
+//-----------------------------------------------------------------------------
+/**
+ * @symbol-name    mod_handshake_v1
+ * @calling-thread SDL_Main
+ * @called-from    program/mod-host.c
+ * @when           after SDL_LoadObject(".../this-mod.so")
+ * @mandatory      yes
+ * @purpose        version compatibility check while a mod is loaded. no data availble yet.
+ * @definition     SDL_DECLSPEC Sint32 SDLCALL mod_handshake(Sint32 running_app_version) { ... }
+ */
+typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
+
+/**
+ * @symbol-name    mod_init_v1
+ * @calling-thread SDL_Main
+ * @called-from    program/mod-host.c
+ * @when           after mod_handshake_v1 success
+ * @mandatory      yes
+ * @purpose        mod own state initialization
+ * @param world    in: main app ECS world, this pointer value should be copied in mod main data struct
+ * @param userptr  out: userptr that be passed when future hooks will be called, should be SDL_calloc()ed by the mod
+ * @returns        the ecs_entity_t corresponding to mods.lifecycle.
+ * @definition     SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
+ */
+typedef ecs_entity_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
+
+/**
+ * @symbol-name    mod_fini_v1
+ * @calling-thread SDL_Main
+ * @called-from    program/mod-host.c
+ * @when           right before SDL_UnloadObject()
+ * @mandatory      yes
+ * @purpose        mod own state de-initialization (free structs from stack)
+ * @definition     SDL_DECLSPEC ecs_entity_t SDLCALL mod_fini_v1(void *userptr) { ... }
+ */
+typedef ecs_entity_t (*mod_fini_v1_t)(void *userptr);
+
+/**
+ * @symbol-name    mod_reload_v1
+ * @calling-thread SDL_Main
+ * @called-from    program/mod-host.c
+ * @when           after loading the new one, before unloading the old one
+ * @mandatory      yes
+ * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one
+ * @definition     SDL_DECLSPEC ecs_entity_t SDLCALL mod_reload_v1(void **userptr) { ... }
+ */
+typedef ecs_entity_t (*mod_reload_v1_t)(void **userptr);
 
 //-----------------------------------------------------------------------------
 // [SECTION] ECS Core definitions
 //-----------------------------------------------------------------------------
+//TODO follow the hint to separate in components.* and systems.* to make replacable things
+//https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
 // ecs-module1.h
 
 // Phases for pipelines
@@ -143,8 +197,39 @@ typedef struct {
 } AppMainTimingContext;
 extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
-// helper called from app-init.c ECS_IMPORT(world, Module1)
-void Module1Import(ecs_world_t *world);
+// helper called from app-init.c ECS_IMPORT(world, AppCore)
+void AppCoreImport(ecs_world_t *world);
 
-// ecs-module2.h
-// ...
+// ecs-mods-lifecycle.h
+extern ECS_TAG_DECLARE(ModState);
+extern ECS_ENTITY_DECLARE(Available);
+extern ECS_ENTITY_DECLARE(Incompatible);
+extern ECS_ENTITY_DECLARE(LoadFailed);
+extern ECS_ENTITY_DECLARE(InitFailed);
+extern ECS_ENTITY_DECLARE(Running);
+extern ECS_ENTITY_DECLARE(Terminated);
+
+extern ECS_TAG_DECLARE(ModFlags);
+extern ECS_ENTITY_DECLARE(Reloadable);
+extern ECS_ENTITY_DECLARE(NewerOnDisk);
+
+typedef struct {
+	char *name;
+	char *so_path;
+	SDL_Time modify_time;
+} ModOnDisk;
+extern ECS_COMPONENT_DECLARE(ModOnDisk);
+
+typedef struct {
+	void *shared_object;
+	void *userptr;
+	Sint32 build_dep_version_compiled_against;
+	SDL_Time so_file_modify_time_when_loaded_in_ram;
+	mod_init_v1_t mod_init_v1;
+	mod_reload_v1_t mod_reload_v1;
+	mod_fini_v1_t mod_fini_v1;
+} ModInRAM;
+extern ECS_COMPONENT_DECLARE(ModInRAM);
+
+// helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
+void ModsLifecycleImport(ecs_world_t *world);

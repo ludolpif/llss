@@ -16,7 +16,6 @@
  */
 #include "alloc.h"
 #include "app.h"
-#include "app-internal.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 
@@ -219,7 +218,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	ecs_log_set_level(0); // Increase verbosity level
 	ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
-	ECS_IMPORT(world, Module1); // Will call Module1Import(world) from ecs-module1.c
+	ECS_IMPORT(world, AppCore); // Will call AppCoreImport(world) from ecs-module1.c
+
 	ecs_singleton_set(world, AppVersion, {
 			.running_app_version = APP_VERSION_INT
 			});
@@ -249,6 +249,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 			.main_frame_start_ns = 0,
 			.main_frameid = 0,
 			});
+	ECS_IMPORT(world, ModsLifecycle);
 
 	// ECS First frame. This runs both the Startup, Update and user-defined systems
 	ecs_progress(world, 0.0f);

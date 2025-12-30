@@ -25,7 +25,7 @@ if ($Configuration -ne "Debug" -and $Configuration -ne "Release") {
 }
 
 function Get-BuildDepVersion {
-    $match = Select-String -Path "include\metadata.h" -Pattern '^#define\s+BUILD_DEP_VERSION\s+"([^"]+)"'
+    $match = Select-String -Path "include\metadata.h" -Pattern '^#define\s+BUILD_DEP_VERSION_STR\s+"([^"]+)"'
     if ($match) {
         $match.Matches[0].Groups[1].Value
     }

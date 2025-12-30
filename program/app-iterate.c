@@ -15,7 +15,6 @@
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
 #include "app.h"
-#include "app-internal.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 #include "alloc.h"
