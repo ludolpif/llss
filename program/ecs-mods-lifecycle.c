@@ -18,13 +18,6 @@
 #endif
 
 SDL_DECLSPEC ECS_TAG_DECLARE(ModState);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(Available);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(Incompatible);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(Loaded);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(LoadFailed);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(InitFailed);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(Running);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(Terminated);
 
 SDL_DECLSPEC ECS_TAG_DECLARE(ModFlags);
 SDL_DECLSPEC ECS_ENTITY_DECLARE(Reloadable);
@@ -52,13 +45,7 @@ void ModsLifecycleImport(ecs_world_t *world) {
 	// Register ModState as exclusive relationship. This ensures that an entity
 	// can only belong to a single ModState.
 	ecs_add_id(world, ModState, EcsExclusive);
-
-	ECS_ENTITY_DEFINE(world, Available);
-	ECS_ENTITY_DEFINE(world, Incompatible);
-	ECS_ENTITY_DEFINE(world, LoadFailed);
-	ECS_ENTITY_DEFINE(world, InitFailed);
-	ECS_ENTITY_DEFINE(world, Running);
-	ECS_ENTITY_DEFINE(world, Terminated);
+	ECS_IMPORT(world, ModsState);
 
 	// ModFlags is not an exclusive relationship.
 	ECS_TAG_DEFINE(world, ModFlags);
@@ -71,15 +58,15 @@ void ModsLifecycleImport(ecs_world_t *world) {
 	// The '()' means, don't match this component on an entity, while `[out]` indicates 
 	// that the component is being written. This is interpreted by pipelines as a
 	// system that can potentially enqueue commands for the ModInRAM component.
-	ECS_SYSTEM(world, ModLoadFromDisk, EcsPreUpdate, (ModState, Available), [in] ModOnDisk, [out] ModInRAM() );
-	ECS_SYSTEM(world, ModReloadFromDisk, EcsPreUpdate, (ModState, Running), (ModFlags, Reloadable), (ModFlags, NewerOnDisk), [in] ModOnDisk, [out] ModInRAM);
+	ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad, (ModState, mods.state.Available), [in] ModOnDisk, [out] ModInRAM() );
+	ECS_SYSTEM(world, ModReloadFromDisk, EcsOnLoad, (ModState, mods.state.Running), (ModFlags, Reloadable), (ModFlags, NewerOnDisk), [in] ModOnDisk, [out] ModInRAM);
 
 	// Periodic Tasks
-	// ECS_SYSTEM(world, ModLookOnDisk, EcsPreUpdate, 0); does not set .interval = ...
+	// ECS_SYSTEM(world, ModLookOnDisk, EcsOnLoad, 0); does not set .interval = ...
 	/*ecs_entity_t ecs_id(ModLookOnDisk) = */ ecs_system(world, { /* ecs_system_desc_t */
 		.entity = ecs_entity(world, { /* ecs_entity_desc_t */
 			.name = "ModLookOnDisk",
-			.add = ecs_ids( ecs_dependson(EcsPreUpdate) )
+			.add = ecs_ids( ecs_dependson(EcsOnLoad) )
 		}),
 		.callback = ModLookOnDisk,
 		.interval = 1.0,
@@ -154,7 +141,7 @@ bad4:
 	SDL_free(mod_dirpath);
 */
 
-	ecs_entity_t mod = ecs_entity(it->world, { .name = "ModThemeRlyeh3" });
+	ecs_entity_t mod = ecs_entity(it->world, { .name = "mods.ModThemeRlyeh3" });
 	ecs_set(it->world, mod, ModOnDisk, {
 			.name = "mod-theme-rlyeh3",
 			.so_path = "/home/ludolpif/git/llss/mods/mod-theme-rlyeh3/program/x64/Debug/mod-theme-rlyeh3.so",

@@ -74,8 +74,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
 	Uint64 tick = SDL_GetTicksNS();
 	tick0_wallclock -= tick;
-	app_warn("Starting %s %s with log priority %d, tick0_wallclock==%"PRId64,
-			APP_METADATA_NAME_STRING, APP_VERSION_STR, logpriority_earlyskip, tick0_wallclock);
+	app_warn("Starting %s %s with SDL %s logpriority==%d, tick0_wallclock==%"PRId64,
+			APP_METADATA_NAME_STRING, APP_VERSION_STR, SDL_GetRevision(),
+			logpriority_earlyskip, tick0_wallclock);
 
 	// Set metadata before SDL_Init because it will print it if loglevel is high enough
 	// We don't check return value, we don't want to abort the app startup if this fails anyway.

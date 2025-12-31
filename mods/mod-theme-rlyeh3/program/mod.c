@@ -26,7 +26,7 @@ SDL_DECLSPEC Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
 	return BUILD_DEP_VERSION_INT;
 }
 
-SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
+SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 #ifdef MOD_USES_IMGUI
 	// As ImGui use a notion of global context for it's API calls, use heap to process data
 	// and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
@@ -44,19 +44,19 @@ SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr
 	igThemeV3('P','Y','C', 0, 0, 1, 1);
 
 
-	return Running;
+	return MOD_RESULT_CONTINUE;
 }
 
 // Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-SDL_DECLSPEC ecs_entity_t SDLCALL mod_fini_v1(void *userptr) {
-	return Terminated;
+SDL_DECLSPEC mod_result_t SDLCALL mod_fini_v1(void *userptr) {
+	return MOD_RESULT_CONTINUE;
 }
 
 // Optionnal mod_reload hook
-SDL_DECLSPEC ecs_entity_t SDLCALL mod_reload_v1(void **userptr) {
+SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) {
 	// Set an ImGui theme from this plugin, to demonstrate modding possibilities
 	// V3 theme v1.1
 	// - rlyeh, public domain
 	igThemeV3('P','Y','C', 0, 0, 1, 1);
-	return Running;
+	return MOD_RESULT_CONTINUE;
 }

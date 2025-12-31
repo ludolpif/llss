@@ -75,7 +75,7 @@ SDL_DECLSPEC Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
 	return BUILD_DEP_VERSION_INT;
 }
 
-SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
+SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 #ifdef MOD_USES_IMGUI
 	// As ImGui use a notion of global context for it's API calls, use heap to process data
 	// and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
@@ -93,25 +93,25 @@ SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr
 	mod_main_data_t *data = (mod_main_data_t *) userptr;
 	data->world = world;
 
-	return Running;
+	return MOD_RESULT_CONTINUE;
 }
 
 // Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-SDL_DECLSPEC ecs_entity_t SDLCALL mod_fini_v1(void *userptr) {
+SDL_DECLSPEC mod_result_t SDLCALL mod_fini_v1(void *userptr) {
 	// may need calls here to your mod's dependancies deinit functions
 
 	SDL_free(userptr);
-	return Terminated;
+	return MOD_RESULT_CONTINUE;
 }
 
 // Optionnal mod_reload hook
-SDL_DECLSPEC ecs_entity_t SDLCALL mod_reload_v1(void **userptr) {
+SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) {
 	// for mod devs: can be used to hot-reload the mod, even with keeping previous data
 	//  if mod private data struct definitions matches or if only some members added at end of struct
 	//
 	// FIXME try it and make the sequence works
 	// TODO define what is mandatory to implement on the mod side
-	return Running;
+	return MOD_RESULT_CONTINUE;
 }
 
 /* TODO convert that to ECS module and MODULE_IMPORT it in init hook

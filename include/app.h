@@ -98,6 +98,12 @@ extern SDL_LogPriority logpriority_earlyskip;
 //-----------------------------------------------------------------------------
 // [SECTION] Mods API definition
 //-----------------------------------------------------------------------------
+typedef enum mod_result {
+	MOD_RESULT_INVALID,
+	MOD_RESULT_FAILURE,
+	MOD_RESULT_SUCCESS,
+	MOD_RESULT_CONTINUE
+} mod_result_t;
 /**
  * @symbol-name    mod_handshake_v1
  * @calling-thread SDL_Main
@@ -118,10 +124,9 @@ typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
  * @purpose        mod own state initialization
  * @param world    in: main app ECS world, this pointer value should be copied in mod main data struct
  * @param userptr  out: userptr that be passed when future hooks will be called, should be SDL_calloc()ed by the mod
- * @returns        the ecs_entity_t corresponding to mods.lifecycle.
- * @definition     SDL_DECLSPEC ecs_entity_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
+ * @definition     SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
  */
-typedef ecs_entity_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
+typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
 
 /**
  * @symbol-name    mod_fini_v1
@@ -130,9 +135,9 @@ typedef ecs_entity_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
  * @when           right before SDL_UnloadObject()
  * @mandatory      yes
  * @purpose        mod own state de-initialization (free structs from stack)
- * @definition     SDL_DECLSPEC ecs_entity_t SDLCALL mod_fini_v1(void *userptr) { ... }
+ * @definition     SDL_DECLSPEC mod_result_t SDLCALL mod_fini_v1(void *userptr) { ... }
  */
-typedef ecs_entity_t (*mod_fini_v1_t)(void *userptr);
+typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
 
 /**
  * @symbol-name    mod_reload_v1
@@ -141,9 +146,9 @@ typedef ecs_entity_t (*mod_fini_v1_t)(void *userptr);
  * @when           after loading the new one, before unloading the old one
  * @mandatory      yes
  * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one
- * @definition     SDL_DECLSPEC ecs_entity_t SDLCALL mod_reload_v1(void **userptr) { ... }
+ * @definition     SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
  */
-typedef ecs_entity_t (*mod_reload_v1_t)(void **userptr);
+typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 
 //-----------------------------------------------------------------------------
 // [SECTION] ECS Core definitions
@@ -200,7 +205,7 @@ extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
 // helper called from app-init.c ECS_IMPORT(world, AppCore)
 void AppCoreImport(ecs_world_t *world);
 
-// ecs-mods-lifecycle.h
+// ecs-mods-state.h
 extern ECS_TAG_DECLARE(ModState);
 extern ECS_ENTITY_DECLARE(Available);
 extern ECS_ENTITY_DECLARE(Incompatible);
@@ -209,6 +214,10 @@ extern ECS_ENTITY_DECLARE(InitFailed);
 extern ECS_ENTITY_DECLARE(Running);
 extern ECS_ENTITY_DECLARE(Terminated);
 
+// helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
+void ModsStateImport(ecs_world_t *world);
+
+// ecs-mods-lifecycle.h
 extern ECS_TAG_DECLARE(ModFlags);
 extern ECS_ENTITY_DECLARE(Reloadable);
 extern ECS_ENTITY_DECLARE(NewerOnDisk);

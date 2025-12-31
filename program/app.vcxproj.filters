@@ -7,6 +7,7 @@
     <ClCompile Include="app-iterate.c" />
     <ClCompile Include="ecs-app-core.c" />
     <ClCompile Include="ecs-mods-lifecycle.c" />
+    <ClCompile Include="ecs-mods-state.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="ui-main.c" />
   </ItemGroup>
