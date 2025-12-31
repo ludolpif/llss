@@ -27,11 +27,11 @@ SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModOnDisk);
 SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModInRAM);
 
 // ECS Tasks forward declarations
-SDL_DECLSPEC void ModLookOnDisk(ecs_iter_t *it);
+void ModLookOnDisk(ecs_iter_t *it);
 
 // ECS Systems forward declarations
-SDL_DECLSPEC void ModLoadFromDisk(ecs_iter_t *it);
-SDL_DECLSPEC void ModReloadFromDisk(ecs_iter_t *it);
+void ModLoadFromDisk(ecs_iter_t *it);
+void ModReloadFromDisk(ecs_iter_t *it);
 
 // Utility functions forward declarations
 ecs_entity_t mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r);

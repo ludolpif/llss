@@ -206,28 +206,28 @@ extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
 void AppCoreImport(ecs_world_t *world);
 
 // ecs-mods-state.h
-extern ECS_TAG_DECLARE(ModState);
-extern ECS_ENTITY_DECLARE(Available);
-extern ECS_ENTITY_DECLARE(Incompatible);
-extern ECS_ENTITY_DECLARE(LoadFailed);
-extern ECS_ENTITY_DECLARE(InitFailed);
-extern ECS_ENTITY_DECLARE(Running);
-extern ECS_ENTITY_DECLARE(Terminated);
+extern SDL_DECLSPEC ECS_TAG_DECLARE(ModState);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Available);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Incompatible);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(LoadFailed);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(InitFailed);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Running);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Terminated);
 
 // helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
 void ModsStateImport(ecs_world_t *world);
 
 // ecs-mods-lifecycle.h
-extern ECS_TAG_DECLARE(ModFlags);
-extern ECS_ENTITY_DECLARE(Reloadable);
-extern ECS_ENTITY_DECLARE(NewerOnDisk);
+extern SDL_DECLSPEC ECS_TAG_DECLARE(ModFlags);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Reloadable);
+extern SDL_DECLSPEC ECS_ENTITY_DECLARE(NewerOnDisk);
 
 typedef struct {
 	char *name;
 	char *so_path;
 	SDL_Time modify_time;
 } ModOnDisk;
-extern ECS_COMPONENT_DECLARE(ModOnDisk);
+extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModOnDisk);
 
 typedef struct {
 	void *shared_object;
@@ -238,7 +238,7 @@ typedef struct {
 	mod_reload_v1_t mod_reload_v1;
 	mod_fini_v1_t mod_fini_v1;
 } ModInRAM;
-extern ECS_COMPONENT_DECLARE(ModInRAM);
+extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModInRAM);
 
 // helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
 void ModsLifecycleImport(ecs_world_t *world);

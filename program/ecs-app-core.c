@@ -14,8 +14,8 @@ SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppImGuiContext);
 SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // ECS Systems forward declarations
-SDL_DECLSPEC void ImGuiPrepareForNewFrame(ecs_iter_t *it);
-SDL_DECLSPEC void ImGuiRenderAndSubmit(ecs_iter_t *it);
+void ImGuiPrepareForNewFrame(ecs_iter_t *it);
+void ImGuiRenderAndSubmit(ecs_iter_t *it);
 
 void AppCoreImport(ecs_world_t *world) {
 	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
