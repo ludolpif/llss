@@ -88,7 +88,7 @@ SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr
 
 	// Allocate our mod private state
 	*userptr = SDL_calloc(1, sizeof(mod_main_data_t));
-	if (!*userptr) return InitFailed;
+	if (!*userptr) return MOD_RESULT_FAILURE;
 
 	mod_main_data_t *data = (mod_main_data_t *) userptr;
 	data->world = world;

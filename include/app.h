@@ -177,20 +177,20 @@ typedef struct {
 	void* imgui_allocator_functions_user_data;
 	// flecs alloc_funcs can always be retreived with ecs_os_get_api()
 } AppMemoryFuncs;
-SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMemoryFuncs);
 
 typedef struct {
 	SDL_Window *main_window;
 	SDL_GPUDevice *gpu_device;
 	SDL_AsyncIOQueue *sdl_io_queue;
 } AppSDLContext;
-SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppSDLContext);
+extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppSDLContext);
 
 typedef struct {
 	ImGuiContext* imgui_context;
 	ImGuiIO *imgui_io;
 } AppImGuiContext;
-SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppImGuiContext);
+extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppImGuiContext);
 
 typedef struct {
 	Uint32 app_iterate_count;
@@ -200,7 +200,7 @@ typedef struct {
 	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
 	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
 } AppMainTimingContext;
-SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
+extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // helper called from app-init.c ECS_IMPORT(world, AppCore)
 void AppCoreImport(ecs_world_t *world);
