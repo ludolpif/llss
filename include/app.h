@@ -155,7 +155,7 @@ typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 //-----------------------------------------------------------------------------
 //TODO follow the hint to separate in components.* and systems.* to make replacable things
 //https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
-// ecs-module1.h
+// ecs-app-core.h
 
 // Phases for pipelines
 extern ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
@@ -164,7 +164,7 @@ extern ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 typedef struct {
 	Sint32 running_app_version;
 } AppVersion;
-extern ECS_COMPONENT_DECLARE(AppVersion);
+SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppVersion);
 
 typedef struct {
 	// TODO this approach don't cover per-thread arena
@@ -177,20 +177,20 @@ typedef struct {
 	void* imgui_allocator_functions_user_data;
 	// flecs alloc_funcs can always be retreived with ecs_os_get_api()
 } AppMemoryFuncs;
-extern ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppMemoryFuncs);
 
 typedef struct {
 	SDL_Window *main_window;
 	SDL_GPUDevice *gpu_device;
 	SDL_AsyncIOQueue *sdl_io_queue;
 } AppSDLContext;
-extern ECS_COMPONENT_DECLARE(AppSDLContext);
+SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppSDLContext);
 
 typedef struct {
 	ImGuiContext* imgui_context;
 	ImGuiIO *imgui_io;
 } AppImGuiContext;
-extern ECS_COMPONENT_DECLARE(AppImGuiContext);
+SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppImGuiContext);
 
 typedef struct {
 	Uint32 app_iterate_count;
@@ -200,7 +200,7 @@ typedef struct {
 	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
 	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
 } AppMainTimingContext;
-extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
+SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // helper called from app-init.c ECS_IMPORT(world, AppCore)
 void AppCoreImport(ecs_world_t *world);
