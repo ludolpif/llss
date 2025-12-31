@@ -14,19 +14,18 @@
  *
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
-#define DLL_EXPORT
 #define MOD_USES_IMGUI
 #include "app.h"
 #include "ui-theming.h"
 
-SDL_DECLSPEC Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
+Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
 	// Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
 	if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
 	// Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not
 	return BUILD_DEP_VERSION_INT;
 }
 
-SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
+mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 #ifdef MOD_USES_IMGUI
 	// As ImGui use a notion of global context for it's API calls, use heap to process data
 	// and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
@@ -48,12 +47,12 @@ SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr
 }
 
 // Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-SDL_DECLSPEC mod_result_t SDLCALL mod_fini_v1(void *userptr) {
+mod_result_t SDLCALL mod_fini_v1(void *userptr) {
 	return MOD_RESULT_CONTINUE;
 }
 
 // Optionnal mod_reload hook
-SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) {
+mod_result_t SDLCALL mod_reload_v1(void **userptr) {
 	// Set an ImGui theme from this plugin, to demonstrate modding possibilities
 	// V3 theme v1.1
 	// - rlyeh, public domain

@@ -1,4 +1,3 @@
-#define DLL_EXPORT
 #include "app.h" // No "ecs-mods-lifecycle.h", embeded in app.h
 
 #define APP_MOD_PATH_FROM_BASEPATH "%s../../../mods/"
@@ -17,14 +16,14 @@
 #define APP_MOD_FILEEXT ".so"
 #endif
 
-SDL_DECLSPEC ECS_TAG_DECLARE(ModState);
+APP_API ECS_TAG_DECLARE(ModState);
 
-SDL_DECLSPEC ECS_TAG_DECLARE(ModFlags);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(Reloadable);
-SDL_DECLSPEC ECS_ENTITY_DECLARE(NewerOnDisk);
+APP_API ECS_TAG_DECLARE(ModFlags);
+APP_API ECS_ENTITY_DECLARE(ModReloadable);
+APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModOnDisk);
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModInRAM);
+APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
+APP_API ECS_COMPONENT_DECLARE(ModInRAM);
 
 // ECS Tasks forward declarations
 void ModLookOnDisk(ecs_iter_t *it);
@@ -35,6 +34,9 @@ void ModReloadFromDisk(ecs_iter_t *it);
 
 // Utility functions forward declarations
 ecs_entity_t mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r);
+
+// Imported modules Import function definition (as we don't make one .h per module)
+void ModsStateImport(ecs_world_t* world);
 
 void ModsLifecycleImport(ecs_world_t *world) {
 	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
@@ -49,8 +51,8 @@ void ModsLifecycleImport(ecs_world_t *world) {
 
 	// ModFlags is not an exclusive relationship.
 	ECS_TAG_DEFINE(world, ModFlags);
-	ECS_ENTITY_DEFINE(world, Reloadable);
-	ECS_ENTITY_DEFINE(world, NewerOnDisk);
+	ECS_ENTITY_DEFINE(world, ModReloadable);
+	ECS_ENTITY_DEFINE(world, ModNewerOnDisk);
 
 	ECS_COMPONENT_DEFINE(world, ModOnDisk);
 	ECS_COMPONENT_DEFINE(world, ModInRAM);
@@ -58,8 +60,8 @@ void ModsLifecycleImport(ecs_world_t *world) {
 	// The '()' means, don't match this component on an entity, while `[out]` indicates 
 	// that the component is being written. This is interpreted by pipelines as a
 	// system that can potentially enqueue commands for the ModInRAM component.
-	ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad, (ModState, mods.state.Available), [in] ModOnDisk, [out] ModInRAM() );
-	ECS_SYSTEM(world, ModReloadFromDisk, EcsOnLoad, (ModState, mods.state.Running), (ModFlags, Reloadable), (ModFlags, NewerOnDisk), [in] ModOnDisk, [out] ModInRAM);
+	ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad, (ModState, mod.state.ModAvailable), [in] ModOnDisk, [out] ModInRAM() );
+	ECS_SYSTEM(world, ModReloadFromDisk, EcsOnLoad, (ModState, mod.state.ModRunning), (ModFlags, ModReloadable), (ModFlags, ModNewerOnDisk), [in] ModOnDisk, [out] ModInRAM);
 
 	// Periodic Tasks
 	// ECS_SYSTEM(world, ModLookOnDisk, EcsOnLoad, 0); does not set .interval = ...
@@ -79,7 +81,7 @@ void ModLoadFromDisk(ecs_iter_t *it) {
 	ModOnDisk *d = ecs_field(it, ModOnDisk, 1);
 
 	for (int i = 0; i < it->count; i++) {
-		ModInRAM r = {};
+		ModInRAM r = {0};
 		ecs_entity_t next_state = mod_tryload(it->world, d, &r);
 		ecs_entity_t mod = it->entities[i];
 		ecs_set_ptr(it->world, mod, ModInRAM, &r);
@@ -147,14 +149,14 @@ bad4:
 			.so_path = "/home/ludolpif/git/llss/mods/mod-theme-rlyeh3/program/x64/Debug/mod-theme-rlyeh3.so",
 			});
 	if (!ecs_has_pair(it->world, mod, ModState, EcsWildcard)) {
-		ecs_add_pair(it->world, mod, ModState, Available);
+		ecs_add_pair(it->world, mod, ModState, ModAvailable);
 	}
 }
 
 ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r) {
 	app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), d->so_path);
 
-	ecs_entity_t next_state = LoadFailed;
+	ecs_entity_t next_state = ModLoadFailed;
 
 	r->shared_object = SDL_LoadObject(d->so_path);
 	if (!r->shared_object) {
@@ -174,7 +176,7 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
 				"(Need to be compiled againt BUILD_DEP_VERSION %s",
 				SDL_GetTicksNS(), d->name, BUILD_DEP_VERSION_STR);
 		//TODO add returned version to msg, it needs to be converted from int to string
-		next_state = Incompatible;
+		next_state = ModIncompatible;
 		goto bad;
 	}
 
@@ -195,11 +197,11 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
 
 	// Actually run mod_init_v1
 	next_state = r->mod_init_v1(world, &r->userptr);
-	if ( next_state == Incompatible ) {
+	if ( next_state == ModIncompatible ) {
 			app_warn("%016"PRIu64" mod_tryload(): mod_init_v1() returned: Incompatible", SDL_GetTicksNS());
-	} else if ( next_state != Running ) {
+	} else if ( next_state != ModRunning ) {
 			app_warn("%016"PRIu64" mod_tryload(): mod_init_v1() failed", SDL_GetTicksNS());
-			next_state = InitFailed;
+			next_state = ModInitFailed;
 	}
 
 /* TODO this became systems tagged somewhere? What about execution order or precedences ?

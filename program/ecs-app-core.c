@@ -1,17 +1,16 @@
-#define DLL_EXPORT
 #include "app.h" // No "ecs-module1.h", embeded in app.h
 #include "ui-main.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 
 // Phases for pipelines
-ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
+APP_API ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppVersion);
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMemoryFuncs);
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppSDLContext);
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppImGuiContext);
-SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMainTimingContext);
+APP_API ECS_COMPONENT_DECLARE(AppVersion);
+APP_API ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+APP_API ECS_COMPONENT_DECLARE(AppSDLContext);
+APP_API ECS_COMPONENT_DECLARE(AppImGuiContext);
+APP_API ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // ECS Systems forward declarations
 void ImGuiPrepareForNewFrame(ecs_iter_t *it);

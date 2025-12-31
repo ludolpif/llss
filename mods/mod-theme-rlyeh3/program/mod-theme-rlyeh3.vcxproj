@@ -98,7 +98,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app.h" />
-    <ClInclude Include="$(SolutionDir)\include\mods-api.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />

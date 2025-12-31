@@ -18,7 +18,6 @@
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 #include "alloc.h"
-#include "utils.h"
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
 	static Sint32 prev_fr_num = 60;

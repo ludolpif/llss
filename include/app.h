@@ -22,11 +22,13 @@
  *
  * [SECTION] Conventions
  * [SECTION] Libraries directly usable from mods
+ * [SECTION] Boring stuff needed for symbol visibility
  * [SECTION] General and metadata macros definitions
  * [SECTION] Logging helpers and counters definitions
  * [SECTION] Structures for global-like plain old data
  * [SECTION] Mods API definition
  * [SECTION] ECS core components definitions
+ * [SECTION] Utilitary functions
  */
 
 //-----------------------------------------------------------------------------
@@ -45,6 +47,7 @@
  * - functions that are used as ECS System (like 'Move') use PascalCase
  */
 
+
 //-----------------------------------------------------------------------------
 // [SECTION] Libraries directly usable from mods
 //-----------------------------------------------------------------------------
@@ -57,6 +60,27 @@
 //TODO in build-dep first
 //#define ecs_ftime_t double //Change to double precision for processes that can run for a long time (e.g. longer than a day).
 #include "flecs.h"
+
+//-----------------------------------------------------------------------------
+// [SECTION] Boring stuff needed for symbol visibility
+//-----------------------------------------------------------------------------
+#ifdef app_EXPORTS
+# if defined(SDL_PLATFORM_WINDOWS)
+#  define APP_API __declspec(dllexport)
+# else
+#  if defined(__GNUC__) && __GNUC__ >= 4
+#   define APP_API __attribute__ ((visibility("default")))
+#  else
+#   define APP_API
+#  endif
+# endif
+#else
+# if defined(SDL_PLATFORM_WINDOWS)
+#  define APP_API __declspec(dllimport)
+# else
+#  define APP_API
+# endif
+#endif
 
 //-----------------------------------------------------------------------------
 // [SECTION] General and metadata macro definitions
@@ -93,7 +117,7 @@ typedef enum app_logcategory {
 //-----------------------------------------------------------------------------
 // [SECTION] Structures for global-like plain old data
 //-----------------------------------------------------------------------------
-extern SDL_LogPriority logpriority_earlyskip;
+extern APP_API SDL_LogPriority logpriority_earlyskip;
 
 //-----------------------------------------------------------------------------
 // [SECTION] Mods API definition
@@ -111,7 +135,7 @@ typedef enum mod_result {
  * @when           after SDL_LoadObject(".../this-mod.so")
  * @mandatory      yes
  * @purpose        version compatibility check while a mod is loaded. no data availble yet.
- * @definition     SDL_DECLSPEC Sint32 SDLCALL mod_handshake(Sint32 running_app_version) { ... }
+ * @definition     Sint32 SDLCALL mod_handshake(Sint32 running_app_version) { ... }
  */
 typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
 
@@ -124,7 +148,7 @@ typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
  * @purpose        mod own state initialization
  * @param world    in: main app ECS world, this pointer value should be copied in mod main data struct
  * @param userptr  out: userptr that be passed when future hooks will be called, should be SDL_calloc()ed by the mod
- * @definition     SDL_DECLSPEC mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
+ * @definition     mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
  */
 typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
 
@@ -135,7 +159,7 @@ typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
  * @when           right before SDL_UnloadObject()
  * @mandatory      yes
  * @purpose        mod own state de-initialization (free structs from stack)
- * @definition     SDL_DECLSPEC mod_result_t SDLCALL mod_fini_v1(void *userptr) { ... }
+ * @definition     mod_result_t SDLCALL mod_fini_v1(void *userptr) { ... }
  */
 typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
 
@@ -146,7 +170,7 @@ typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
  * @when           after loading the new one, before unloading the old one
  * @mandatory      yes
  * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one
- * @definition     SDL_DECLSPEC mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
+ * @definition     mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
  */
 typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 
@@ -156,15 +180,16 @@ typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 //TODO follow the hint to separate in components.* and systems.* to make replacable things
 //https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
 // ecs-app-core.h
+APP_API void AppCoreImport(ecs_world_t* world);
 
 // Phases for pipelines
-extern ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
+extern APP_API  ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
 // Components
 typedef struct {
 	Sint32 running_app_version;
 } AppVersion;
-SDL_DECLSPEC extern ECS_COMPONENT_DECLARE(AppVersion);
+extern APP_API ECS_COMPONENT_DECLARE(AppVersion);
 
 typedef struct {
 	// TODO this approach don't cover per-thread arena
@@ -177,20 +202,20 @@ typedef struct {
 	void* imgui_allocator_functions_user_data;
 	// flecs alloc_funcs can always be retreived with ecs_os_get_api()
 } AppMemoryFuncs;
-extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMemoryFuncs);
+extern APP_API ECS_COMPONENT_DECLARE(AppMemoryFuncs);
 
 typedef struct {
 	SDL_Window *main_window;
 	SDL_GPUDevice *gpu_device;
 	SDL_AsyncIOQueue *sdl_io_queue;
 } AppSDLContext;
-extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppSDLContext);
+extern APP_API ECS_COMPONENT_DECLARE(AppSDLContext);
 
 typedef struct {
 	ImGuiContext* imgui_context;
 	ImGuiIO *imgui_io;
 } AppImGuiContext;
-extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppImGuiContext);
+extern APP_API ECS_COMPONENT_DECLARE(AppImGuiContext);
 
 typedef struct {
 	Uint32 app_iterate_count;
@@ -200,34 +225,28 @@ typedef struct {
 	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
 	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
 } AppMainTimingContext;
-extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(AppMainTimingContext);
-
-// helper called from app-init.c ECS_IMPORT(world, AppCore)
-void AppCoreImport(ecs_world_t *world);
+extern APP_API ECS_COMPONENT_DECLARE(AppMainTimingContext);
 
 // ecs-mods-state.h
-extern SDL_DECLSPEC ECS_TAG_DECLARE(ModState);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Available);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Incompatible);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(LoadFailed);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(InitFailed);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Running);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Terminated);
-
-// helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
-void ModsStateImport(ecs_world_t *world);
+extern APP_API ECS_TAG_DECLARE(ModState);
+extern APP_API ECS_ENTITY_DECLARE(ModAvailable);
+extern APP_API ECS_ENTITY_DECLARE(ModIncompatible);
+extern APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
+extern APP_API ECS_ENTITY_DECLARE(ModInitFailed);
+extern APP_API ECS_ENTITY_DECLARE(ModRunning);
+extern APP_API ECS_ENTITY_DECLARE(ModTerminated);
 
 // ecs-mods-lifecycle.h
-extern SDL_DECLSPEC ECS_TAG_DECLARE(ModFlags);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(Reloadable);
-extern SDL_DECLSPEC ECS_ENTITY_DECLARE(NewerOnDisk);
+extern APP_API ECS_TAG_DECLARE(ModFlags);
+extern APP_API ECS_ENTITY_DECLARE(ModReloadable);
+extern APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
 typedef struct {
 	char *name;
 	char *so_path;
 	SDL_Time modify_time;
 } ModOnDisk;
-extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModOnDisk);
+extern APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
 
 typedef struct {
 	void *shared_object;
@@ -238,7 +257,20 @@ typedef struct {
 	mod_reload_v1_t mod_reload_v1;
 	mod_fini_v1_t mod_fini_v1;
 } ModInRAM;
-extern SDL_DECLSPEC ECS_COMPONENT_DECLARE(ModInRAM);
+extern APP_API ECS_COMPONENT_DECLARE(ModInRAM);
 
 // helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
 void ModsLifecycleImport(ecs_world_t *world);
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] Utilitary functions
+//-----------------------------------------------------------------------------
+
+APP_API Uint64 convert_ns_to_frameid(Uint64 ns, Sint32 framerate_num, Sint32 framerate_den);
+APP_API Uint64 convert_frameid_to_ns(Uint64 frameid, Sint32 framerate_num, Sint32 framerate_den);
+
+// For static initializers, we cannot use the function, so here a macro
+#define CONVERT_FRAMEID_TO_NS(frameid, framerate_num, framerate_den) \
+	( ( ( (Uint64)frameid) * 1000000000 * framerate_den ) / framerate_num )
+

@@ -1,21 +1,20 @@
-#define DLL_EXPORT
 #include "app.h" // No "ecs-mods-state.h", embeded in app.h
 
-ECS_ENTITY_DECLARE(Available);
-ECS_ENTITY_DECLARE(Incompatible);
-ECS_ENTITY_DECLARE(Loaded);
-ECS_ENTITY_DECLARE(LoadFailed);
-ECS_ENTITY_DECLARE(InitFailed);
-ECS_ENTITY_DECLARE(Running);
-ECS_ENTITY_DECLARE(Terminated);
+APP_API ECS_ENTITY_DECLARE(ModAvailable);
+APP_API ECS_ENTITY_DECLARE(ModIncompatible);
+APP_API ECS_ENTITY_DECLARE(ModLoaded);
+APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
+APP_API ECS_ENTITY_DECLARE(ModInitFailed);
+APP_API ECS_ENTITY_DECLARE(ModRunning);
+APP_API ECS_ENTITY_DECLARE(ModTerminated);
 
 void ModsStateImport(ecs_world_t *world) {
 	ECS_MODULE(world, ModsState);
 
-	ECS_ENTITY_DEFINE(world, Available);
-	ECS_ENTITY_DEFINE(world, Incompatible);
-	ECS_ENTITY_DEFINE(world, LoadFailed);
-	ECS_ENTITY_DEFINE(world, InitFailed);
-	ECS_ENTITY_DEFINE(world, Running);
-	ECS_ENTITY_DEFINE(world, Terminated);
+	ECS_ENTITY_DEFINE(world, ModAvailable);
+	ECS_ENTITY_DEFINE(world, ModIncompatible);
+	ECS_ENTITY_DEFINE(world, ModLoadFailed);
+	ECS_ENTITY_DEFINE(world, ModInitFailed);
+	ECS_ENTITY_DEFINE(world, ModRunning);
+	ECS_ENTITY_DEFINE(world, ModTerminated);
 }

@@ -19,11 +19,12 @@
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 
-SDL_DECLSPEC SDL_LogPriority logpriority_earlyskip;
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
 #define APP_UI_DEFAULT_WIDTH 1280
 #define APP_UI_DEFAULT_HEIGHT 720
+
+APP_API SDL_LogPriority logpriority_earlyskip;
 
 //typedef void(* ecs_os_api_log_t) (int32_t level, const char *file, int32_t line, const char *msg)
 void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg) {
@@ -43,12 +44,6 @@ void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, con
 		default: app_trace(FLECS_LOG_VAARGS); break;
 	}
 #undef FLECS_LOG_VAARGS
-}
-
-char *my_flecs_strdup(const char *s) {
-	if ( s ) return SDL_strdup(s);
-	app_warn("flecs_strdup(NULL) called");
-	return NULL;
 }
 
 // Implementations
