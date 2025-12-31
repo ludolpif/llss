@@ -14,16 +14,16 @@
  *
  * Copyright 2025 Author <author-contact@email-domain.tld>
  */
-#define MOD_USES_IMGUI
 #include "app.h"
 #include "hello.h"
 
+#define MOD_USES_IMGUI
 /*
  * mod writer quickstart: no main(), no global variables.
  * You have to implement a few mandatory hooks, export them. The app will call them.
  * You get access to the main app ecs_world_t *world, you can register Entities, Components, Systems, and others
  *
- * APP_API macro purpose: tag something to be exported or imported as a dynamic symbol. Build system hide symbols by default.
+ * MOD_API macro purpose: tag something to be exported or imported as a dynamic symbol. Build system hide symbols by default.
  * SDLCALL macro purpose: set a function's calling conventions (unsure if really needed in this project scope, but SDL do it)
  *
  * Parameters
@@ -41,7 +41,7 @@
  *   and uses data defined by the core app or the other mods.
  */
 
-typedef struct mod_main_data {
+typedef struct {
 	Sint32 running_struct_size;
 	ecs_world_t *world;
 	/*
@@ -66,21 +66,21 @@ typedef struct mod_main_data {
 	 */
 } mod_main_data_t;
 
-Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
+MOD_API Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
 	// Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
 	if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
 	// Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not
 	return BUILD_DEP_VERSION_INT;
 }
 
-mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
+MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 #ifdef MOD_USES_IMGUI
-		// As ImGui use a notion of global context for it's API calls, use heap to process data
-		// and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
-		const AppImGuiContext* imgui = ecs_singleton_get(world, AppImGuiContext);
-		ImGui_SetCurrentContext(imgui->imgui_context);
-		const AppMemoryFuncs* mem = ecs_singleton_get(world, AppMemoryFuncs);
-		ImGui_SetAllocatorFunctions(mem->imgui_malloc_func, mem->imgui_free_func, mem->imgui_allocator_functions_user_data);
+	// As ImGui use a notion of global context for it's API calls, use heap to process data
+	// and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
+	const AppImGuiContext *imgui = ecs_singleton_get(world, AppImGuiContext);
+	ImGui_SetCurrentContext(imgui->imgui_context);
+	const AppMemoryFuncs *mem = ecs_singleton_get(world, AppMemoryFuncs);
+	ImGui_SetAllocatorFunctions(mem->imgui_malloc_func, mem->imgui_free_func, mem->imgui_allocator_functions_user_data);
 #endif
 	// TODO check if https://wiki.libsdl.org/SDL3/SDL_GetMemoryFunctions return the custom ones on linux and Windows. I think the mod have nothing to do but, unsure.
 
@@ -95,7 +95,7 @@ mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 }
 
 // Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-mod_result_t SDLCALL mod_fini_v1(void *userptr) {
+MOD_API mod_result_t SDLCALL mod_fini_v1(void *userptr) {
 	// may need calls here to your mod's dependancies deinit functions
 
 	SDL_free(userptr);
@@ -103,7 +103,7 @@ mod_result_t SDLCALL mod_fini_v1(void *userptr) {
 }
 
 // Optionnal mod_reload hook
-mod_result_t SDLCALL mod_reload_v1(void **userptr) {
+MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) {
 	// for mod devs: can be used to hot-reload the mod, even with keeping previous data
 	//  if mod private data struct definitions matches or if only some members added at end of struct
 	//
@@ -113,7 +113,7 @@ mod_result_t SDLCALL mod_reload_v1(void **userptr) {
 }
 
 /* TODO convert that to ECS module and MODULE_IMPORT it in init hook
-APP_API mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
+MOD_API mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
 	mod_main_data_t *data = (mod_main_data_t *) userptr;
 	mod_result_t then = MOD_RESULT_CONTINUE;
 
@@ -131,7 +131,7 @@ APP_API mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
 }
 */
 
-// This function will not be an exported dynamic symbol because APP_API is absent
+// This function will not be an exported dynamic symbol because MOD_API is absent
 Sint32 some_private_func(Sint32 a) {
 	return a;
 }

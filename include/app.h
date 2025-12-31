@@ -82,6 +82,16 @@
 # endif
 #endif
 
+#if defined(SDL_PLATFORM_WINDOWS)
+# define MOD_API __declspec(dllexport)
+#else
+# if defined(__GNUC__) && __GNUC__ >= 4
+#  define MOD_API __attribute__ ((visibility("default")))
+# else
+#  define MOD_API
+# endif
+#endif
+
 //-----------------------------------------------------------------------------
 // [SECTION] General and metadata macro definitions
 //-----------------------------------------------------------------------------
@@ -135,7 +145,7 @@ typedef enum mod_result {
  * @when           after SDL_LoadObject(".../this-mod.so")
  * @mandatory      yes
  * @purpose        version compatibility check while a mod is loaded. no data availble yet.
- * @definition     Sint32 SDLCALL mod_handshake(Sint32 running_app_version) { ... }
+ * @definition     MOD_API Sint32 SDLCALL mod_handshake(Sint32 running_app_version) { ... }
  */
 typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
 
@@ -148,7 +158,7 @@ typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
  * @purpose        mod own state initialization
  * @param world    in: main app ECS world, this pointer value should be copied in mod main data struct
  * @param userptr  out: userptr that be passed when future hooks will be called, should be SDL_calloc()ed by the mod
- * @definition     mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
+ * @definition     MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
  */
 typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
 
@@ -159,7 +169,7 @@ typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
  * @when           right before SDL_UnloadObject()
  * @mandatory      yes
  * @purpose        mod own state de-initialization (free structs from stack)
- * @definition     mod_result_t SDLCALL mod_fini_v1(void *userptr) { ... }
+ * @definition     MOD_API mod_result_t SDLCALL mod_fini_v1(void *userptr) { ... }
  */
 typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
 
@@ -170,7 +180,7 @@ typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
  * @when           after loading the new one, before unloading the old one
  * @mandatory      yes
  * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one
- * @definition     mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
+ * @definition     MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
  */
 typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 
