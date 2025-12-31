@@ -22,6 +22,7 @@
   - https://github.com/libsdl-org/SDL/blob/main/examples/audio/04-multiple-streams/multiple-streams.c
 
 - make NUT encoding to a pipe
+  - https://github.com/leandromoreira/ffmpeg-libav-tutorial
 
 - make some camera input (via SDL API, will RAM to VRAM but ok as a start point)
   - https://examples.libsdl.org/SDL3/camera/01-read-and-draw/
