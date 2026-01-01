@@ -43,6 +43,9 @@ void alloc_count_install_hooks(void) {
 	os_api.realloc_ = alloc_count_realloc_ecs;
 	os_api.calloc_  = alloc_count_calloc_ecs;
 	os_api.strdup_  = alloc_count_strdup_ecs;
+	// Should not be in alloc.c but it fails if done in a second ecs_os_set_api() call
+	os_api.log_     = flecs_to_sdl_log_adapter;
+	os_api.now_     = SDL_GetTicksNS; // Hopefully less confusing to use the same everywhere
 	ecs_os_set_api(&os_api);
 }
 
@@ -78,7 +81,7 @@ void * SDLCALL alloc_count_malloc_ecs(ecs_size_t size) {
 }
 
 void * SDLCALL alloc_count_malloc_userptr(size_t size, void *userptr) {
-    (void) userptr;
+	(void) userptr;
 	SDL_AtomicIncRef(alloc_count_current_context+0);
 	return orig_malloc_func(size);
 }
@@ -114,8 +117,8 @@ void   SDLCALL alloc_count_free_ecs(void *mem) {
 }
 
 void   SDLCALL alloc_count_free_userptr(void *mem, void *userptr) {
-    (void) userptr;
-    SDL_AtomicIncRef(alloc_count_current_context+3);
+	(void) userptr;
+	SDL_AtomicIncRef(alloc_count_current_context+3);
 	orig_free_func(mem);
 }
 

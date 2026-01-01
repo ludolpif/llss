@@ -26,26 +26,6 @@
 
 APP_API SDL_LogPriority logpriority_earlyskip;
 
-//typedef void(* ecs_os_api_log_t) (int32_t level, const char *file, int32_t line, const char *msg)
-void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg) {
-	/* The level should be interpreted as:
-	 * >0: Debug tracing. Only enabled in debug builds.
-	 *  0: Tracing. Enabled in debug/release builds.
-	 * -2: Warning. An issue occurred, but operation was successful.
-	 * -3: Error. An issue occurred, and operation was unsuccessful.
-	 * -4: Fatal. An issue occurred, and application must quit.
-	 */
-#define FLECS_LOG_VAARGS "%016"PRIu64" %s:%"PRIi32" %s", SDL_GetTicksNS(), file, line, msg
-	switch (level) {
-		case -4: app_critical(FLECS_LOG_VAARGS); break;
-		case -3: app_error(FLECS_LOG_VAARGS); break;
-		case -2: app_warn(FLECS_LOG_VAARGS); break;
-		case  0: app_verbose(FLECS_LOG_VAARGS); break;
-		default: app_trace(FLECS_LOG_VAARGS); break;
-	}
-#undef FLECS_LOG_VAARGS
-}
-
 // Implementations
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
@@ -53,13 +33,13 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
 	// Configure logging
 	logpriority_earlyskip = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_TRACE,    "TRACE ");
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE,  "VERB  ");
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG,    "DEBUG ");
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_INFO,     "INFO  ");
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN,     "WARN  ");
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR,    "ERROR ");
-	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, "CRIT  ");
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_TRACE, ECS_GREY   "TRACE " ECS_NORMAL);
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE, ECS_GREY "VERB  " ECS_NORMAL);
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_DEBUG, ECS_GREY   "DEBUG " ECS_NORMAL);
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_INFO, ECS_MAGENTA "INFO  " ECS_NORMAL);
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_WARN, ECS_YELLOW  "WARN  " ECS_NORMAL);
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_ERROR, ECS_RED    "ERROR " ECS_NORMAL);
+	SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_CRITICAL, ECS_RED "CRIT  " ECS_NORMAL);
 
 	// Early log message to help troubleshoot application init and allow human readable timestamps later conversion
 	// Note SDL_Ticks should be a CLOCK_MONOTONIC source, but some platforms may not provide it
@@ -200,13 +180,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	Sint32 fr_den = 1;
 	int32_t ecs_worker_threads_count = 4;
 
-	// ECS init
-	// ecs_os_set_api_defaults(); // already done then tweaked in alloc_count_install_hooks();
-	ecs_os_api_t os_api = ecs_os_get_api();
-	os_api.log_ = flecs_to_sdl_log_adapter;
-	os_api.now_ = SDL_GetTicksNS; // Hopefully less confusing to use the same everywhere
-	ecs_os_set_api(&os_api);
-
+	// FLECS init
 	ecs_world_t *world = ecs_init();
 	ecs_set_threads(world, ecs_worker_threads_count);
 	ECS_IMPORT(world, FlecsStats); // Optional, gather statistics for explorer

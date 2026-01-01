@@ -284,3 +284,4 @@ APP_API Uint64 convert_frameid_to_ns(Uint64 frameid, Sint32 framerate_num, Sint3
 #define CONVERT_FRAMEID_TO_NS(frameid, framerate_num, framerate_den) \
 	( ( ( (Uint64)frameid) * 1000000000 * framerate_den ) / framerate_num )
 
+void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg);
