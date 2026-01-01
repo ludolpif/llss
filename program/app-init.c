@@ -49,7 +49,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
 	Uint64 tick = SDL_GetTicksNS();
 	tick0_wallclock -= tick;
-	app_warn("Starting %s %s with SDL %s logpriority==%d, tick0_wallclock==%"PRId64,
+	app_warn("Starting %s %s with SDL %s logpriority:%d, tick0_wallclock:%"PRId64,
 			APP_METADATA_NAME_STRING, APP_VERSION_STR, SDL_GetRevision(),
 			logpriority_earlyskip, tick0_wallclock);
 
