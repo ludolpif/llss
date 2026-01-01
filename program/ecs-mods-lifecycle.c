@@ -97,7 +97,7 @@ void ModReloadFromDisk(ecs_iter_t *it) {
 	app_info("%016"PRIu64" ModReloadFromDisk() begin", SDL_GetTicksNS());
 }
 
-// Task, run once per second
+// Task, run once per second TODO use libevent to watch folder
 void ModLookOnDisk(ecs_iter_t *it) {
 	if (!mods_basepath) { 
 		if (!SDL_asprintf(&mods_basepath, APP_MOD_PATH_FROM_BASEPATH, SDL_GetBasePath())) {
@@ -162,7 +162,7 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
 
 	// Create or refresh the current mod entity
 	ecs_entity_t mod = ecs_entity(world, { .name = mod_entity_name });
-	ecs_set(world, mod, ModOnDisk, { .name = mod_name, .so_path = so_path });
+	ecs_set(world, mod, ModOnDisk, { .name = mod_name, .so_path = so_path, .modify_time = info.modify_time });
 	if (!ecs_has_pair(world, mod, ModState, EcsWildcard)) {
 		ecs_add_pair(world, mod, ModState, ModAvailable);
 	}
@@ -232,6 +232,7 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
 		app_warn("%016"PRIu64" mod_tryload(): mod_init_v1() returned: %d", SDL_GetTicksNS(), res);
 		next_state = ModInitFailed;
 	} else {
+		r->so_file_modify_time_when_loaded_in_ram = d->modify_time;
 		next_state = ModRunning;
 	}
 
