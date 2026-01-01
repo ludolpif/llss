@@ -41,6 +41,13 @@ void AppCoreImport(ecs_world_t *world) {
 	ecs_add_pair(world, RenderingPostImGui, EcsDependsOn, RenderingOnImGui);
 
 	ECS_COMPONENT_DEFINE(world, AppVersion);
+	ecs_struct(world, {
+			.entity = ecs_id(AppVersion),
+			.members = {
+				{ .name = "running_app_version", .type = ecs_id(ecs_i32_t) },
+				{ .name = "build_dep_version_compiled_against", .type = ecs_id(ecs_i32_t) },
+			}
+		});
 	ECS_COMPONENT_DEFINE(world, AppMemoryFuncs);
 	ECS_COMPONENT_DEFINE(world, AppSDLContext);
 	ECS_COMPONENT_DEFINE(world, AppImGuiContext);

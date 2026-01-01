@@ -198,6 +198,7 @@ extern APP_API  ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostI
 // Components
 typedef struct {
 	Sint32 running_app_version;
+	Sint32 build_dep_version_compiled_against;
 } AppVersion;
 extern APP_API ECS_COMPONENT_DECLARE(AppVersion);
 
