@@ -5,7 +5,8 @@
     <ClCompile Include="app-event.c" />
     <ClCompile Include="app-init.c" />
     <ClCompile Include="app-iterate.c" />
-    <ClCompile Include="ecs-app-core.c" />
+    <ClCompile Include="app-components-core.c" />
+    <ClCompile Include="app-systems-core.c" />
     <ClCompile Include="ecs-mods-lifecycle.c" />
     <ClCompile Include="ecs-mods-state.c" />
     <ClCompile Include="main.c" />

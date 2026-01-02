@@ -28,7 +28,7 @@
  * [SECTION] Structures for global-like plain old data
  * [SECTION] Mods API definition
  * [SECTION] ECS core components definitions
- * [SECTION] Utilitary functions
+ * [SECTION] Utility functions
  */
 
 //-----------------------------------------------------------------------------
@@ -189,54 +189,7 @@ typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 //-----------------------------------------------------------------------------
 //TODO follow the hint to separate in components.* and systems.* to make replacable things
 //https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
-// ecs-app-core.h
-APP_API void AppCoreImport(ecs_world_t* world);
-
-// Phases for pipelines
-extern APP_API  ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
-
-// Components
-typedef struct {
-	Sint32 running_app_version;
-	Sint32 build_dep_version_compiled_against;
-} AppVersion;
-extern APP_API ECS_COMPONENT_DECLARE(AppVersion);
-
-typedef struct {
-	// TODO this approach don't cover per-thread arena
-	SDL_malloc_func sdl_malloc_func;
-	SDL_calloc_func sdl_calloc_func;
-	SDL_realloc_func sdl_realloc_func;
-	SDL_free_func sdl_free_func;
-	ImGuiMemAllocFunc imgui_malloc_func;
-	ImGuiMemFreeFunc imgui_free_func;
-	void* imgui_allocator_functions_user_data;
-	// flecs alloc_funcs can always be retreived with ecs_os_get_api()
-} AppMemoryFuncs;
-extern APP_API ECS_COMPONENT_DECLARE(AppMemoryFuncs);
-
-typedef struct {
-	SDL_Window *main_window;
-	SDL_GPUDevice *gpu_device;
-	SDL_AsyncIOQueue *sdl_io_queue;
-} AppSDLContext;
-extern APP_API ECS_COMPONENT_DECLARE(AppSDLContext);
-
-typedef struct {
-	ImGuiContext* imgui_context;
-	ImGuiIO *imgui_io;
-} AppImGuiContext;
-extern APP_API ECS_COMPONENT_DECLARE(AppImGuiContext);
-
-typedef struct {
-	Uint32 app_iterate_count;
-	Uint32 total_skipped;
-	Sint32 main_framerate_num;  // AVRational framerate numerator
-	Sint32 main_framerate_den;  // AVRational framerate denominator
-	Uint64 main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
-	Uint64 main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
-} AppMainTimingContext;
-extern APP_API ECS_COMPONENT_DECLARE(AppMainTimingContext);
+#include "app-components-core.h"
 
 // ecs-mods-state.h
 extern APP_API ECS_TAG_DECLARE(ModState);
@@ -275,14 +228,14 @@ void ModsLifecycleImport(ecs_world_t *world);
 
 
 //-----------------------------------------------------------------------------
-// [SECTION] Utilitary functions
+// [SECTION] Utility functions
 //-----------------------------------------------------------------------------
 
-APP_API Uint64 convert_ns_to_frameid(Uint64 ns, Sint32 framerate_num, Sint32 framerate_den);
-APP_API Uint64 convert_frameid_to_ns(Uint64 frameid, Sint32 framerate_num, Sint32 framerate_den);
+APP_API uint64_t convert_ns_to_frameid(uint64_t ns, int32_t framerate_num, int32_t framerate_den);
+APP_API uint64_t convert_frameid_to_ns(uint64_t frameid, int32_t framerate_num, int32_t framerate_den);
 
 // For static initializers, we cannot use the function, so here a macro
 #define CONVERT_FRAMEID_TO_NS(frameid, framerate_num, framerate_den) \
-	( ( ( (Uint64)frameid) * 1000000000 * framerate_den ) / framerate_num )
+	( ( ( (uint64_t)frameid) * 1000000000 * framerate_den ) / framerate_num )
 
 void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg);

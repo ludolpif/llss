@@ -26,6 +26,9 @@
 
 APP_API SDL_LogPriority logpriority_earlyskip;
 
+// app.systems.* modules import functions defined in app-systems-*.c (no .h, only ine line per module)
+void AppSystemsCoreImport(ecs_world_t *world);
+
 // Implementations
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	// Configure memory functions before the first dynamic allocation
@@ -188,10 +191,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	ecs_log_set_level(0); // Increase verbosity level
 	ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
-	ECS_IMPORT(world, AppCore); // Will call AppCoreImport(world) from ecs-module1.c
+	ECS_IMPORT(world, AppSystemsCore); // Will call AppSystemsCoreImport function
 
 	ecs_singleton_set(world, AppVersion, {
-			.running_app_version = APP_VERSION_INT
+			.running_app_version = APP_VERSION_INT,
+			.build_dep_version_compiled_against = BUILD_DEP_VERSION_INT
 			});
 	ecs_singleton_set(world, AppMemoryFuncs, {
 			.sdl_malloc_func = alloc_count_malloc,

@@ -1,9 +1,9 @@
 #include "app.h" // No "utils.h", embeded in app.h
 
-APP_API Uint64 convert_ns_to_frameid(Uint64 ns, Sint32 framerate_num, Sint32 framerate_den) {
+APP_API uint64_t convert_ns_to_frameid(uint64_t ns, int32_t framerate_num, int32_t framerate_den) {
 	return (ns * framerate_num) / (1000000000 * framerate_den);
 }
-APP_API Uint64 convert_frameid_to_ns(Uint64 frameid, Sint32 framerate_num, Sint32 framerate_den) {
+APP_API uint64_t convert_frameid_to_ns(uint64_t frameid, int32_t framerate_num, int32_t framerate_den) {
 	return (frameid * 1000000000 * framerate_den ) / framerate_num;
 }
 
