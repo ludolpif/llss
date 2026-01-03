@@ -101,9 +101,9 @@
     <ClCompile Include="alloc.c" />
     <ClCompile Include="app-components-core.c" />
     <ClCompile Include="app-systems-core.c" />
-    <ClCompile Include="ecs-mods-lifecycle.c" />
-    <ClCompile Include="ecs-mods-state.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="mods-components-core-lifecycle.c" />
+    <ClCompile Include="mods-systems-core-lifecycle.c" />
     <ClCompile Include="sdl-app-event.c" />
     <ClCompile Include="sdl-app-init.c" />
     <ClCompile Include="sdl-app-iterate.c" />
