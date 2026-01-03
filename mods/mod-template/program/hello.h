@@ -17,4 +17,4 @@
 #pragma once
 #include "app.h"
 
-Sint32 hello(Sint32 b);
+int32_t hello(int32_t b);

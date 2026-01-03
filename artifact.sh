@@ -49,7 +49,7 @@ case $1 in
 		rm -rf artifacts/$artifact artifacts/$artifact$compress
 		ls -d $files | copy_to artifacts/$artifact
 	;;
-	*) echo "Usage $0 [--zip] ((Sources|Debug|Release)" >&2; exit 1 ;;
+	*) echo "Usage $0 [--zip] (Sources|Debug|Release)" >&2; exit 1 ;;
 esac
 case $compress in
 	.zip) ( cd artifacts/$artifact && zip -r ../$artifact.zip . && cd ../.. && rm -rf artifacts/$artifact );;

@@ -20,7 +20,7 @@ check() {
 	cmd="$1"; shift
 	echo "${PS4}$cmd $*" >>$LOG
 	err=$($cmd $* 2>&1 >>$LOG)
-      	res=$?
+	res=$?
 	if [ $res -eq 127 ]; then
 		echo "You need $cmd in PATH" >&2
 	fi
@@ -40,7 +40,7 @@ check ar --version
 check pkg-config --version
 check install --version
 
-[ -d lib ] || echo "lib/ folder absent, you need to call './get --build-dep Debug' or ./get --build-dep  Release' first" >&2
+[ -d lib ] || echo "lib/ folder absent, you need to call './get --build-dep Debug' or ./get --build-dep Release' first" >&2
 
 if ! pkg-config sdl3 --cflags > /dev/null; then
 	cat <<"EOT"

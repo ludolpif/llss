@@ -24,14 +24,26 @@ if ($Configuration -ne "Debug" -and $Configuration -ne "Release") {
     exit 1
 }
 
-function Get-BuildDepVersion {
-    $match = Select-String -Path "include\metadata.h" -Pattern '^#define\s+BUILD_DEP_VERSION_STR\s+"([^"]+)"'
-    if ($match) {
-        $match.Matches[0].Groups[1].Value
+function Get-MetadataValue {
+    param (
+        [Parameter(Mandatory)]
+        [string]$FilePath,
+
+        [Parameter(Mandatory)]
+        [string]$DefineName
+    )
+
+    $pattern = "^\s*#define\s+$DefineName\s+""([^""]+)"""
+    $match = Select-String -Path $FilePath -Pattern $pattern
+
+    if (-not $match) {
+        throw "Can't find $DefineName in $FilePath"
     }
+
+    return $match.Matches[0].Groups[1].Value
 }
 
-$build_dep_version = Get-BuildDepVersion;
+$build_dep_version = Get-MetadataValue -FilePath "include/build-dep-version.h" -DefineName "BUILD_DEP_VERSION_STR"
 $build_dep_zip = "build-dep-${build_dep_version}-Windows-$Configuration.zip"
 $build_dep_url = "https://ludolpif.fr/pub/llss/artifacts/$build_dep_zip"
 

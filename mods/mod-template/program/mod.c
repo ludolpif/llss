@@ -42,7 +42,7 @@
  */
 
 typedef struct {
-	Sint32 running_struct_size;
+	int32_t running_struct_size;
 	ecs_world_t *world;
 	/*
 	 * Try to put a maximum of data in ECS (*world) instead of below.
@@ -51,9 +51,9 @@ typedef struct {
 	 *  and things that your mod dependencies needs to have internally.
 	 */
 	//lib_something_internal_data_t lib_something;
-	//Sint32 some_fixed_size_typed_data_for_the_mod1;
+	//int32_t some_fixed_size_typed_data_for_the_mod1;
 	//mod_template_something_t *list_of_something;
-	//Sint32 list_of_something_len;
+	//int32_t list_of_something_len;
 
 	/*
 	 * When improving the mod, don't change previous members, add new ones below,
@@ -66,7 +66,7 @@ typedef struct {
 	 */
 } mod_main_data_t;
 
-MOD_API Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
+MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
 	// Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
 	if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
 	// Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not
@@ -132,6 +132,6 @@ MOD_API mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
 */
 
 // This function will not be an exported dynamic symbol because MOD_API is absent
-Sint32 some_private_func(Sint32 a) {
+int32_t some_private_func(int32_t a) {
 	return a;
 }

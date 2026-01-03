@@ -95,12 +95,13 @@
 //-----------------------------------------------------------------------------
 // [SECTION] General and metadata macro definitions
 //-----------------------------------------------------------------------------
-#include "metadata.h"
-// Following macros can't be in metadata.h as Microsoft res.exe can't cope with it (app.rc includes metadata.h)
-#define VERSION_TO_INT(a, b, c) ((a)<<16 | (b)<<8 | (c))
-#define	VERSION_MAJOR_FROM_INT(a) ((a) >> 16)
-#define	VERSION_MINOR_FROM_INT(a) (((a) & 0x00FF00) >> 8)
-#define	VERSION_MICRO_FROM_INT(a) ((a) & 0xFF)
+#include "app-version.h"
+#include "build-dep-version.h"
+// Following macros can't be in *-version.h as Microsoft res.exe can't cope with it (app.rc includes them)
+#define VERSION_TO_INT(a, b, c) (a*10000+b*100+c)
+#define	VERSION_MAJOR_FROM_INT(a) (a/10000)
+#define	VERSION_MINOR_FROM_INT(a) ((a%10000)/100)
+#define	VERSION_MICRO_FROM_INT(a) (a%100)
 
 #define APP_VERSION_INT VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
 #define BUILD_DEP_VERSION_INT VERSION_TO_INT(BUILD_DEP_VERSION_MAJOR,BUILD_DEP_VERSION_MINOR,BUILD_DEP_VERSION_PATCH)
@@ -145,9 +146,9 @@ typedef enum mod_result {
  * @when           after SDL_LoadObject(".../this-mod.so")
  * @mandatory      yes
  * @purpose        version compatibility check while a mod is loaded. no data availble yet.
- * @definition     MOD_API Sint32 SDLCALL mod_handshake(Sint32 running_app_version) { ... }
+ * @definition     MOD_API int32_t SDLCALL mod_handshake(int32_t running_app_version) { ... }
  */
-typedef Sint32 (*mod_handshake_v1_t)(Sint32 running_app_version);
+typedef int32_t (*mod_handshake_v1_t)(int32_t running_app_version);
 
 /**
  * @symbol-name    mod_init_v1

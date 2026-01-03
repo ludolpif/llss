@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app.h" />
-    <ClInclude Include="$(SolutionDir)\include\metadata.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL_gpu.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
@@ -120,8 +119,8 @@
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdlgpu3.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\backends\dcimgui_impl_sdl3.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\imgui_config.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="alloc.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ui-main.h" />
   </ItemGroup>
   <ItemGroup>

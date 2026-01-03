@@ -20,7 +20,7 @@
 #define MOD_USES_IMGUI
 // No mod_main_data_t needed for this mod
 
-MOD_API Sint32 SDLCALL mod_handshake_v1(Sint32 running_app_version) {
+MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
 	// Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
 	if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
 	// Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not

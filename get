@@ -26,11 +26,11 @@ build_dep() {
 	zipname=build-dep-$build_dep_version-$prettyos-$1.zip
 	url=https://ludolpif.fr/pub/llss/artifacts/$zipname
 	[ -f $zipname ] || curl -Lfo $zipname $url
-	unzip -q $zipname
+	unzip -qo $zipname
 	rm -f $zipname
 }
 build_dep_version() {
-	grep "define BUILD_DEP_VERSION_STR" include/metadata.h | cut -d'"' -f2
+	grep "define BUILD_DEP_VERSION_STR" include/build-dep-version.h | cut -d'"' -f2
 }
 cflags() {
 	case "$1" in
@@ -45,7 +45,7 @@ ldflags() {
 	echo $solution
 }
 name() {
-	grep "define APP_METADATA_NAME_STRING" include/metadata.h | cut -d'"' -f2
+	grep "define APP_METADATA_NAME_STRING" include/app-version.h | cut -d'"' -f2
 }
 prettyos() {
 	case $(uname -s) in
@@ -56,7 +56,7 @@ prettyos() {
 	echo $os
 }
 version() {
-	grep "define APP_VERSION_STR" include/metadata.h | cut -d'"' -f2
+	grep "define APP_VERSION_STR" include/app-version.h | cut -d'"' -f2
 }
 _usage() {
 	echo "Usage $0 (--build-dep|--build-dep-version|--cflags|--ldflags|--prettyos|--name|--version) [Debug|Release|SystemLibs]" >&2

@@ -10,11 +10,11 @@ xcuserdata
 # renderdoc things
 *.cap
 # build-dep things
+/lib
 *.zip
 *.log
 # Output dirs
 x64
 artifacts
 # program things
-/lib
 imgui.ini
