@@ -1,21 +1,7 @@
-#include "mods-components-core-lifecycle.h"
+#include "mods-systems-core-lifecycle.h"
 
-#define APP_MOD_PATH_FROM_BASEPATH "%s../../../mods/"
-
-#ifdef _DEBUG
-#define APP_MOD_SUBDIR "program/x64/Debug/"
-#else
-#define APP_MOD_SUBDIR "program/x64/Release/"
-#endif
-
-#if defined(SDL_PLATFORM_WINDOWS)
-#define APP_MOD_FILEEXT ".dll"
-#elif defined(SDL_PLATFORM_APPLE)
-#define APP_MOD_FILEEXT ".dylib"
-#else
-#define APP_MOD_FILEEXT ".so"
-#endif
-
+// ECS cached queries forward declarations
+ECS_QUERY_DECLARE(ModReadyQuery);
 
 // ECS Tasks forward declarations
 void ModLookOnDisk(ecs_iter_t *it);
@@ -36,6 +22,11 @@ void ModsSystemsCoreLifecycleImport(ecs_world_t *world) {
     // See the "modules" example
     ECS_MODULE(world, ModsSystemsCoreLifecycle);
     ECS_IMPORT(world, ModsComponentsCoreLifecycle);
+
+    ECS_QUERY_DEFINE(world, ModReadyQuery,
+        mods.components.core.lifecycle.ModInRAM,
+        (mods.components.core.lifecycle.ModState, mods.components.core.lifecycle.ModReady)
+        );
 
     // The '()' means, don't match this component on an entity, while `[out]` indicates 
     // that the component is being written. This is interpreted by pipelines as a
@@ -72,7 +63,7 @@ void ModLoadFromDisk(ecs_iter_t *it) {
     ModInRAM r;
     for (int i = 0; i < it->count; i++) {
         SDL_zero(r);
-        ecs_entity_t next_state = mod_tryload(it->world, d+i, &r);
+        ecs_entity_t next_state = mod_tryload(it->real_world, d+i, &r);
         ecs_entity_t mod = it->entities[i];
         ecs_set_ptr(it->world, mod, ModInRAM, &r);
         ecs_add_pair(it->world, mod, ModState, next_state);
@@ -208,22 +199,48 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
         goto bad;
     }
 
-    // Optionnal Hook
+    // Load all optionnal hook(s)
     r->mod_reload_v1 = (mod_reload_v1_t) SDL_LoadFunction(r->shared_object, "mod_reload_v1");
 
-    // Actually run mod_init_v1
-    mod_result_t res = r->mod_init_v1(world, &r->userptr);
-    
-    if ( res != MOD_RESULT_CONTINUE ) {
-        app_warn("%016"PRIu64" mod_tryload(): mod_init_v1() returned: %d", SDL_GetTicksNS(), res);
-        next_state = ModInitFailed;
-    } else {
-        r->so_file_modify_time_when_loaded_in_ram = d->modify_time;
-        next_state = ModRunning;
-    }
+    next_state = ModReady;
 
 bad:
     SDL_UnloadObject(r->shared_object);
 bad2:
     return next_state;
+}
+
+// Bare function not declared as ECS_SYSTEM, because we want ot run mod_init_v1 outside of ecs_progress(), see sdl-app-iterate.c
+void ModRunInit(ecs_iter_t *it) {
+    ModInRAM *r = ecs_field(it, ModInRAM, 0);
+
+    for (int i = 0; i < it->count; i++) {
+        void *userptr = NULL;
+        app_warn("%016"PRIu64" ModRunInit(): Will call mod_init_v1(%p, %p) at %p",
+                SDL_GetTicksNS(), it->world, &userptr, r[i].mod_init_v1);
+
+        mod_result_t res = MOD_RESULT_INVALID;
+        if ( r[i].mod_init_v1 ) {
+            //FIXME crash here : r[i].mod_init_v1(it->world, &userptr);
+        }
+
+        ecs_entity_t next_state;
+        switch (res) {
+            case MOD_RESULT_SUCCESS:
+                next_state = ModTerminated;
+                break;
+            case MOD_RESULT_CONTINUE:
+                next_state = ModRunning;
+                break;
+            default: /* MOD_RESULT_FAILURE or unknown value */
+                next_state = ModInitFailed;
+                break;
+        }
+        if ( next_state != ModRunning ) {
+            app_warn("%016"PRIu64" ModRunInit(): mod_init_v1() returned: %d", SDL_GetTicksNS(), res);
+        }
+        ecs_entity_t mod = it->entities[i];
+        ecs_add_pair(it->world, mod, ModState, next_state);
+        //TODO save userptr in r while iterating (how ?)
+    }
 }

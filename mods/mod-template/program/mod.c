@@ -92,6 +92,9 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
     data->running_struct_size = sizeof(mod_main_data_t);
     data->world = world;
 
+    // You can import here your ECS modules containing Entities, Components, Systems and so on
+    ECS_IMPORT(world, ModTemplateHello);
+
     return MOD_RESULT_CONTINUE;
 }
 
@@ -112,25 +115,6 @@ MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) {
     // TODO define what is mandatory to implement on the mod side
     return MOD_RESULT_CONTINUE;
 }
-
-/* TODO convert that to ECS module and MODULE_IMPORT it in init hook
-MOD_API mod_result_t SDLCALL hook_ui_config_v1(void *userptr) {
-    mod_main_data_t *data = (mod_main_data_t *) userptr;
-    mod_result_t then = MOD_RESULT_CONTINUE;
-
-    // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-    ImGui_Begin("A mod Window", &data->show_another_window, 0);
-    ImGui_Text("Hello from mod-template!");
-    if (ImGui_Button("Close Me"))
-        then = MOD_RESULT_SUCCESS;
-    ImGui_End();
-
-    // You can also ImGui_Begin("An existing window", NULL), it will add components to it, even if created by app or other plugin !
-
-    //TODO see if we can have ImGui and ECS share the same data copy (&data->show_another_window is not correctly shared for now)
-    return then;
-}
-*/
 
 // This function will not be an exported dynamic symbol because MOD_API is absent
 int32_t some_private_func(int32_t a) {

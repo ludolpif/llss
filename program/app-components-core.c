@@ -31,7 +31,7 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
             .add = ecs_ids(EcsPhase)
             });
     ecs_add_pair(world, RenderingPostImGui, EcsDependsOn, RenderingOnImGui);
-        ECS_META_COMPONENT(world, AppVersion);
+    ECS_META_COMPONENT(world, AppVersion);
     ECS_COMPONENT_DEFINE(world, AppMemoryFuncs);
     ECS_COMPONENT_DEFINE(world, AppSDLContext);
     ECS_COMPONENT_DEFINE(world, AppImGuiContext);

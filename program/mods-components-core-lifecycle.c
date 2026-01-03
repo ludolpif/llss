@@ -5,6 +5,7 @@ APP_API ECS_TAG_DECLARE(ModState);
 APP_API ECS_ENTITY_DECLARE(ModAvailable);
 APP_API ECS_ENTITY_DECLARE(ModIncompatible);
 APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
+APP_API ECS_ENTITY_DECLARE(ModReady);
 APP_API ECS_ENTITY_DECLARE(ModInitFailed);
 APP_API ECS_ENTITY_DECLARE(ModRunning);
 APP_API ECS_ENTITY_DECLARE(ModTerminated);
@@ -29,6 +30,7 @@ void ModsComponentsCoreLifecycleImport(ecs_world_t *world) {
   ECS_ENTITY_DEFINE(world, ModAvailable);
   ECS_ENTITY_DEFINE(world, ModIncompatible);
   ECS_ENTITY_DEFINE(world, ModLoadFailed);
+  ECS_ENTITY_DEFINE(world, ModReady);
   ECS_ENTITY_DEFINE(world, ModInitFailed);
   ECS_ENTITY_DEFINE(world, ModRunning);
   ECS_ENTITY_DEFINE(world, ModTerminated);

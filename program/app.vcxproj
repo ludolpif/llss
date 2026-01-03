@@ -112,6 +112,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app.h" />
+    <ClInclude Include="$(SolutionDir)\include\app-components-core.h" />
+    <ClInclude Include="$(SolutionDir)\include\app-version.h" />
+    <ClInclude Include="$(SolutionDir)\include\build-dep-version.h" />
+    <ClInclude Include="$(SolutionDir)\include\mods-components-core-lifecycle.h" />
+    <ClInclude Include="$(SolutionDir)\include\mods-systems-core-lifecycle.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL_gpu.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />

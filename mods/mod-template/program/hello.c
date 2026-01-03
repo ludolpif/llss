@@ -14,9 +14,23 @@
  *
  * Copyright 2025 Author <author-contact@email-domain.tld>
  */
-#include "app.h"
+#define MOD_TEMPLATE_UI_STATE_IMPL
+#include "hello.h"
 
-int32_t hello(int32_t b) {
-    // Remove me, illustration purposes only
-    return b;
+void ModTemplateUIHello(ecs_iter_t *it) {
+    ImGui_Begin("A mod Window", /*&data->show_another_window*/ NULL, 0);
+    ImGui_Text("Hello from mod-template!");
+//    if (ImGui_Button("Close Me"))
+//        then = MOD_RESULT_SUCCESS;
+    ImGui_End();
+};
+
+void ModTemplateHelloImport(ecs_world_t *world) {
+    ECS_MODULE(world, ModTemplateHello);
+
+    // Component definition (+ setup metadata for reflection)
+    ECS_META_COMPONENT(world, ModTemplateUIState);
+
+    // Tasks definitions, will run once per frame
+    ECS_SYSTEM(world, ModTemplateUIHello, RenderingOnImGui, 0);
 }

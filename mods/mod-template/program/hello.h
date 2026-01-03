@@ -1,3 +1,4 @@
+#pragma once
 /*
  * This file is part of Foobar.
  *
@@ -14,7 +15,17 @@
  *
  * Copyright 2025 Author <author-contact@email-domain.tld>
  */
-#pragma once
 #include "app.h"
 
-int32_t hello(int32_t b);
+// FLECS Reflection system boilerplate
+#undef ECS_META_IMPL
+#ifndef MOD_TEMPLATE_UI_STATE_IMPL
+#define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
+#endif
+
+void ModTemplateHelloImport(ecs_world_t *world);
+
+// Components
+MOD_API ECS_STRUCT(ModTemplateUIState, {
+    bool show_hello_window;
+});

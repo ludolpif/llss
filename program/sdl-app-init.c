@@ -18,6 +18,7 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
+#include "mods-systems-core-lifecycle.h"
 
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
@@ -28,7 +29,6 @@ APP_API SDL_LogPriority logpriority_earlyskip;
 
 // app.systems.* modules import functions defined in app-systems-*.c (no .h, only one line per module)
 void AppSystemsCoreImport(ecs_world_t *world);
-void ModsSystemsCoreLifecycleImport(ecs_world_t *world);
 
 // Implementations
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {

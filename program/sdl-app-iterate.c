@@ -14,25 +14,44 @@
  *
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
+#include "alloc.h"
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
-#include "alloc.h"
+#include "mods-systems-core-lifecycle.h"
+
+void throttle(ecs_world_t *world);
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
-    static int32_t prev_fr_num = 60;
-    static int32_t prev_fr_den = 1;
-    static uint64_t sleep_max = CONVERT_FRAMEID_TO_NS(1, 60, 1);
-
     ecs_world_t *world = (ecs_world_t *)appstate;
 
-    // Make most of the work from ECS pipeline as it allow dynamic scheduling without recompiling this program
+    // Make most of the work from ECS pipeline as it allow dynamic scheduling
+    // without recompiling this program
     ecs_progress(world, 0.0f);
 
+    // Mods init is defered outside of ecs_progress() so they can ECS_IMPORT() modules
+    // while the world isn't in read-only mode
+    ecs_iter_t it = ecs_query_iter(world, ModReadyQuery);
+    while (ecs_query_next(&it)) {
+        ModRunInit(&it);
+    }
+
+    // Custom method for targetting desired FPS in a non-standard videogame fashion
+    throttle(world);
+
+    // TODO trigger QUIT here depending on an info from the ECS
+    return SDL_APP_CONTINUE;
+}
+
+void throttle(ecs_world_t *world) {
     // Throttle in a way that helps to get clean CFR video stream (Constant Frame Rate)
     // External video editing software needs CFR, streaming could be VFR but audio/video sync seems harder with VFR
     // We want to snap PTS (Presentation TimeStamps) for all video streams to a multiple of the framerate
     // Here we throttle to snap to SDL ticks so video code can just to have PTS = ticks - offset with offset = N/framerate.
+    static int32_t prev_fr_num = 60;
+    static int32_t prev_fr_den = 1;
+    static uint64_t sleep_max = CONVERT_FRAMEID_TO_NS(1, 60, 1);
+
     AppMainTimingContext *app_main_timing_context = ecs_singleton_get_mut(world, AppMainTimingContext);
     int32_t fr_num = app_main_timing_context->main_framerate_num;
     int32_t fr_den = app_main_timing_context->main_framerate_den;
@@ -79,6 +98,4 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     app_main_timing_context->main_frameid = next_frameid;
     app_main_timing_context->main_frame_start_ns = next_ns;
 
-    // TODO trigger QUIT here depending on an info from the ECS
-    return SDL_APP_CONTINUE;
 }

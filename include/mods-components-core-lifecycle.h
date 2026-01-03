@@ -13,6 +13,7 @@ extern APP_API ECS_TAG_DECLARE(ModState);
 extern APP_API ECS_ENTITY_DECLARE(ModAvailable);
 extern APP_API ECS_ENTITY_DECLARE(ModIncompatible);
 extern APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
+extern APP_API ECS_ENTITY_DECLARE(ModReady);
 extern APP_API ECS_ENTITY_DECLARE(ModInitFailed);
 extern APP_API ECS_ENTITY_DECLARE(ModRunning);
 extern APP_API ECS_ENTITY_DECLARE(ModTerminated);

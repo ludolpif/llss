@@ -32,6 +32,21 @@
     <ClInclude Include="$(SolutionDir)\include\app.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\app-components-core.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\app-version.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\build-dep-version.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\mods-components-core-lifecycle.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\mods-systems-core-lifecycle.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
