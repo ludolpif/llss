@@ -79,14 +79,14 @@ Remove-Item "artifacts/$artifact" -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force "artifacts/$artifact" | Out-Null
 
 $paths = @(
-	"doc/user",
-	"program/data",
-	"program/x64/$Configuration/*.exe"
-	"program/x64/$Configuration/*.dll"
+    "doc/user",
+    "program/data",
+    "program/x64/$Configuration/*.exe"
+    "program/x64/$Configuration/*.dll"
 )
 Get-ChildItem "mods" -Directory | ForEach-Object {
-	$paths += "$($_.FullName)/data"
-	$paths += "$($_.FullName)/program/x64/$Configuration/*.dll"
+    $paths += "$($_.FullName)/data"
+    $paths += "$($_.FullName)/program/x64/$Configuration/*.dll"
 }
 Copy-WithStructure -Paths $paths -DestinationRoot "artifacts/$artifact"
 Write-Output "artifact=$artifact"
