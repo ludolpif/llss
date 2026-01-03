@@ -140,7 +140,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	ImGuiContext* imgui_context = ImGui_GetCurrentContext();
 	ImGuiIO *imgui_io = ImGui_GetIO();
 	imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	// imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //TODO need more code in app-events.c
+	// imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //TODO need more code in sdl-app-events.c
 
 	// Setup Dear ImGui style
 	ImGui_StyleColorsDark(NULL);

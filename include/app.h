@@ -224,7 +224,7 @@ typedef struct {
 } ModInRAM;
 extern APP_API ECS_COMPONENT_DECLARE(ModInRAM);
 
-// helper called from app-init.c ECS_IMPORT(world, ModsLifecycle)
+// helper called from sdl-app-init.c ECS_IMPORT(world, ModsLifecycle)
 void ModsLifecycleImport(ecs_world_t *world);
 
 
