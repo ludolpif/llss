@@ -23,19 +23,19 @@ extern APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
 //TODO ECS_STRUCT()
 typedef struct {
-	char *name;
-	char *so_path;
-	SDL_Time modify_time;
+    char *name;
+    char *so_path;
+    SDL_Time modify_time;
 } ModOnDisk;
 extern APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
 
 typedef struct {
-	void *shared_object;
-	void *userptr;
-	Sint32 build_dep_version_compiled_against;
-	SDL_Time so_file_modify_time_when_loaded_in_ram;
-	mod_init_v1_t mod_init_v1;
-	mod_reload_v1_t mod_reload_v1;
-	mod_fini_v1_t mod_fini_v1;
+    void *shared_object;
+    void *userptr;
+    Sint32 build_dep_version_compiled_against;
+    SDL_Time so_file_modify_time_when_loaded_in_ram;
+    mod_init_v1_t mod_init_v1;
+    mod_reload_v1_t mod_reload_v1;
+    mod_fini_v1_t mod_fini_v1;
 } ModInRAM;
 extern APP_API ECS_COMPONENT_DECLARE(ModInRAM);

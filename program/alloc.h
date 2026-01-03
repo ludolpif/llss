@@ -18,11 +18,11 @@
 #include "app.h"
 
 typedef enum app_alloc_count_contexts {
-	APP_CONTEXT_STARTUP_SHUTDOWN,
-	APP_CONTEXT_FIRST_FRAMES,
-	APP_CONTEXT_RENDERING,
-	// add here and update app_alloc_count_contexts_str[][] in alloc.c
-	APP_CONTEXT_COUNT
+    APP_CONTEXT_STARTUP_SHUTDOWN,
+    APP_CONTEXT_FIRST_FRAMES,
+    APP_CONTEXT_RENDERING,
+    // add here and update app_alloc_count_contexts_str[][] in alloc.c
+    APP_CONTEXT_COUNT
 } app_alloc_count_contexts_t;
 
 void alloc_count_install_hooks(void);

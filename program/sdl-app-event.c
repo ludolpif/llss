@@ -18,52 +18,52 @@
 #include "dcimgui_impl_sdl3.h"
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-	ecs_world_t *world = (ecs_world_t *)appstate;
+  ecs_world_t *world = (ecs_world_t *)appstate;
 
-	const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
-	const AppImGuiContext *app_imgui_context = ecs_singleton_get(world, AppImGuiContext);
-	SDL_Window *main_window = app_sdl_context->main_window;
-	ImGuiIO *imgui_io = app_imgui_context->imgui_io;
+  const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
+  const AppImGuiContext *app_imgui_context = ecs_singleton_get(world, AppImGuiContext);
+  SDL_Window *main_window = app_sdl_context->main_window;
+  ImGuiIO *imgui_io = app_imgui_context->imgui_io;
 
-	SDL_AppResult then = SDL_APP_CONTINUE;
-	// Poll and handle events (inputs, window resize, etc.)
-	// You can read the io->WantCaptureMouse, io->WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-	// - When io->WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-	// - When io->WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-	// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-	cImGui_ImplSDL3_ProcessEvent(event);
-	switch (event->type) {
-		case SDL_EVENT_QUIT:
-			then = SDL_APP_SUCCESS;
-			//TODO pass to ECS
-			break;
-		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-			if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
-				 then = SDL_APP_SUCCESS;
-				 //TODO pass to ECS
-			 }
-			break;
-		case SDL_EVENT_MOUSE_MOTION:
-		case SDL_EVENT_MOUSE_BUTTON_DOWN:
-		case SDL_EVENT_MOUSE_BUTTON_UP:
-		case SDL_EVENT_MOUSE_WHEEL:
-			if (!imgui_io->WantCaptureMouse) {
-				// SDL_MouseMotionEvent motion
-				// SDL_MouseButtonEvent button
-				// SDL_MouseWheelEvent wheel
-				//TODO pass to ECS
-			}
-			break;
-		case SDL_EVENT_KEY_DOWN:
-		case SDL_EVENT_KEY_UP:
-			if (!imgui_io->WantCaptureKeyboard) {
-				// SDL_KeyboardEvent key
-				//TODO pass to ECS
-			}
-			break;
-		default:
-			//TODO pass to ECS
-			break;
-	}
-	return then;
+  SDL_AppResult then = SDL_APP_CONTINUE;
+  // Poll and handle events (inputs, window resize, etc.)
+  // You can read the io->WantCaptureMouse, io->WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+  // - When io->WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
+  // - When io->WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
+  // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+  cImGui_ImplSDL3_ProcessEvent(event);
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      then = SDL_APP_SUCCESS;
+      //TODO pass to ECS
+      break;
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+      if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
+         then = SDL_APP_SUCCESS;
+         //TODO pass to ECS
+       }
+      break;
+    case SDL_EVENT_MOUSE_MOTION:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+    case SDL_EVENT_MOUSE_WHEEL:
+      if (!imgui_io->WantCaptureMouse) {
+        // SDL_MouseMotionEvent motion
+        // SDL_MouseButtonEvent button
+        // SDL_MouseWheelEvent wheel
+        //TODO pass to ECS
+      }
+      break;
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+      if (!imgui_io->WantCaptureKeyboard) {
+        // SDL_KeyboardEvent key
+        //TODO pass to ECS
+      }
+      break;
+    default:
+      //TODO pass to ECS
+      break;
+  }
+  return then;
 }

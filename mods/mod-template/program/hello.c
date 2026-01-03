@@ -17,6 +17,6 @@
 #include "app.h"
 
 int32_t hello(int32_t b) {
-	// Remove me, illustration purposes only
-	return b;
+    // Remove me, illustration purposes only
+    return b;
 }

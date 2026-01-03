@@ -99,9 +99,9 @@
 #include "build-dep-version.h"
 // Following macros can't be in *-version.h as Microsoft res.exe can't cope with it (app.rc includes them)
 #define VERSION_TO_INT(a, b, c) (a*10000+b*100+c)
-#define	VERSION_MAJOR_FROM_INT(a) (a/10000)
-#define	VERSION_MINOR_FROM_INT(a) ((a%10000)/100)
-#define	VERSION_MICRO_FROM_INT(a) (a%100)
+#define    VERSION_MAJOR_FROM_INT(a) (a/10000)
+#define    VERSION_MINOR_FROM_INT(a) ((a%10000)/100)
+#define    VERSION_MICRO_FROM_INT(a) (a%100)
 
 #define APP_VERSION_INT VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
 #define BUILD_DEP_VERSION_INT VERSION_TO_INT(BUILD_DEP_VERSION_MAJOR,BUILD_DEP_VERSION_MINOR,BUILD_DEP_VERSION_PATCH)
@@ -111,8 +111,8 @@
 //-----------------------------------------------------------------------------
 /* TODO
 typedef enum app_logcategory {
-	APP_CATEGORY_CORE = SDL_LOG_CATEGORY_CUSTOM,
-	APP_CATEGORY_PLUGIN,
+    APP_CATEGORY_CORE = SDL_LOG_CATEGORY_CUSTOM,
+    APP_CATEGORY_PLUGIN,
 } app_logcategory_t;
 */
 
@@ -134,10 +134,10 @@ extern APP_API SDL_LogPriority logpriority_earlyskip;
 // [SECTION] Mods API definition
 //-----------------------------------------------------------------------------
 typedef enum mod_result {
-	MOD_RESULT_INVALID,
-	MOD_RESULT_FAILURE,
-	MOD_RESULT_SUCCESS,
-	MOD_RESULT_CONTINUE
+    MOD_RESULT_INVALID,
+    MOD_RESULT_FAILURE,
+    MOD_RESULT_SUCCESS,
+    MOD_RESULT_CONTINUE
 } mod_result_t;
 /**
  * @symbol-name    mod_handshake_v1
@@ -202,6 +202,6 @@ APP_API uint64_t convert_frameid_to_ns(uint64_t frameid, int32_t framerate_num, 
 
 // For static initializers, we cannot use the function, so here a macro
 #define CONVERT_FRAMEID_TO_NS(frameid, framerate_num, framerate_den) \
-	( ( ( (uint64_t)frameid) * 1000000000 * framerate_den ) / framerate_num )
+    ( ( ( (uint64_t)frameid) * 1000000000 * framerate_den ) / framerate_num )
 
 void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg);
