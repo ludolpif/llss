@@ -89,6 +89,7 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
 	if (!*userptr) return MOD_RESULT_FAILURE;
 
 	mod_main_data_t *data = (mod_main_data_t *) userptr;
+	data->running_struct_size = sizeof(mod_main_data_t);
 	data->world = world;
 
 	return MOD_RESULT_CONTINUE;

@@ -1,4 +1,4 @@
-#include "app.h" // No "ecs-mods-lifecycle.h", embeded in app.h
+#include "mods-components-core-lifecycle.h"
 
 #define APP_MOD_PATH_FROM_BASEPATH "%s../../../mods/"
 
@@ -16,14 +16,6 @@
 #define APP_MOD_FILEEXT ".so"
 #endif
 
-APP_API ECS_TAG_DECLARE(ModState);
-
-APP_API ECS_TAG_DECLARE(ModFlags);
-APP_API ECS_ENTITY_DECLARE(ModReloadable);
-APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
-
-APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
-APP_API ECS_COMPONENT_DECLARE(ModInRAM);
 
 // ECS Tasks forward declarations
 void ModLookOnDisk(ecs_iter_t *it);
@@ -36,36 +28,30 @@ void ModReloadFromDisk(ecs_iter_t *it);
 SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const char *dirname, const char *fname);
 ecs_entity_t mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r);
 
-// Imported modules Import function definition (as we don't make one .h per module)
-void ModsStateImport(ecs_world_t* world);
-
 //XXX make it part of world
 char *mods_basepath = NULL;
 
-void ModsLifecycleImport(ecs_world_t *world) {
+void ModsSystemsCoreLifecycleImport(ecs_world_t *world) {
 	// https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
 	// See the "modules" example
-	ECS_MODULE(world, ModsLifecycle);
-
-	ECS_TAG_DEFINE(world, ModState);
-	// Register ModState as exclusive relationship. This ensures that an entity
-	// can only belong to a single ModState.
-	ecs_add_id(world, ModState, EcsExclusive);
-	ECS_IMPORT(world, ModsState);
-
-	// ModFlags is not an exclusive relationship.
-	ECS_TAG_DEFINE(world, ModFlags);
-	ECS_ENTITY_DEFINE(world, ModReloadable);
-	ECS_ENTITY_DEFINE(world, ModNewerOnDisk);
-
-	ECS_COMPONENT_DEFINE(world, ModOnDisk);
-	ECS_COMPONENT_DEFINE(world, ModInRAM);
+	ECS_MODULE(world, ModsSystemsCoreLifecycle);
+	ECS_IMPORT(world, ModsComponentsCoreLifecycle);
 
 	// The '()' means, don't match this component on an entity, while `[out]` indicates 
 	// that the component is being written. This is interpreted by pipelines as a
 	// system that can potentially enqueue commands for the ModInRAM component.
-	ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad, (ModState, mods.state.ModAvailable), [in] ModOnDisk, [out] ModInRAM() );
-	ECS_SYSTEM(world, ModReloadFromDisk, EcsOnLoad, (ModState, mods.state.ModRunning), (ModFlags, ModReloadable), (ModFlags, ModNewerOnDisk), [in] ModOnDisk, [out] ModInRAM);
+	ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad,
+		(mods.components.core.lifecycle.ModState, mods.components.core.lifecycle.ModAvailable),
+		[in] mods.components.core.lifecycle.ModOnDisk,
+		[out] mods.components.core.lifecycle.ModInRAM()
+		);
+	ECS_SYSTEM(world, ModReloadFromDisk, EcsOnLoad,
+		(mods.components.core.lifecycle.ModState, mods.components.core.lifecycle.ModRunning),
+		(mods.components.core.lifecycle.ModFlags, mods.components.core.lifecycle.ModReloadable),
+		(mods.components.core.lifecycle.ModFlags, mods.components.core.lifecycle.ModNewerOnDisk),
+		[in] mods.components.core.lifecycle.ModOnDisk,
+		[out] mods.components.core.lifecycle.ModInRAM
+		);
 
 	// Periodic Tasks
 	// ECS_SYSTEM(world, ModLookOnDisk, EcsOnLoad, 0); does not set .interval = ...

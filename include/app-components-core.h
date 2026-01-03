@@ -1,11 +1,11 @@
 #pragma once
+#include "app.h"
+
 // FLECS Reflection system boilerplate
 #undef ECS_META_IMPL
 #ifndef APP_COMPONENTS_CORE_IMPL
 #define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
 #endif
-
-#include "app.h"
 
 APP_API void AppComponentsCoreImport(ecs_world_t *world);
 

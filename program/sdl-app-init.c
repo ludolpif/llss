@@ -26,8 +26,9 @@
 
 APP_API SDL_LogPriority logpriority_earlyskip;
 
-// app.systems.* modules import functions defined in app-systems-*.c (no .h, only ine line per module)
+// app.systems.* modules import functions defined in app-systems-*.c (no .h, only one line per module)
 void AppSystemsCoreImport(ecs_world_t *world);
+void ModsSystemsCoreLifecycleImport(ecs_world_t *world);
 
 // Implementations
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
@@ -192,6 +193,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 	ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
 	ECS_IMPORT(world, AppSystemsCore); // Will call AppSystemsCoreImport function
+	ECS_IMPORT(world,ModsSystemsCoreLifecycle);
 
 	ecs_singleton_set(world, AppVersion, {
 			.running_app_version = APP_VERSION_INT,
@@ -223,7 +225,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 			.main_frame_start_ns = 0,
 			.main_frameid = 0,
 			});
-	ECS_IMPORT(world, ModsLifecycle);
 
 	// ECS First frame. This runs both the Startup, Update and user-defined systems
 	ecs_progress(world, 0.0f);

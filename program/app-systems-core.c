@@ -1,4 +1,4 @@
-#include "../include/app-components-core.h"
+#include "app-components-core.h"
 #include "ui-main.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"

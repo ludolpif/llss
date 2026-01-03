@@ -191,42 +191,7 @@ typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 //TODO follow the hint to separate in components.* and systems.* to make replacable things
 //https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
 #include "app-components-core.h"
-
-// ecs-mods-state.h
-extern APP_API ECS_TAG_DECLARE(ModState);
-extern APP_API ECS_ENTITY_DECLARE(ModAvailable);
-extern APP_API ECS_ENTITY_DECLARE(ModIncompatible);
-extern APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
-extern APP_API ECS_ENTITY_DECLARE(ModInitFailed);
-extern APP_API ECS_ENTITY_DECLARE(ModRunning);
-extern APP_API ECS_ENTITY_DECLARE(ModTerminated);
-
-// ecs-mods-lifecycle.h
-extern APP_API ECS_TAG_DECLARE(ModFlags);
-extern APP_API ECS_ENTITY_DECLARE(ModReloadable);
-extern APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
-
-typedef struct {
-	char *name;
-	char *so_path;
-	SDL_Time modify_time;
-} ModOnDisk;
-extern APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
-
-typedef struct {
-	void *shared_object;
-	void *userptr;
-	Sint32 build_dep_version_compiled_against;
-	SDL_Time so_file_modify_time_when_loaded_in_ram;
-	mod_init_v1_t mod_init_v1;
-	mod_reload_v1_t mod_reload_v1;
-	mod_fini_v1_t mod_fini_v1;
-} ModInRAM;
-extern APP_API ECS_COMPONENT_DECLARE(ModInRAM);
-
-// helper called from sdl-app-init.c ECS_IMPORT(world, ModsLifecycle)
-void ModsLifecycleImport(ecs_world_t *world);
-
+#include "mods-components-core-lifecycle.h"
 
 //-----------------------------------------------------------------------------
 // [SECTION] Utility functions
