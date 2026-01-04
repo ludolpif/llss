@@ -7,7 +7,7 @@
 #define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
 #endif
 
-APP_API void ModsComponentsCoreLifecycleImport(ecs_world_t *world);
+APP_API void AppComponentsModsImport(ecs_world_t *world);
 
 extern APP_API ECS_TAG_DECLARE(ModState);
 extern APP_API ECS_ENTITY_DECLARE(ModAvailable);

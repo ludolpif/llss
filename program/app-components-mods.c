@@ -1,5 +1,5 @@
 #define MODS_COMPONENTS_CORE_LIFECYCLE_IMPL
-#include "mods-components-core-lifecycle.h"
+#include "app-components-mods.h"
 
 APP_API ECS_TAG_DECLARE(ModState);
 APP_API ECS_ENTITY_DECLARE(ModAvailable);
@@ -17,10 +17,10 @@ APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
 APP_API ECS_COMPONENT_DECLARE(ModInRAM);
 
-void ModsComponentsCoreLifecycleImport(ecs_world_t *world) {
+void AppComponentsModsImport(ecs_world_t *world) {
   // https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
   // See the "modules" example
-  ECS_MODULE(world, ModsComponentsCoreLifecycle);
+  ECS_MODULE(world, AppComponentsMods);
 
   ECS_TAG_DEFINE(world, ModState);
   // Register ModState as exclusive relationship. This ensures that an entity

@@ -18,7 +18,7 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
-#include "mods-systems-core-lifecycle.h"
+#include "app-systems-mods.h"
 
 #define app_failure(...) do { SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__); return SDL_APP_FAILURE; } while(SDL_NULL_WHILE_LOOP_CONDITION)
 
@@ -193,7 +193,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
     ECS_IMPORT(world, AppSystemsCore); // Will call AppSystemsCoreImport function
-    ECS_IMPORT(world,ModsSystemsCoreLifecycle);
+    ECS_IMPORT(world,AppSystemsMods);
 
     ecs_singleton_set(world, AppVersion, {
             .running_app_version = APP_VERSION_INT,

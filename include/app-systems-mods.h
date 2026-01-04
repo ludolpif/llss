@@ -1,5 +1,5 @@
 #pragma once
-#include "mods-components-core-lifecycle.h"
+#include "app-components-mods.h"
 
 #define APP_MOD_PATH_FROM_BASEPATH "%s../../../mods/"
 
@@ -18,5 +18,5 @@
 #endif
 
 extern ECS_QUERY_DECLARE(ModReadyQuery);
-void ModsSystemsCoreLifecycleImport(ecs_world_t *world);
+void AppSystemsModsImport(ecs_world_t *world);
 void ModRunInit(ecs_iter_t *it);

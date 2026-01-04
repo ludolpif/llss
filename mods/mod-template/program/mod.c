@@ -74,6 +74,8 @@ MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
 }
 
 MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
+              app_warn("%016"PRIu64" mod_init_v1() in %s: starting",
+                      SDL_GetTicksNS(), SDL_FILE);
 #ifdef MOD_USES_IMGUI
     // As ImGui use a notion of global context for it's API calls, use heap to process data
     // and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.

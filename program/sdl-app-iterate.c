@@ -18,7 +18,7 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
-#include "mods-systems-core-lifecycle.h"
+#include "app-systems-mods.h"
 
 void throttle(ecs_world_t *world);
 

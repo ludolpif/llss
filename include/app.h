@@ -191,7 +191,7 @@ typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
 //TODO follow the hint to separate in components.* and systems.* to make replacable things
 //https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
 #include "app-components-core.h"
-#include "mods-components-core-lifecycle.h"
+#include "app-components-mods.h"
 
 //-----------------------------------------------------------------------------
 // [SECTION] Utility functions
