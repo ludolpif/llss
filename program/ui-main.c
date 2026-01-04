@@ -23,7 +23,6 @@ void UIMain(ecs_iter_t *it) {
 
     // TODO rewire this data to ECS when ready
     static bool show_demo_window;
-    static bool show_another_window;
     static ImVec4 clear_color;
 
     // 1. Show the big demo window (Most of the sample code is in ImGui_ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -39,7 +38,6 @@ void UIMain(ecs_iter_t *it) {
 
         ImGui_Text("This is some useful text.");               // Display some text (you can use a format strings too)
         ImGui_Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-        ImGui_Checkbox("mod-template Window", &show_another_window);
 
         ImGui_SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
         ImGui_ColorEdit3("clear color", (float*)&clear_color, 0); // Edit 3 floats representing a color
@@ -51,6 +49,7 @@ void UIMain(ecs_iter_t *it) {
 
         ImGui_Text("Application average %.3f ms/frame (%.1f FPS)",
                 1000.0f / fr_float, fr_float);
+        ImGui_Text("Some room for mods below this text.");
 
         ImGui_End();
     }

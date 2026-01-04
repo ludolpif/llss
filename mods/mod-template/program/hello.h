@@ -27,5 +27,5 @@ void ModTemplateHelloImport(ecs_world_t *world);
 
 // Components
 MOD_API ECS_STRUCT(ModTemplateUIState, {
-    bool show_hello_window;
+    bool show_template_window;
 });
