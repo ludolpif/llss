@@ -40,7 +40,28 @@ void AppComponentsModsImport(ecs_world_t *world) {
   ECS_ENTITY_DEFINE(world, ModReloadable);
   ECS_ENTITY_DEFINE(world, ModNewerOnDisk);
 
-        // Components
+  // Components
   ECS_COMPONENT_DEFINE(world, ModOnDisk);
+  ecs_struct(world, {
+      .entity = ecs_id(ModOnDisk),
+      .members = {
+          { .name = "name",  .type = ecs_id(ecs_string_t) },
+          { .name = "so_path",  .type = ecs_id(ecs_string_t) },
+          { .name = "modify_time", .type = ecs_id(ecs_i64_t) },
+          }
+      });
+
   ECS_COMPONENT_DEFINE(world, ModInRAM);
+  ecs_struct(world, {
+      .entity = ecs_id(ModInRAM),
+      .members = {
+          { .name = "shared_object",  .type = ecs_id(ecs_uptr_t) },
+          { .name = "userptr",  .type = ecs_id(ecs_uptr_t) },
+          { .name = "build_dep_version_compiled_against", .type = ecs_id(ecs_i32_t) },
+          { .name = "so_file_modify_time_when_loaded_in_ram", .type = ecs_id(ecs_i64_t) },
+          { .name = "mod_init_v1", .type = ecs_id(ecs_uptr_t) },
+          { .name = "mod_reload_v1", .type = ecs_id(ecs_uptr_t) },
+          { .name = "mod_fini_v1", .type = ecs_id(ecs_uptr_t) },
+          }
+      });
 }

@@ -22,7 +22,6 @@ extern APP_API ECS_TAG_DECLARE(ModFlags);
 extern APP_API ECS_ENTITY_DECLARE(ModReloadable);
 extern APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
-//TODO ECS_STRUCT()
 typedef struct {
     char *name;
     char *so_path;
