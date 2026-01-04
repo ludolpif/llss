@@ -38,6 +38,9 @@
     <ClInclude Include="$(SolutionDir)\include\app-components-mods.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
+    <ClInclude Include="$(SolutionDir)\include\app-systems-core.h">
+      <Filter>Public Headers</Filter>
+    </ClInclude>
     <ClInclude Include="$(SolutionDir)\include\app-systems-mods.h">
       <Filter>Public Headers</Filter>
     </ClInclude>

@@ -43,11 +43,16 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     return SDL_APP_CONTINUE;
 }
 
+/* Throttle in a way that helps to get clean CFR video stream (Constant Frame Rate)
+ * External video editing software needs CFR, streaming could be VFR
+ *   but audio/video sync seems harder with VFR.
+ * We want to snap PTS (Presentation TimeStamps) for all streams to a multiple of the framerate
+ * Here we throttle not to minimize framedrops at all costs, but to snap frame start to SDL Ticks.
+ *
+ * If main_framerate is 1/60, and render time 20ms (out of 16ms budget for 60 FPS), this code will
+ * go for 30 FPS because it will wait 2*1/60-0.02s <=> 32-20ms <=> 12ms each loop to keep aligned.
+ */
 void throttle(ecs_world_t *world) {
-    // Throttle in a way that helps to get clean CFR video stream (Constant Frame Rate)
-    // External video editing software needs CFR, streaming could be VFR but audio/video sync seems harder with VFR
-    // We want to snap PTS (Presentation TimeStamps) for all video streams to a multiple of the framerate
-    // Here we throttle to snap to SDL ticks so video code can just to have PTS = ticks - offset with offset = N/framerate.
     static int32_t prev_fr_num = 60;
     static int32_t prev_fr_den = 1;
     static uint64_t sleep_max = CONVERT_FRAMEID_TO_NS(1, 60, 1);

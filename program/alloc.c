@@ -50,7 +50,10 @@ void alloc_count_install_hooks(void) {
 }
 
 void alloc_count_dump_counters(Uint32 loops, char *when) {
-    if (when) app_info("%016"PRIu64" heap allocation at %s (only SDL_*alloc/SDL_free calls)", SDL_GetTicksNS(), when);
+    if (when) {
+        app_info("%016"PRIu64" heap allocation at %s (only SDL_*alloc/SDL_free calls)",
+                SDL_GetTicksNS(), when);
+    }
     app_info("[%7"PRIu32" loops]  ctxt   malloc   calloc  realloc     free (+diff)", loops);
     for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
         int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);

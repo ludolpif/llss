@@ -11,4 +11,5 @@
 #define APP_METADATA_COPYRIGHT_STRING "Copyright 2025 ludolpif <ludolpif@gmail.com>"
 #define APP_METADATA_URL_STRING "https://ludolpif.fr/llss"
 #define APP_METADATA_TYPE_STRING "application"
-#define APP_METADATA_DESCRIPTION "Libre Live Streaming Software (LLSS)" // Shows up on Windows Firewall popup as Application long name
+#define APP_METADATA_DESCRIPTION "Libre Live Streaming Software (LLSS)"
+// Note: APP_METADATA_DESCRIPTION shows up on Windows Firewall popup as Application long name

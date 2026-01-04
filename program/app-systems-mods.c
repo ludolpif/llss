@@ -29,7 +29,7 @@ void AppSystemsModsImport(ecs_world_t *world) {
         (app.components.mods.ModState, app.components.mods.ModReady)
         );
 
-    // The '()' means, don't match this component on an entity, while `[out]` indicates 
+    // The '()' means, don't match this component on an entity, while `[out]` indicates
     // that the component is being written. This is interpreted by pipelines as a
     // system that can potentially enqueue commands for the ModInRAM component.
     ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad,
@@ -78,19 +78,21 @@ void ModReloadFromDisk(ecs_iter_t *it) {
 
 // Task, run once per second TODO use libevent to watch folder
 void ModLookOnDisk(ecs_iter_t *it) {
-    if (!mods_basepath) { 
+    if (!mods_basepath) {
         if (!SDL_asprintf(&mods_basepath, APP_MOD_PATH_FROM_BASEPATH, SDL_GetBasePath())) {
-            app_error("%016"PRIu64" ModLookOnDisk(): SDL_asprintf(&mods_basepath, ...) failed", SDL_GetTicksNS());
+            app_error("%016"PRIu64" ModLookOnDisk(): SDL_asprintf(&mods_basepath, ...) failed",
+                    SDL_GetTicksNS());
             return;
         }
     }
 
     if (!SDL_EnumerateDirectory(mods_basepath, enumerate_mod_directory_callback, it->world)) {
-        app_error("%016"PRIu64" ModLookOnDisk(): SDL_EnumerateDirectory(%s) failed", SDL_GetTicksNS(), mods_basepath);
+        app_error("%016"PRIu64" ModLookOnDisk(): SDL_EnumerateDirectory(%s) failed",
+                SDL_GetTicksNS(), mods_basepath);
     }
 }
 
-// callback for each matching file/folder from SDL_EnumerateDirectory(mods_basepath, ...) in ModLookOnDisk(ecs_iter_t *it)
+// callback for each matching file/folder from above SDL_EnumerateDirectory(mods_basepath, ...)
 SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const char *dirname, const char *fname) {
 #define LOG_PREFIX "%016"PRIu64" enumerate_mod_directory_callback(world, \"%s\", \"%s\")"
     //app_trace(LOG_PREFIX, SDL_GetTicksNS(), dirname, fname);
@@ -143,7 +145,11 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
 
     // Create or refresh the current mod entity
     ecs_entity_t mod = ecs_entity(world, { .name = mod_entity_name });
-    ecs_set(world, mod, ModOnDisk, { .name = mod_name, .so_path = so_path, .modify_time = info.modify_time });
+    ecs_set(world, mod, ModOnDisk, {
+        .name = mod_name,
+        .so_path = so_path,
+        .modify_time = info.modify_time
+    });
     if (!ecs_has_pair(world, mod, ModState, EcsWildcard)) {
         ecs_add_pair(world, mod, ModState, ModAvailable);
     }
@@ -171,13 +177,16 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
 
     r->shared_object = SDL_LoadObject(d->so_path);
     if (!r->shared_object) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadObject(): %s", SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadObject(): %s",
+                SDL_GetTicksNS(), SDL_GetError());
         goto bad2;
     }
 
-    mod_handshake_v1_t mod_handshake_v1 = (mod_handshake_v1_t) SDL_LoadFunction(r->shared_object, "mod_handshake_v1");
+    mod_handshake_v1_t mod_handshake_v1 =
+        (mod_handshake_v1_t) SDL_LoadFunction(r->shared_object, "mod_handshake_v1");
     if (!mod_handshake_v1) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_handshake_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_handshake_v1): %s",
+                SDL_GetTicksNS(), SDL_GetError());
         goto bad;
     }
 
@@ -193,13 +202,15 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
 
     r->mod_init_v1 = (mod_init_v1_t) SDL_LoadFunction(r->shared_object, "mod_init_v1");
     if (!r->mod_init_v1) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s",
+                SDL_GetTicksNS(), SDL_GetError());
         goto bad;
     }
 
     r->mod_fini_v1 = (mod_fini_v1_t) SDL_LoadFunction(r->shared_object, "mod_fini_v1");
     if (!r->mod_fini_v1) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s", SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s",
+                SDL_GetTicksNS(), SDL_GetError());
         goto bad;
     }
 
@@ -223,8 +234,8 @@ void ModRunInit(ecs_iter_t *it) {
 
     for (int i = 0; i < it->count; i++) {
         void *userptr = NULL;
-        app_warn("%016"PRIu64" ModRunInit() for %s: calling mod_init_v1(%p, %p) at %p",
-                SDL_GetTicksNS(), d->name, it->world, &userptr, r[i].mod_init_v1);
+        app_warn("%016"PRIu64" ModRunInit() for %s: calling mod_init_v1()",
+                SDL_GetTicksNS(), d->name);
 
         mod_result_t res = MOD_RESULT_INVALID;
         if ( r[i].mod_init_v1 ) {

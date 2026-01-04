@@ -113,6 +113,7 @@
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app-components-core.h" />
     <ClInclude Include="$(SolutionDir)\include\app-components-mods.h" />
+    <ClInclude Include="$(SolutionDir)\include\app-systems-core.h" />
     <ClInclude Include="$(SolutionDir)\include\app-systems-mods.h" />
     <ClInclude Include="$(SolutionDir)\include\app-version.h" />
     <ClInclude Include="$(SolutionDir)\include\app.h" />

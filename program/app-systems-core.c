@@ -1,13 +1,12 @@
-#include "app-components-core.h"
+#include "app-systems-core.h"
 #include "ui-main.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
 
-void ImGuiPrepareForNewFrame(ecs_iter_t *it);
-void ImGuiRenderAndSubmit(ecs_iter_t *it);
-
 void AppSystemsCoreImport(ecs_world_t *world) {
-    ECS_IMPORT(world, AppComponentsCore); // Will call AppComponentsCoreImport(world) from app-components-core.c
+    // ECS_IMPORT Will call AppComponentsCoreImport(world) from app-components-core.c
+    ECS_IMPORT(world, AppComponentsCore);
+
     ECS_MODULE(world, AppSystemsCore);
 
     // Tasks declarations, will run once per frame
@@ -35,13 +34,15 @@ void ImGuiRenderAndSubmit(ecs_iter_t *it) {
     ImDrawData* draw_data = ImGui_GetDrawData();
     const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f);
 
-    SDL_GPUCommandBuffer* command_buffer = SDL_AcquireGPUCommandBuffer(gpu_device); // Acquire a GPU command buffer
+    // Acquire a GPU command buffer
+    SDL_GPUCommandBuffer* command_buffer = SDL_AcquireGPUCommandBuffer(gpu_device);
 
+    // Acquire a target texture
     SDL_GPUTexture* swapchain_texture;
-    SDL_WaitAndAcquireGPUSwapchainTexture(command_buffer, main_window, &swapchain_texture, NULL, NULL); // Acquire a swapchain texture
+    SDL_WaitAndAcquireGPUSwapchainTexture(command_buffer, main_window, &swapchain_texture, NULL, NULL);
 
     if (swapchain_texture != NULL && !is_minimized) {
-        // This is mandatory: call ImGui_ImplSDLGPU3_PrepareDrawData() to upload the vertex/index buffer!
+        // Mandatory ImGui_ImplSDLGPU3_PrepareDrawData() to upload the vertex/index buffer!
         cImGui_ImplSDLGPU3_PrepareDrawData(draw_data, command_buffer);
 
         // Setup and start a render pass
