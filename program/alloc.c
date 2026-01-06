@@ -129,7 +129,8 @@ void * SDLCALL alloc_count_realloc(void *mem, size_t size) {
         app_debug("%016"PRIu64" alloc_count_realloc(mem, 0) called", SDL_GetTicksNS());
         SDL_AtomicIncRef(alloc_count_current_context+3);
     } else if (!mem) {
-        app_debug("%016"PRIu64" alloc_count_realloc(NULL, size) called", SDL_GetTicksNS());
+        // no log because SDL3 make some realloc(NULL, size) calls
+        //app_debug("%016"PRIu64" alloc_count_realloc(NULL, size) called", SDL_GetTicksNS());
         SDL_AtomicIncRef(alloc_count_current_context+0);
     }
     return new;
@@ -143,7 +144,8 @@ void * SDLCALL alloc_count_realloc_ecs(void *mem, ecs_size_t size) {
         app_debug("%016"PRIu64" alloc_count_realloc_ecs(mem, 0) called", SDL_GetTicksNS());
         SDL_AtomicIncRef(alloc_count_current_context+3);
     } else if (!mem) {
-        app_debug("%016"PRIu64" alloc_count_realloc_ecs(NULL, size) called", SDL_GetTicksNS());
+        // no log because flecs make many realloc(NULL, size) calls
+        //app_debug("%016"PRIu64" alloc_count_realloc_ecs(NULL, size) called", SDL_GetTicksNS());
         SDL_AtomicIncRef(alloc_count_current_context+0);
     }
     return new;
