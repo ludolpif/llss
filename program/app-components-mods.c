@@ -1,4 +1,4 @@
-#define MODS_COMPONENTS_CORE_LIFECYCLE_IMPL
+#define APP_COMPONENTS_MODS_IMPL
 #include "app-components-mods.h"
 
 APP_API ECS_TAG_DECLARE(ModState);

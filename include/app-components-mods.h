@@ -19,7 +19,7 @@
 
 // FLECS Reflection system boilerplate
 #undef ECS_META_IMPL
-#ifndef MODS_COMPONENTS_CORE_LIFECYCLE_IMPL
+#ifndef APP_COMPONENTS_MODS_IMPL
 #define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
 #endif
 
