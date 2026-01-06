@@ -32,19 +32,29 @@ void AppSystemsModsImport(ecs_world_t *world) {
         (app.components.mods.ModState, app.components.mods.ModTerminating)
         );
 
+    //TODO EcsOnLoad only garanties that we will wait those tasks to make others in frametime budget without the need
+
+    ECS_SYSTEM(world, ModPrepareFromDisk, EcsOnLoad,
+        [inout] app.components.mods.ModOnDisk,
+        (app.components.mods.ModState, app.components.mods.ModAvailable)
+        );
+    ECS_SYSTEM(world, ModPrepareAgainFromDisk, EcsOnLoad,
+        [inout] app.components.mods.ModOnDisk,
+        (app.components.mods.ModState, app.components.mods.ModIncompatible),
+        (app.components.mods.ModFlags, app.components.mods.ModNewerOnDisk)
+        );
     // The '()' means, don't match this component on an entity, while `[out]` indicates
     // that the component is being written. This is interpreted by pipelines as a
     // system that can potentially enqueue commands for the ModInRAM component.
     ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad,
         [in] app.components.mods.ModOnDisk,
         [out] app.components.mods.ModInRAM(),
-        (app.components.mods.ModState, app.components.mods.ModAvailable)
+        (app.components.mods.ModState, app.components.mods.ModLoading)
         );
     ECS_SYSTEM(world, ModLoadAgainFromDisk, EcsOnLoad,
         [in] app.components.mods.ModOnDisk,
         [inout] app.components.mods.ModInRAM,
-        (app.components.mods.ModState, app.components.mods.ModIncompatible),
-        (app.components.mods.ModFlags, app.components.mods.ModNewerOnDisk)
+        (app.components.mods.ModState, app.components.mods.ModLoading)
         );
 
 
@@ -61,6 +71,44 @@ void AppSystemsModsImport(ecs_world_t *world) {
 }
 
 // Systems run once per frame but only if entities that need attention are matching
+void ModPrepareFromDisk(ecs_iter_t *it) {
+    app_debug("%016"PRIu64" ModPrepareFromDisk(): starting", SDL_GetTicksNS());
+    ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
+    for (int i = 0; i < it->count; i++) {
+        ecs_entity_t mod = it->entities[i];
+        ecs_entity_t next_state = ModLoading;
+
+        d[i].load_id++;
+#ifdef SDL_PLATFORM_WINDOWS
+        // Windows locks .dll files on disk if they are loaded in RAM, by design
+        if (!SDL_asprintf(&d[i].so_realpath, "%s/"APP_MOD_SUBDIR"%03"PRIi32"-%s"APP_MOD_FILEEXT,
+                    d[i].mod_dirpath, d[i].load_id, d[i].name)) {
+            app_error("%016"PRIu64" ModPrepareFromDisk(%s): SDL_asprintf(&so_realpath,...): %s",
+                    SDL_GetTicksNS(), d[i].name, SDL_GetError());
+            next_state = ModLoadFailed;
+            goto bad1;
+        }
+        // TODO check if not exists
+        // TODO ask async copy
+#else
+        // For other OSes, nothing to do, .so or .dylib can be replaced freely
+        d[i].so_realpath = SDL_strdup(d[i].so_path);
+        if (!d[i].so_realpath) {
+            app_error("%016"PRIu64" ModPrepareFromDisk(%s): SDL_strcy(&so_path,...): %s",
+                    SDL_GetTicksNS(), d[i].name, SDL_GetError());
+            next_state = ModLoadFailed;
+            goto bad1;
+        }
+#endif
+bad1:
+        // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
+        ecs_add_pair(it->world, mod, ModState, next_state);
+    }
+}
+void ModPrepareAgainFromDisk(ecs_iter_t *it) {
+    app_debug("%016"PRIu64" ModPrepareAgainFromDisk(): starting", SDL_GetTicksNS());
+    ModPrepareFromDisk(it);
+}
 void ModLoadFromDisk(ecs_iter_t *it) {
     ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM r;
@@ -125,17 +173,19 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     }
     // Silently skip files living at *dirname
     if (!SDL_GetPathInfo(mod_dirpath, &info)) {
-        app_error(LOG_PREFIX ": SDL_GetPathInfo(): %s", SDL_GetTicksNS(), dirname, fname, SDL_GetError());
+        app_error(LOG_PREFIX ": SDL_GetPathInfo(): %s",
+                SDL_GetTicksNS(), dirname, fname, SDL_GetError());
         goto bad3;
     }
     if (info.type != SDL_PATHTYPE_DIRECTORY) {
         goto bad3;
     }
+    // Generate full path
     char *so_path;
     if (!SDL_asprintf(&so_path, "%s/"APP_MOD_SUBDIR"%s"APP_MOD_FILEEXT, mod_dirpath, fname)) {
-        app_error(LOG_PREFIX ": SDL_asprintf(...,\"%%s/APP_MOD_SUBDIR%%sAPP_MOD_FILEEXT\",...): %s",
+        app_error(LOG_PREFIX ": SDL_asprintf(&so_path,...): %s",
                 SDL_GetTicksNS(), dirname, fname, SDL_GetError());
-        goto bad2;
+        goto bad3;
     }
     // Skip if we can't stat the so file
     if (!SDL_GetPathInfo(so_path, &info)) {
@@ -146,9 +196,10 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
         app_info(LOG_PREFIX ": %s isn't a file", SDL_GetTicksNS(), dirname, fname, so_path);
         goto bad2;
     }
+    // Prepare some strings for the ModOnDisk component
     char *mod_entity_name;
     if (!SDL_asprintf(&mod_entity_name, "mod.meta.%s", fname)) {
-        app_error(LOG_PREFIX ": SDL_asprintf(&mod_entity_name, \"mods.%%s\",...): %s",
+        app_error(LOG_PREFIX ": SDL_asprintf(&mod_entity_name, ...): %s",
                 SDL_GetTicksNS(), dirname, fname, SDL_GetError());
         goto bad2;
     }
@@ -158,12 +209,14 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
                 SDL_GetTicksNS(), dirname, fname, SDL_GetError());
         goto bad1;
     }
-
     // Create or refresh the current mod entity
     ecs_entity_t mod = ecs_entity(world, { .name = mod_entity_name });
     ecs_set(world, mod, ModOnDisk, {
         .name = mod_name,
+        .mod_dirpath = mod_dirpath,
         .so_path = so_path,
+        .so_realpath = NULL,
+        .load_id = 1,
         .modify_time = info.modify_time
     });
     if (!ecs_has_pair(world, mod, ModState, EcsWildcard)) {
@@ -173,12 +226,10 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     // this entity have already a ModInRAM component
     const ModInRAM *r = ecs_get(world, mod, ModInRAM);
     if (r && info.modify_time > r->modify_time_when_loaded ) {
-        app_info(LOG_PREFIX ": mod has changed on disk (%"PRIu64" < %"PRIu64")",
-                SDL_GetTicksNS(), "...", fname, info.modify_time, r->modify_time_when_loaded);
+        app_info(LOG_PREFIX ": mod has changed on disk", SDL_GetTicksNS(), "...", fname);
         ecs_add_pair(world, mod, ModFlags, ModNewerOnDisk);
     }
 
-    SDL_free(mod_dirpath);
     return SDL_ENUM_CONTINUE;
 
     SDL_free(mod_name);
@@ -195,11 +246,11 @@ bad4:
 }
 
 ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r) {
-    app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), d->so_path);
+    app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), d->so_realpath);
 
     ecs_entity_t next_state = ModLoadFailed;
 
-    r->shared_object = SDL_LoadObject(d->so_path);
+    r->shared_object = SDL_LoadObject(d->so_realpath);
     if (!r->shared_object) {
         app_warn("%016"PRIu64" mod_tryload(): SDL_LoadObject(): %s",
                 SDL_GetTicksNS(), SDL_GetError());
@@ -219,7 +270,7 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
     int32_t res = mod_handshake_v1(APP_VERSION_INT);
     if (res != BUILD_DEP_VERSION_INT) {
         if ( res == -1 ) {
-            app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update this app.",
+            app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update the app.",
                     SDL_GetTicksNS(), d->name);
         } else {
             app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update this mod. "
@@ -346,25 +397,18 @@ void ModFiniAndUnload(ecs_iter_t *it) {
                 SDL_GetTicksNS(), d[i].name);
         ecs_entity_t mod = it->entities[i];
         mod_result_t res = MOD_RESULT_INVALID;
-        ecs_entity_t next_state = ModInitFailed;
         if ( r[i].mod_fini_v1 ) {
             res = r[i].mod_fini_v1(MOD_FLAGS_NONE, r[i].userptr);
         }
         app_warn("%016"PRIu64" ModFiniAndUnload(): mod_fini_v1() returned: %d",
                 SDL_GetTicksNS(), res);
 
-        switch (res) {
-            case MOD_RESULT_SUCCESS:
-                next_state = ModTerminated;
-                break;
-            default: /* MOD_RESULT_FAILURE, MOD_RESULT_CONTINUE or unknown value */
-                next_state = ModRunning;
-                goto bailout;
-        }
-        r[i].userptr = NULL;
+        ecs_entity_t next_state = (res==MOD_RESULT_SUCCESS)?ModTerminated:ModRunning;
 
-        SDL_UnloadObject(r->shared_object);
-bailout:
+        if ( next_state == ModTerminated ) {
+            r[i].userptr = NULL;
+            SDL_UnloadObject(r->shared_object);
+        }
         // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
         ecs_add_pair(it->world, mod, ModState, next_state);
     }

@@ -175,18 +175,6 @@ typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, uint32_t flags, void *
  */
 typedef mod_result_t (*mod_fini_v1_t)(uint32_t flags, void *userptr);
 
-/** XXX
- * @symbol-name    mod_reload_v1
- * @calling-thread SDL_Main
- * @called-from    program/mod-host.c
- * @when           after loading the new one, before unloading the old one
- * @mandatory      yes
- * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one
- * @definition     MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
- *
-typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
-*/
-
 //-----------------------------------------------------------------------------
 // [SECTION] ECS Core definitions
 //-----------------------------------------------------------------------------

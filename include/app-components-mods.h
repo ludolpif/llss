@@ -27,6 +27,7 @@ APP_API void AppComponentsModsImport(ecs_world_t *world);
 
 extern APP_API ECS_TAG_DECLARE(ModState);
 extern APP_API ECS_ENTITY_DECLARE(ModAvailable);
+extern APP_API ECS_ENTITY_DECLARE(ModLoading);
 extern APP_API ECS_ENTITY_DECLARE(ModIncompatible);
 extern APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
 extern APP_API ECS_ENTITY_DECLARE(ModReady);
@@ -40,8 +41,11 @@ extern APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
 typedef struct {
     char *name;
+    char *mod_dirpath;
     char *so_path;
+    char *so_realpath;
     SDL_Time modify_time;
+    ecs_i32_t load_id;
 } ModOnDisk;
 extern APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
 
@@ -51,7 +55,6 @@ typedef struct {
     Sint32 build_dep_version_compiled_against;
     SDL_Time modify_time_when_loaded;
     mod_init_v1_t mod_init_v1;
-    //XXX mod_reload_v1_t mod_reload_v1;
     mod_fini_v1_t mod_fini_v1;
 } ModInRAM;
 extern APP_API ECS_COMPONENT_DECLARE(ModInRAM);

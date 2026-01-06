@@ -43,6 +43,8 @@ void AppSystemsModsImport(ecs_world_t *world);
 void ModLookOnDisk(ecs_iter_t *it);
 
 // Systems
+void ModPrepareFromDisk(ecs_iter_t *it);
+void ModPrepareAgainFromDisk(ecs_iter_t *it);
 void ModLoadFromDisk(ecs_iter_t *it);
 void ModLoadAgainFromDisk(ecs_iter_t *it);
 

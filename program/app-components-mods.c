@@ -3,6 +3,7 @@
 
 APP_API ECS_TAG_DECLARE(ModState);
 APP_API ECS_ENTITY_DECLARE(ModAvailable);
+APP_API ECS_ENTITY_DECLARE(ModLoading);
 APP_API ECS_ENTITY_DECLARE(ModIncompatible);
 APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
 APP_API ECS_ENTITY_DECLARE(ModReady);
@@ -28,6 +29,7 @@ void AppComponentsModsImport(ecs_world_t *world) {
   ecs_add_id(world, ModState, EcsExclusive);
 
   ECS_ENTITY_DEFINE(world, ModAvailable);
+  ECS_ENTITY_DEFINE(world, ModLoading);
   ECS_ENTITY_DEFINE(world, ModIncompatible);
   ECS_ENTITY_DEFINE(world, ModLoadFailed);
   ECS_ENTITY_DEFINE(world, ModReady);
@@ -45,9 +47,12 @@ void AppComponentsModsImport(ecs_world_t *world) {
   ecs_struct(world, {
       .entity = ecs_id(ModOnDisk),
       .members = {
-          { .name = "name",  .type = ecs_id(ecs_string_t) },
-          { .name = "so_path",  .type = ecs_id(ecs_string_t) },
+          { .name = "name",        .type = ecs_id(ecs_string_t) },
+          { .name = "mod_dirpath", .type = ecs_id(ecs_string_t) },
+          { .name = "so_path",     .type = ecs_id(ecs_string_t) },
+          { .name = "so_realpath", .type = ecs_id(ecs_string_t) },
           { .name = "modify_time", .type = ecs_id(ecs_i64_t) },
+          { .name = "load_id",     .type = ecs_id(ecs_i32_t) },
           }
       });
 
@@ -56,12 +61,11 @@ void AppComponentsModsImport(ecs_world_t *world) {
       .entity = ecs_id(ModInRAM),
       .members = {
           { .name = "shared_object",  .type = ecs_id(ecs_uptr_t) },
-          { .name = "userptr",  .type = ecs_id(ecs_uptr_t) },
+          { .name = "userptr",        .type = ecs_id(ecs_uptr_t) },
           { .name = "build_dep_version_compiled_against", .type = ecs_id(ecs_i32_t) },
           { .name = "modify_time_when_loaded", .type = ecs_id(ecs_i64_t) },
-          { .name = "mod_init_v1", .type = ecs_id(ecs_uptr_t) },
-          //XXX { .name = "mod_reload_v1", .type = ecs_id(ecs_uptr_t) },
-          { .name = "mod_fini_v1", .type = ecs_id(ecs_uptr_t) },
+          { .name = "mod_init_v1",     .type = ecs_id(ecs_uptr_t) },
+          { .name = "mod_fini_v1",     .type = ecs_id(ecs_uptr_t) },
           }
       });
 }
