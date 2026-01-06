@@ -29,11 +29,19 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     // without recompiling this program
     ecs_progress(world, 0.0f);
 
-    // Mods init is defered outside of ecs_progress() so they can ECS_IMPORT() modules
-    // while the world isn't in read-only mode
+    // Mods init and reload is defered outside of ecs_progress() so they can ECS_IMPORT() modules
+    // while the world isn't in read-only mode. mod fini needs it too.
     ecs_iter_t it = ecs_query_iter(world, ModReadyQuery);
     while (ecs_query_next(&it)) {
-        ModRunInit(&it);
+        ModInit(&it);
+    }
+    it = ecs_query_iter(world, ModRunningNewerOnDiskQuery);
+    while (ecs_query_next(&it)) {
+        ModReloadFromDisk(&it);
+    }
+    it = ecs_query_iter(world, ModTerminatingQuery);
+    while (ecs_query_next(&it)) {
+        ModFiniAndUnload(&it);
     }
 
     // Custom method for targetting desired FPS in a non-standard videogame fashion

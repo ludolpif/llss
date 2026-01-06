@@ -137,8 +137,9 @@ typedef enum mod_result {
     MOD_RESULT_INVALID,
     MOD_RESULT_FAILURE,
     MOD_RESULT_SUCCESS,
-    MOD_RESULT_CONTINUE
 } mod_result_t;
+#define MOD_FLAGS_NONE 0
+#define MOD_FLAGS_RELOADING 1<<0
 /**
  * @symbol-name    mod_handshake_v1
  * @calling-thread SDL_Main
@@ -159,9 +160,9 @@ typedef int32_t (*mod_handshake_v1_t)(int32_t running_app_version);
  * @purpose        mod own state initialization
  * @param world    in: main app ECS world, this pointer value should be copied in mod main data struct
  * @param userptr  out: userptr that be passed when future hooks will be called, should be SDL_calloc()ed by the mod
- * @definition     MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) { ... }
+ * @definition     MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, void **userptr) { ... }
  */
-typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
+typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, uint32_t flags, void **userptr);
 
 /**
  * @symbol-name    mod_fini_v1
@@ -172,9 +173,9 @@ typedef mod_result_t (*mod_init_v1_t)(ecs_world_t *world, void **userptr);
  * @purpose        mod own state de-initialization (free structs from stack)
  * @definition     MOD_API mod_result_t SDLCALL mod_fini_v1(void *userptr) { ... }
  */
-typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
+typedef mod_result_t (*mod_fini_v1_t)(uint32_t flags, void *userptr);
 
-/**
+/** XXX
  * @symbol-name    mod_reload_v1
  * @calling-thread SDL_Main
  * @called-from    program/mod-host.c
@@ -182,8 +183,9 @@ typedef mod_result_t (*mod_fini_v1_t)(void *userptr);
  * @mandatory      yes
  * @purpose        allow mod hot-reloading by given the new one a pointer to the data of the previous one
  * @definition     MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) { ... }
- */
+ *
 typedef mod_result_t (*mod_reload_v1_t)(void **userptr);
+*/
 
 //-----------------------------------------------------------------------------
 // [SECTION] ECS Core definitions

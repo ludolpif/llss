@@ -21,13 +21,15 @@
 // No mod_main_data_t needed for this mod
 
 MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
-    // Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
-    if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
-    // Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not
+    // Plugin can bail out if it know that it doesn't meant to be used
+    //  with app version below VERSION_TO_INT(major,minor,patch)
+    if ( running_app_version < VERSION_TO_INT(0,5,0) ) return -1;
+    // Plugin returns to app which version of app headers/libs
+    //  it was compiled for, app decides to continue or not
     return BUILD_DEP_VERSION_INT;
 }
 
-MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
+MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, void **userptr) {
 #ifdef MOD_USES_IMGUI
     // As ImGui use a notion of global context for it's API calls, use heap to process data
     // and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
@@ -44,20 +46,11 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
     // - rlyeh, public domain
     igThemeV3('P','Y','C', 0, 0, 1, 1);
 
-
-    return MOD_RESULT_CONTINUE;
+    return MOD_RESULT_SUCCESS;
 }
 
 // Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-MOD_API mod_result_t SDLCALL mod_fini_v1(void *userptr) {
-    return MOD_RESULT_CONTINUE;
+MOD_API mod_result_t SDLCALL mod_fini_v1(uint32_t flags, void *userptr) {
+    return MOD_RESULT_SUCCESS;
 }
 
-// Optionnal mod_reload hook
-MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) {
-    // Set an ImGui theme from this plugin, to demonstrate modding possibilities
-    // V3 theme v1.1
-    // - rlyeh, public domain
-    igThemeV3('P','Y','C', 0, 0, 1, 1);
-    return MOD_RESULT_CONTINUE;
-}

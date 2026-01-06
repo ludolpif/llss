@@ -8,10 +8,10 @@ APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
 APP_API ECS_ENTITY_DECLARE(ModReady);
 APP_API ECS_ENTITY_DECLARE(ModInitFailed);
 APP_API ECS_ENTITY_DECLARE(ModRunning);
+APP_API ECS_ENTITY_DECLARE(ModTerminating);
 APP_API ECS_ENTITY_DECLARE(ModTerminated);
 
 APP_API ECS_TAG_DECLARE(ModFlags);
-APP_API ECS_ENTITY_DECLARE(ModReloadable);
 APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
 APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
@@ -33,11 +33,11 @@ void AppComponentsModsImport(ecs_world_t *world) {
   ECS_ENTITY_DEFINE(world, ModReady);
   ECS_ENTITY_DEFINE(world, ModInitFailed);
   ECS_ENTITY_DEFINE(world, ModRunning);
+  ECS_ENTITY_DEFINE(world, ModTerminating);
   ECS_ENTITY_DEFINE(world, ModTerminated);
 
   // ModFlags is not an exclusive relationship.
   ECS_TAG_DEFINE(world, ModFlags);
-  ECS_ENTITY_DEFINE(world, ModReloadable);
   ECS_ENTITY_DEFINE(world, ModNewerOnDisk);
 
   // Components
@@ -58,9 +58,9 @@ void AppComponentsModsImport(ecs_world_t *world) {
           { .name = "shared_object",  .type = ecs_id(ecs_uptr_t) },
           { .name = "userptr",  .type = ecs_id(ecs_uptr_t) },
           { .name = "build_dep_version_compiled_against", .type = ecs_id(ecs_i32_t) },
-          { .name = "so_file_modify_time_when_loaded_in_ram", .type = ecs_id(ecs_i64_t) },
+          { .name = "modify_time_when_loaded", .type = ecs_id(ecs_i64_t) },
           { .name = "mod_init_v1", .type = ecs_id(ecs_uptr_t) },
-          { .name = "mod_reload_v1", .type = ecs_id(ecs_uptr_t) },
+          //XXX { .name = "mod_reload_v1", .type = ecs_id(ecs_uptr_t) },
           { .name = "mod_fini_v1", .type = ecs_id(ecs_uptr_t) },
           }
       });

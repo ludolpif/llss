@@ -2,17 +2,9 @@
 
 // ECS cached queries forward declarations
 ECS_QUERY_DECLARE(ModReadyQuery);
-
-// ECS Tasks forward declarations
-void ModLookOnDisk(ecs_iter_t *it);
-
-// ECS Systems forward declarations
-void ModLoadFromDisk(ecs_iter_t *it);
-void ModReloadFromDisk(ecs_iter_t *it);
-
-// Utility functions forward declarations
-SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const char *dirname, const char *fname);
-ecs_entity_t mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r);
+ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
+ECS_QUERY_DECLARE(ModRunningIncompatibleOnDiskQuery);
+ECS_QUERY_DECLARE(ModTerminatingQuery);
 
 //XXX make it part of world
 char *mods_basepath = NULL;
@@ -28,22 +20,33 @@ void AppSystemsModsImport(ecs_world_t *world) {
         app.components.mods.ModInRAM,
         (app.components.mods.ModState, app.components.mods.ModReady)
         );
+    ECS_QUERY_DEFINE(world, ModRunningNewerOnDiskQuery,
+        app.components.mods.ModOnDisk,
+        app.components.mods.ModInRAM,
+        (app.components.mods.ModState, app.components.mods.ModRunning),
+        (app.components.mods.ModFlags, app.components.mods.ModNewerOnDisk)
+        );
+    ECS_QUERY_DEFINE(world, ModTerminatingQuery,
+        app.components.mods.ModOnDisk,
+        app.components.mods.ModInRAM,
+        (app.components.mods.ModState, app.components.mods.ModTerminating)
+        );
 
     // The '()' means, don't match this component on an entity, while `[out]` indicates
     // that the component is being written. This is interpreted by pipelines as a
     // system that can potentially enqueue commands for the ModInRAM component.
     ECS_SYSTEM(world, ModLoadFromDisk, EcsOnLoad,
-        (app.components.mods.ModState, app.components.mods.ModAvailable),
         [in] app.components.mods.ModOnDisk,
-        [out] app.components.mods.ModInRAM()
+        [out] app.components.mods.ModInRAM(),
+        (app.components.mods.ModState, app.components.mods.ModAvailable)
         );
-    ECS_SYSTEM(world, ModReloadFromDisk, EcsOnLoad,
-        (app.components.mods.ModState, app.components.mods.ModRunning),
-        (app.components.mods.ModFlags, app.components.mods.ModReloadable),
-        (app.components.mods.ModFlags, app.components.mods.ModNewerOnDisk),
+    ECS_SYSTEM(world, ModLoadAgainFromDisk, EcsOnLoad,
         [in] app.components.mods.ModOnDisk,
-        [out] app.components.mods.ModInRAM
+        [inout] app.components.mods.ModInRAM,
+        (app.components.mods.ModState, app.components.mods.ModIncompatible),
+        (app.components.mods.ModFlags, app.components.mods.ModNewerOnDisk)
         );
+
 
     // Periodic Tasks
     // ECS_SYSTEM(world, ModLookOnDisk, EcsOnLoad, 0); does not set .interval = ...
@@ -59,21 +62,35 @@ void AppSystemsModsImport(ecs_world_t *world) {
 
 // Systems run once per frame but only if entities that need attention are matching
 void ModLoadFromDisk(ecs_iter_t *it) {
-    ModOnDisk *d = ecs_field(it, ModOnDisk, 1);
-
+    ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM r;
     for (int i = 0; i < it->count; i++) {
+        ecs_entity_t next_state;
+
         SDL_zero(r);
-        ecs_entity_t next_state = mod_tryload(it->real_world, d+i, &r);
+        next_state = mod_tryload(it->real_world, d+i, &r);
+
         ecs_entity_t mod = it->entities[i];
         ecs_set_ptr(it->world, mod, ModInRAM, &r);
         // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
         ecs_add_pair(it->world, mod, ModState, next_state);
     }
-
 }
-void ModReloadFromDisk(ecs_iter_t *it) {
-    app_info("%016"PRIu64" ModReloadFromDisk() begin", SDL_GetTicksNS());
+
+void ModLoadAgainFromDisk(ecs_iter_t *it) {
+    ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
+    ModInRAM *r = ecs_field(it, ModInRAM, 1);
+    for (int i = 0; i < it->count; i++) {
+        ecs_entity_t next_state;
+
+        SDL_zero(r[i]);
+        next_state = mod_tryload(it->real_world, d+i, r+i);
+
+        ecs_entity_t mod = it->entities[i];
+        ecs_remove_pair(it->world, mod, ModFlags, ModNewerOnDisk);
+        // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
+        ecs_add_pair(it->world, mod, ModState, next_state);
+    }
 }
 
 // Task, run once per second TODO use libevent to watch folder
@@ -129,7 +146,6 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
         app_info(LOG_PREFIX ": %s isn't a file", SDL_GetTicksNS(), dirname, fname, so_path);
         goto bad2;
     }
-    // TODO see if we can PascalCase fname (without mod- prefix)
     char *mod_entity_name;
     if (!SDL_asprintf(&mod_entity_name, "mod.meta.%s", fname)) {
         app_error(LOG_PREFIX ": SDL_asprintf(&mod_entity_name, \"mods.%%s\",...): %s",
@@ -152,6 +168,14 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     });
     if (!ecs_has_pair(world, mod, ModState, EcsWildcard)) {
         ecs_add_pair(world, mod, ModState, ModAvailable);
+    }
+    // If the mod entity was refreshed and not just created, and module was previously loaded,
+    // this entity have already a ModInRAM component
+    const ModInRAM *r = ecs_get(world, mod, ModInRAM);
+    if (r && info.modify_time > r->modify_time_when_loaded ) {
+        app_info(LOG_PREFIX ": mod has changed on disk (%"PRIu64" < %"PRIu64")",
+                SDL_GetTicksNS(), "...", fname, info.modify_time, r->modify_time_when_loaded);
+        ecs_add_pair(world, mod, ModFlags, ModNewerOnDisk);
     }
 
     SDL_free(mod_dirpath);
@@ -181,7 +205,9 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
                 SDL_GetTicksNS(), SDL_GetError());
         goto bad2;
     }
+    r->modify_time_when_loaded = d->modify_time;
 
+    // load and run mod_handshake_v1()
     mod_handshake_v1_t mod_handshake_v1 =
         (mod_handshake_v1_t) SDL_LoadFunction(r->shared_object, "mod_handshake_v1");
     if (!mod_handshake_v1) {
@@ -190,16 +216,23 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
         goto bad;
     }
 
-    r->build_dep_version_compiled_against = mod_handshake_v1(APP_VERSION_INT);
-    if (r->build_dep_version_compiled_against != BUILD_DEP_VERSION_INT) {
-        app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update this mod. "
-                "(Need to be compiled againt BUILD_DEP_VERSION %s",
-                SDL_GetTicksNS(), d->name, BUILD_DEP_VERSION_STR);
+    int32_t res = mod_handshake_v1(APP_VERSION_INT);
+    if (res != BUILD_DEP_VERSION_INT) {
+        if ( res == -1 ) {
+            app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update this app.",
+                    SDL_GetTicksNS(), d->name);
+        } else {
+            app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update this mod. "
+                    "(Need to be compiled againt BUILD_DEP_VERSION %s)",
+                    SDL_GetTicksNS(), d->name, BUILD_DEP_VERSION_STR);
+        }
         //TODO add returned version to msg, it needs to be converted from int to string
         next_state = ModIncompatible;
         goto bad;
     }
+    r->build_dep_version_compiled_against = res;
 
+    // load for mod_init_v1(), don't run it now, world is read-only
     r->mod_init_v1 = (mod_init_v1_t) SDL_LoadFunction(r->shared_object, "mod_init_v1");
     if (!r->mod_init_v1) {
         app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s",
@@ -207,15 +240,13 @@ ecs_entity_t /* ModState */ mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInR
         goto bad;
     }
 
+    // load mod_fini_v1()
     r->mod_fini_v1 = (mod_fini_v1_t) SDL_LoadFunction(r->shared_object, "mod_fini_v1");
     if (!r->mod_fini_v1) {
         app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s",
                 SDL_GetTicksNS(), SDL_GetError());
         goto bad;
     }
-
-    // Load all optionnal hook(s)
-    r->mod_reload_v1 = (mod_reload_v1_t) SDL_LoadFunction(r->shared_object, "mod_reload_v1");
 
     next_state = ModReady;
     return next_state;
@@ -228,43 +259,112 @@ bad2:
 
 // Unregistered System (not declared as ECS_SYSTEM(...), because we want to run
 // mod_init_v1() outside of ecs_progress(), see SDL_AppIterate() in sdl-app-iterate.c
-void ModRunInit(ecs_iter_t *it) {
+void ModInit(ecs_iter_t *it) {
     ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM *r = ecs_field(it, ModInRAM, 1);
 
     for (int i = 0; i < it->count; i++) {
         void *userptr = NULL;
-        app_warn("%016"PRIu64" ModRunInit() for %s: calling mod_init_v1()",
-                SDL_GetTicksNS(), d->name);
+        app_warn("%016"PRIu64" ModInit() for %s: calling mod_init_v1()",
+                SDL_GetTicksNS(), d[i].name);
 
         mod_result_t res = MOD_RESULT_INVALID;
         if ( r[i].mod_init_v1 ) {
-            res = r[i].mod_init_v1(it->world, &userptr);
+            res = r[i].mod_init_v1(it->world, MOD_FLAGS_NONE, &userptr);
         }
 
-        app_warn("%016"PRIu64" ModRunInit(): mod_init_v1() returned: %d",
+        app_warn("%016"PRIu64" ModInit(): mod_init_v1() returned: %d",
                 SDL_GetTicksNS(), res);
 
-        ecs_entity_t next_state;
+        r[i].userptr = userptr;
+
+        // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
+        ecs_entity_t next_state = (res==MOD_RESULT_SUCCESS)?ModRunning:ModInitFailed;
+        ecs_entity_t mod = it->entities[i];
+        ecs_add_pair(it->world, mod, ModState, next_state);
+    }
+}
+
+// Unregistered System (not declared as ECS_SYSTEM(...), same reason as for ModInit
+void ModReloadFromDisk(ecs_iter_t *it) {
+    app_info("%016"PRIu64" ModReloadFromDisk() begin", SDL_GetTicksNS());
+    ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
+    ModInRAM *r = ecs_field(it, ModInRAM, 1);
+    for (int i = 0; i < it->count; i++) {
+        app_warn("%016"PRIu64" ModReloadFromDisk() for %s: calling mod_fini_v1()",
+                SDL_GetTicksNS(), d[i].name);
+        ecs_entity_t mod = it->entities[i];
+        mod_result_t res = MOD_RESULT_INVALID;
+        if ( r[i].mod_fini_v1 ) {
+            res = r[i].mod_fini_v1(MOD_FLAGS_RELOADING, r[i].userptr);
+        }
+        app_warn("%016"PRIu64" ModReloadFromDisk(): mod_fini_v1() returned: %d",
+                SDL_GetTicksNS(), res);
+
+        ecs_entity_t next_state = (res==MOD_RESULT_SUCCESS)?ModTerminated:ModTerminating;
+        if ( next_state != ModTerminated ) {
+            goto bailout;
+        }
+
+        SDL_UnloadObject(r->shared_object);
+
+        next_state = mod_tryload(it->world, d, r);
+        if ( next_state != ModReady ) {
+            goto bailout;
+        }
+
+        app_warn("%016"PRIu64" ModReloadFromDisk() for %s: calling mod_init_v1()",
+                SDL_GetTicksNS(), d[i].name);
+        if ( r[i].mod_init_v1 ) {
+            res = r[i].mod_init_v1(it->world, MOD_FLAGS_RELOADING, &r[i].userptr);
+        }
+        app_warn("%016"PRIu64" ModReloadFromDisk(): mod_init_v1() returned: %d",
+                SDL_GetTicksNS(), res);
+
+        next_state = (res==MOD_RESULT_SUCCESS)?ModRunning:ModInitFailed;
+
+        if ( next_state != ModRunning ) {
+            goto bailout;
+        }
+
+        // If we are here, then everything gone right
+        r->modify_time_when_loaded = d->modify_time;
+        ecs_remove_pair(it->world, mod, ModFlags, ModNewerOnDisk);
+bailout:
+        // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
+        ecs_add_pair(it->world, mod, ModState, next_state);
+    }
+}
+
+// Unregistered System (not declared as ECS_SYSTEM(...), same reason as for ModInit
+void ModFiniAndUnload(ecs_iter_t *it) {
+    app_info("%016"PRIu64" ModFiniAndUnload() begin", SDL_GetTicksNS());
+    ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
+    ModInRAM *r = ecs_field(it, ModInRAM, 1);
+    for (int i = 0; i < it->count; i++) {
+        app_warn("%016"PRIu64" ModFiniAndUnload() for %s: calling mod_fini_v1()",
+                SDL_GetTicksNS(), d[i].name);
+        ecs_entity_t mod = it->entities[i];
+        mod_result_t res = MOD_RESULT_INVALID;
+        ecs_entity_t next_state = ModInitFailed;
+        if ( r[i].mod_fini_v1 ) {
+            res = r[i].mod_fini_v1(MOD_FLAGS_NONE, r[i].userptr);
+        }
+        app_warn("%016"PRIu64" ModFiniAndUnload(): mod_fini_v1() returned: %d",
+                SDL_GetTicksNS(), res);
+
         switch (res) {
             case MOD_RESULT_SUCCESS:
                 next_state = ModTerminated;
                 break;
-            case MOD_RESULT_CONTINUE:
+            default: /* MOD_RESULT_FAILURE, MOD_RESULT_CONTINUE or unknown value */
                 next_state = ModRunning;
-                break;
-            default: /* MOD_RESULT_FAILURE or unknown value */
-                next_state = ModInitFailed;
-                break;
+                goto bailout;
         }
-        ecs_entity_t mod = it->entities[i];
-        if ( next_state == ModRunning ) {
-            // Save userptr returned by mod_init_v1 for further mod API calls
-            ModInRAM r2;
-            SDL_memcpy(&r2, r+i, sizeof(r2)); // TODO see doc if copy is mandatory here
-            r2.userptr = userptr;
-            ecs_set_ptr(it->world, mod, ModInRAM, &r2);
-        }
+        r[i].userptr = NULL;
+
+        SDL_UnloadObject(r->shared_object);
+bailout:
         // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
         ecs_add_pair(it->world, mod, ModState, next_state);
     }

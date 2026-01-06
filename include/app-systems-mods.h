@@ -34,5 +34,23 @@
 #endif
 
 extern ECS_QUERY_DECLARE(ModReadyQuery);
+extern ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
+extern ECS_QUERY_DECLARE(ModTerminatingQuery);
+
 void AppSystemsModsImport(ecs_world_t *world);
-void ModRunInit(ecs_iter_t *it);
+
+// Tasks
+void ModLookOnDisk(ecs_iter_t *it);
+
+// Systems
+void ModLoadFromDisk(ecs_iter_t *it);
+void ModLoadAgainFromDisk(ecs_iter_t *it);
+
+// Unregistered Systems
+void ModInit(ecs_iter_t *it);
+void ModReloadFromDisk(ecs_iter_t *it);
+void ModFiniAndUnload(ecs_iter_t *it);
+
+// mod-related utility functions
+SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const char *dirname, const char *fname);
+ecs_entity_t mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r);

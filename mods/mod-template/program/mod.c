@@ -21,10 +21,14 @@
 /*
  * mod writer quickstart: no main(), no global variables.
  * You have to implement a few mandatory hooks, export them. The app will call them.
- * You get access to the main app ecs_world_t *world, you can register Entities, Components, Systems, and others
+ * You get access to the main app ecs_world_t *world and using to flecs API,
+ *  you can register Entities, Components, Systems, Tasks, Observers
+ *  to extend the data set known globally and extend the behavior of the app.
  *
- * MOD_API macro purpose: tag something to be exported or imported as a dynamic symbol. Build system hide symbols by default.
- * SDLCALL macro purpose: set a function's calling conventions (unsure if really needed in this project scope, but SDL do it)
+ * MOD_API macro purpose: tag something to be exported or imported as a dynamic symbol.
+ *  Note that the build system is configured to hide symbols by default.
+ * SDLCALL macro purpose: set a function's calling conventions to C calling convention
+ *  (unsure if really needed in this project scope, but SDL do it, important if you mix some C++)
  *
  * Parameters
  * void *userptr:
@@ -32,8 +36,8 @@
  *  from the mod: points to a struct for private mod data in substitution of global variables.
  *   It's important because Windows, Mac, Linux have different behaviors about heap and
  *    namespace separation of dynamically loaded shared objects. Allow also some mod reload features.
- *   It's allocation/deallocation have to be done in mod_init_v1/mod_fini_v1 and optionnally in mod_reload_v1
- *   using SDL_calloc()
+ *   It's allocation/deallocation have to be done in mod_init_v1/mod_fini_v1 and optionnally in
+ *   mod_reload_v1 using SDL_calloc()
  *
  * ecs_world_t *world:
  *  contains all core app and others mods informations and behaviors
@@ -42,7 +46,7 @@
  */
 
 typedef struct {
-    int32_t running_struct_size;
+    size_t running_struct_size;
     ecs_world_t *world;
     /*
      * Try to put a maximum of data in ECS (*world) instead of below.
@@ -67,55 +71,75 @@ typedef struct {
 } mod_main_data_t;
 
 MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
-    // Plugin can bail out if it know that it doesn't meant to be used with app version below VERSION_TO_INT(major,minor,patch)
-    if ( running_app_version < VERSION_TO_INT(0,2,5) ) return -1;
-    // Plugin returns to app which version of app headers/libs it was compiled for, app decides to continue or not
+    // Plugin can bail out if it know that it doesn't meant to be used
+    //  with app version below VERSION_TO_INT(major,minor,patch)
+    if ( running_app_version < VERSION_TO_INT(0,5,0) ) return -1;
+    // Plugin returns to app which version of app headers/libs
+    //  it was compiled for, app decides to continue or not
     return BUILD_DEP_VERSION_INT;
 }
 
-MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, void **userptr) {
-              app_warn("%016"PRIu64" mod_init_v1() in %s: starting",
-                      SDL_GetTicksNS(), SDL_FILE);
+MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, void **userptr) {
+    app_debug("%016"PRIu64" mod-template mod_init_v1(%p, %"PRIu32", %p)",
+            SDL_GetTicksNS(), world, flags, *userptr);
 #ifdef MOD_USES_IMGUI
-    // As ImGui use a notion of global context for it's API calls, use heap to process data
-    // and we are in a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
+    // As ImGui use a global context for it's API calls, use heap to process data and we are in
+    // a shared object, we need to ImGui_SetCurrentContext and ImGui_SetAllocatorFunctions again.
     const AppImGuiContext *imgui = ecs_singleton_get(world, AppImGuiContext);
     ImGui_SetCurrentContext(imgui->imgui_context);
     const AppMemoryFuncs *mem = ecs_singleton_get(world, AppMemoryFuncs);
     ImGui_SetAllocatorFunctions(mem->imgui_malloc_func, mem->imgui_free_func, mem->imgui_allocator_functions_user_data);
+    // Both SDL3 and flecs don't need this sort of care.
 #endif
-    // TODO check if https://wiki.libsdl.org/SDL3/SDL_GetMemoryFunctions return the custom ones on linux and Windows. I think the mod have nothing to do but, unsure.
 
-    // Allocate our mod private state
-    *userptr = SDL_calloc(1, sizeof(mod_main_data_t));
-    if (!*userptr) return MOD_RESULT_FAILURE;
+    mod_main_data_t *data = NULL;
+    if (!(flags & MOD_FLAGS_RELOADING)) {
+        // Allocate our mod private state
+        *userptr = SDL_calloc(1, sizeof(mod_main_data_t));
+        if (!*userptr) return MOD_RESULT_FAILURE;
+        // Setup initial state
+        data = (mod_main_data_t *) *userptr;
+        data->running_struct_size = sizeof(mod_main_data_t);
+        data->world = world;
+    } else {
+        // Use the previous state, using realloc() if fields have been added
+        data = (mod_main_data_t *) *userptr;
+        if ( data->running_struct_size < sizeof(mod_main_data_t) ) {
+            *userptr = SDL_realloc(*userptr, sizeof(mod_main_data_t));
+            data = (mod_main_data_t *) *userptr;
+            size_t extralen = sizeof(mod_main_data_t) - data->running_struct_size;
+            SDL_memset(data+data->running_struct_size, 0, extralen);
+            data->running_struct_size = sizeof(mod_main_data_t);
+        }
+    }
+
+    // ECS_IMPORT is valid because mod_init_v1() called outside ecs_progress() by sdl-app-iterate.c
+    ECS_IMPORT(world, ModTemplateHello); // Creates entity with Module component then many others
+                                         // It's query/lookup identifier is "mod.template.hello"
+
+    return MOD_RESULT_SUCCESS;
+}
+
+MOD_API mod_result_t SDLCALL mod_fini_v1(uint32_t flags, void *userptr) {
+    app_debug("%016"PRIu64" mod-template mod_fini_v1(%"PRIu32", %p)",
+            SDL_GetTicksNS(), flags, userptr);
 
     mod_main_data_t *data = (mod_main_data_t *) userptr;
-    data->running_struct_size = sizeof(mod_main_data_t);
-    data->world = world;
+    ecs_world_t *world = data->world;
 
-    // You can import here your ECS modules containing Entities, Components, Systems and so on
-    ECS_IMPORT(world, ModTemplateHello);
+    // Remove all ECS items registered by this mod (if name/prefix convention was respected)
+    ecs_entity_t e_hello = ecs_lookup(world, "mod.template");
+    if (e_hello) {
+        ecs_delete(world, e_hello);
+        app_debug("%016"PRIu64" mod_fini_v1(): removed ECS items", SDL_GetTicksNS());
+    }
 
-    return MOD_RESULT_CONTINUE;
-}
+    // here may need to add calls to shutdown to your mod's dependencies
 
-// Mandatory mod_fini hook, called before this mod is fully unloaded from memory
-MOD_API mod_result_t SDLCALL mod_fini_v1(void *userptr) {
-    // may need calls here to your mod's dependancies deinit functions
-
-    SDL_free(userptr);
-    return MOD_RESULT_CONTINUE;
-}
-
-// Optionnal mod_reload hook
-MOD_API mod_result_t SDLCALL mod_reload_v1(void **userptr) {
-    // for mod devs: can be used to hot-reload the mod, even with keeping previous data
-    //  if mod private data struct definitions matches or if only some members added at end of struct
-    //
-    // FIXME try it and make the sequence works
-    // TODO define what is mandatory to implement on the mod side
-    return MOD_RESULT_CONTINUE;
+    if (!(flags & MOD_FLAGS_RELOADING)) {
+        SDL_free(userptr); // last operation to do
+    }
+    return MOD_RESULT_SUCCESS;
 }
 
 // This function will not be an exported dynamic symbol because MOD_API is absent

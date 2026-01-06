@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "program", "program\app.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-template", "mods\mod-template\program\mod-template.vcxproj", "{ABCDEF01-2345-6789-ABCD-EF0123456789}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-theme-rlyeh3", "mods\mod-theme-rlyeh3\program\mod-theme-rlyeh3.vcxproj", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-uitheme-rlyeh3", "mods\mod-uitheme-rlyeh3\program\mod-uitheme-rlyeh3.vcxproj", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
