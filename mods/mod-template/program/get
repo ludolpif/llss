@@ -23,7 +23,7 @@ cflags() {
 		*) _usage ;;
 	esac
 	solution=`${SolutionDir}get --cflags $1`
-	project="-Wall -Wformat -std=gnu99 -fvisibility=hidden"
+	project="-Wall -Wformat -std=gnu99 -fvisibility=hidden -fPIC"
 	project="$project
 	-I${SolutionDir}lib/ui
 	-I${SolutionDir}lib/ui/dear_bindings_generated
@@ -34,7 +34,7 @@ cflags() {
 	-I${SolutionDir}include
 	"
 	libsdl3=`pkg-config --cflags sdl3`
-	echo -fPIC -fvisibility=hidden $project $libsdl3
+	echo $solution $project $libsdl3
 }
 ldflags() {
 	case "$1" in
