@@ -15,7 +15,7 @@ I made Solution and Project files with a default install of VisualStudio 2022 Co
   - Install Git for Windows from https://git-scm.com/install/windows
   - From `explorer.exe` pointed at `C:\dev\git`, right-click, "Open Git bash here"
   - Run this: `git clone https://github.com/ludolpif/llss.git`
-- Get the pre-built dependancies
+- Get the pre-built dependencies
   - The whole source of thoses dependencies is in the llss-build-dep project
   - We aim to help newcomers and build-time, it comes as separate .zip
   - We provide a powershell script named `build-dep.ps1` to get it and unzip at right place
