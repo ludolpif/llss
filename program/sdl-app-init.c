@@ -268,7 +268,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
     const AppMainTimingContext *app_main_timing_context = ecs_singleton_get(world, AppMainTimingContext);
     Uint32 app_iterate_count = app_main_timing_context->app_iterate_count;
-    
+
     SDL_WaitForGPUIdle(app_sdl_context->gpu_device);
     cImGui_ImplSDL3_Shutdown();
     cImGui_ImplSDLGPU3_Shutdown();
@@ -277,6 +277,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     SDL_ReleaseWindowFromGPUDevice(app_sdl_context->gpu_device, app_sdl_context->main_window);
     SDL_DestroyGPUDevice(app_sdl_context->gpu_device);
     SDL_DestroyWindow(app_sdl_context->main_window);
+    SDL_DestroyAsyncIOQueue(app_sdl_context->sdl_io_queue);
 
     ecs_log_set_level(-1);
     ecs_fini(world);
