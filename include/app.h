@@ -95,8 +95,8 @@
 //-----------------------------------------------------------------------------
 // [SECTION] General and metadata macro definitions
 //-----------------------------------------------------------------------------
-#include "app-version.h"
-#include "build-dep-version.h"
+#include "version-app.h"
+#include "version-build-dep.h"
 // Following macros can't be in *-version.h as Microsoft res.exe can't cope with it (app.rc includes them)
 #define VERSION_TO_INT(a, b, c) (a*10000+b*100+c)
 #define    VERSION_MAJOR_FROM_INT(a) (a/10000)

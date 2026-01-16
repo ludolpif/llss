@@ -70,8 +70,8 @@ function Copy-WithStructure {
     }
 }
 
-$version = Get-MetadataValue -FilePath "include/app-version.h" -DefineName "APP_VERSION_STR"
-$progname = Get-MetadataValue -FilePath "include/app-version.h" -DefineName "APP_METADATA_NAME_STRING"
+$version = Get-MetadataValue -FilePath "include/version-app.h" -DefineName "APP_VERSION_STR"
+$progname = Get-MetadataValue -FilePath "include/version-app.h" -DefineName "APP_METADATA_NAME_STRING"
 $prettyos = "Windows"
 $artifact = "$progname-$version-$prettyos-$Configuration"
 

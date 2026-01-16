@@ -23,7 +23,7 @@ void ModTemplateUIHello(ecs_iter_t *it) {
     if (!data->show_template_window) return; // TODO make it as query filter ?
 
     ImGui_Begin("A mod Window", &data->show_template_window, ImGuiWindowFlags_NoFocusOnAppearing);
-    ImGui_Text("Hello from mod-template v231!");
+    ImGui_Text("Hello from mod-template v4!");
     if (ImGui_Button("Close Me"))
         data->show_template_window = false;
     ImGui_End();

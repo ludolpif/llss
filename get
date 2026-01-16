@@ -30,7 +30,7 @@ build_dep() {
 	rm -f $zipname
 }
 build_dep_version() {
-	grep "define BUILD_DEP_VERSION_STR" include/build-dep-version.h | cut -d'"' -f2
+	grep "define BUILD_DEP_VERSION_STR" include/version-build-dep.h | cut -d'"' -f2
 }
 cflags() {
 	case "$1" in
@@ -45,7 +45,7 @@ ldflags() {
 	echo $solution
 }
 name() {
-	grep "define APP_METADATA_NAME_STRING" include/app-version.h | cut -d'"' -f2
+	grep "define APP_METADATA_NAME_STRING" include/version-app.h | cut -d'"' -f2
 }
 prettyos() {
 	case $(uname -s) in

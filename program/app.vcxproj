@@ -57,7 +57,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;app_EXPORTS;flecs_EXPORTS;imgui_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;app_FlecsStats;app_EXPORTS;flecs_EXPORTS;imgui_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\platform\sdl3-devel-vc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -115,9 +115,9 @@
     <ClInclude Include="$(SolutionDir)\include\app-components-mods.h" />
     <ClInclude Include="$(SolutionDir)\include\app-systems-core.h" />
     <ClInclude Include="$(SolutionDir)\include\app-systems-mods.h" />
-    <ClInclude Include="$(SolutionDir)\include\app-version.h" />
+    <ClInclude Include="..\include\version-app.h" />
     <ClInclude Include="$(SolutionDir)\include\app.h" />
-    <ClInclude Include="$(SolutionDir)\include\build-dep-version.h" />
+    <ClInclude Include="..\include\version-build-dep.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL.h" />
     <ClInclude Include="$(SolutionDir)\lib\platform\sdl3-devel-vc\include\SDL3\SDL_gpu.h" />
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />

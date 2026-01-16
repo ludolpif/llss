@@ -44,10 +44,10 @@
     <ClInclude Include="$(SolutionDir)\include\app-systems-mods.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\include\app-version.h">
+    <ClInclude Include="..\include\version-app.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\include\build-dep-version.h">
+    <ClInclude Include="..\include\version-build-dep.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

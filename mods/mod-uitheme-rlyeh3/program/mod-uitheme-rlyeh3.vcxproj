@@ -104,6 +104,11 @@
     <ClInclude Include="$(SolutionDir)\lib\ui\imgui_config.h" />
     <ClInclude Include="ui-theming.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\program\app.vcxproj">
+      <Project>{4e4536b5-7943-4153-b43a-1d196b9fc220}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

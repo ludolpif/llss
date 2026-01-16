@@ -43,7 +43,7 @@ function Get-MetadataValue {
     return $match.Matches[0].Groups[1].Value
 }
 
-$build_dep_version = Get-MetadataValue -FilePath "include/build-dep-version.h" -DefineName "BUILD_DEP_VERSION_STR"
+$build_dep_version = Get-MetadataValue -FilePath "include/version-build-dep.h" -DefineName "BUILD_DEP_VERSION_STR"
 $build_dep_zip = "build-dep-${build_dep_version}-Windows-$Configuration.zip"
 $build_dep_url = "https://ludolpif.fr/pub/llss/artifacts/$build_dep_zip"
 
