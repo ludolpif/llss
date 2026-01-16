@@ -32,7 +32,7 @@
 #define APP_MOD_FILEEXT ".dylib"
 #else
 #define APP_MOD_FILEEXT ".so"
-// #define APP_MOD_COPYONLOAD // Can help testing, but not necessary
+#define APP_MOD_COPYONLOAD // Can help testing, but not necessary
 #endif
 
 extern ECS_QUERY_DECLARE(ModInitializableQuery);

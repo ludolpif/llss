@@ -5,6 +5,7 @@
 - try https://wiki.libsdl.org/SDL3/README-highdpi
 - read https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/Latency.c (SDL_SetGPUAllowedFramesInFlight)
 
+- consider replacing every `SDL_PRIs32` `SDL_PRIs64` `SDL_PRIu32` `SDL_PRIu64`
 
 - Artifact naming with commit hash when it is not a build from a tagged commit ?
   - Update metadata.h on the fly ?

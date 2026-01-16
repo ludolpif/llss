@@ -101,6 +101,12 @@ void ModPrepareFromDisk(ecs_iter_t *it) {
         next_state = ModCopying;
 
         if ( d[i].so_realpath ) {
+            app_debug("%016"PRIu64" ModPrepareFromDisk(%s): removing: %s",
+                    SDL_GetTicksNS(), d[i].name, d[i].so_realpath);
+            if (!SDL_RemovePath(d[i].so_realpath)) {
+                app_warn("%016"PRIu64" ModPrepareFromDisk(%s): can't remove previous mod copy: %s",
+                        SDL_GetTicksNS(), d[i].name, SDL_GetError());
+            }
             SDL_free(d[i].so_realpath);
         }
         if (!SDL_asprintf(&d[i].so_realpath, "%s/"APP_MOD_SUBDIR"%03"PRIi32"-%s"APP_MOD_FILEEXT,
@@ -366,24 +372,32 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
                 SDL_GetTicksNS(), dirname, fname, SDL_GetError());
         goto bailout;
     }
-#ifndef MOD_COPYONLOAD
-    // On all non-windows platform we directly load the shared object from it's so_path
-    // On Windows, more steps are required as an open .dll is a locked file on disk by design.
-    so_realpath = SDL_strdup(so_path);
-    if (!so_realpath) {
-        app_error(LOG_PREFIX ": SDL_strdup(so_path): %s",
-                SDL_GetTicksNS(), dirname, fname, SDL_GetError());
-        goto bailout;
-    }
-#endif
     // Create or refresh the current mod entity
     ecs_entity_t mod = ecs_entity(world, { .name = mod_entity_name });
+    const ModOnDisk *d = ecs_get(world, mod, ModOnDisk);
+    ecs_i32_t load_id = 0;
+    if ( d ) {
+        load_id = d->load_id;
+        so_realpath = d->so_realpath;
+    }
+#ifndef APP_MOD_COPYONLOAD
+    // On all non-windows platform we directly load the shared object
+    // On Windows, more steps are required as an open .dll is a locked file on disk by design
+    if (!so_realpath) {
+        so_realpath = SDL_strdup(so_path);
+        if (!so_realpath) {
+            app_error(LOG_PREFIX ": SDL_strdup(so_path): %s",
+                    SDL_GetTicksNS(), dirname, fname, SDL_GetError());
+            goto bailout;
+        }
+    }
+#endif
     ecs_set(world, mod, ModOnDisk, {
         .name = mod_name,
         .mod_dirpath = mod_dirpath,
         .so_path = so_path,
         .so_realpath = so_realpath,
-        .load_id = 0,
+        .load_id = load_id,
         .modify_time = info.modify_time
     });
     if (!ecs_has_pair(world, mod, ModState, EcsWildcard)) {
