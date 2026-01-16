@@ -56,7 +56,7 @@ prettyos() {
 	echo $os
 }
 version() {
-	grep "define APP_VERSION_STR" include/app-version.h | cut -d'"' -f2
+	grep "define APP_VERSION_STR" include/version-app.h | cut -d'"' -f2
 }
 _usage() {
 	echo "Usage $0 (--build-dep|--build-dep-version|--cflags|--ldflags|--prettyos|--name|--version) [Debug|Release|SystemLibs]" >&2
