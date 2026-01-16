@@ -4,9 +4,17 @@
 // Phases for pipelines
 APP_API ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
+// Elements for async IO state
+APP_API ECS_TAG_DECLARE(IOState);
+APP_API ECS_ENTITY_DECLARE(IOComplete);
+APP_API ECS_ENTITY_DECLARE(IOFailure);
+APP_API ECS_ENTITY_DECLARE(IOCanceled);
+
+// Components not using ECS_STRUCT() in .h file (for custom type reflection)
 APP_API ECS_COMPONENT_DECLARE(AppMemoryFuncs);
 APP_API ECS_COMPONENT_DECLARE(AppSDLContext);
 APP_API ECS_COMPONENT_DECLARE(AppImGuiContext);
+APP_API ECS_COMPONENT_DECLARE(AsyncIOOutcome);
 
 APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     // https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
@@ -31,6 +39,15 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
             .add = ecs_ids(EcsPhase)
             });
     ecs_add_pair(world, RenderingPostImGui, EcsDependsOn, RenderingOnImGui);
+
+    // Elements for async IO state
+    ECS_TAG_DEFINE(world, IOState);
+    // Register IOState as exclusive relationship. This ensures that an entity
+    // can only belong to a single IOState.
+    ecs_add_id(world, IOState, EcsExclusive);
+    ECS_ENTITY_DEFINE(world, IOComplete);
+    ECS_ENTITY_DEFINE(world, IOFailure);
+    ECS_ENTITY_DEFINE(world, IOCanceled);
 
     // Using ECS_STRUCT + ECS_META_COMPONENT when possible, if struct of primivite types
     // See type names at flecs.h "Primitive type definitions" section
@@ -67,6 +84,21 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
         .members = {
             { .name = "imgui_context",  .type = ecs_id(ecs_uptr_t) },
             { .name = "imgui_io",   .type = ecs_id(ecs_uptr_t) },
+        }
+    });
+
+    ECS_COMPONENT_DEFINE(world, AsyncIOOutcome);
+    ecs_struct(world, {
+        .entity = ecs_id(AsyncIOOutcome),
+        .members = {
+            { .name = "asyncio", .type = ecs_id(ecs_uptr_t) },
+            { .name = "type", .type = ecs_id(ecs_i32_t) },
+            { .name = "result", .type = ecs_id(ecs_i32_t) },
+            { .name = "buffer", .type = ecs_id(ecs_uptr_t) },
+            { .name = "offset", .type = ecs_id(ecs_u64_t) },
+            { .name = "bytes_requested", .type = ecs_id(ecs_u64_t) },
+            { .name = "bytes_transferred", .type = ecs_id(ecs_u64_t) },
+            { .name = "userdata", .type = ecs_id(ecs_uptr_t) },
         }
     });
 }

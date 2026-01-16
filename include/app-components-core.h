@@ -28,6 +28,12 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world);
 // Phases for pipelines
 extern APP_API ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
+// Elements for async IO state
+extern APP_API ECS_TAG_DECLARE(IOState);
+extern APP_API ECS_ENTITY_DECLARE(IOComplete);
+extern APP_API ECS_ENTITY_DECLARE(IOFailure);
+extern APP_API ECS_ENTITY_DECLARE(IOCanceled);
+
 // Components
 APP_API ECS_STRUCT(AppVersion, {
     int32_t running_app_version;
@@ -68,4 +74,6 @@ APP_API ECS_STRUCT(AppMainTimingContext, {
     uint64_t main_frame_start_ns; // In SDL_GetTicksNS() format, snapped to multiple of main_framerate
     uint64_t main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
 });
-//extern APP_API ECS_COMPONENT_DECLARE(AppMainTimingContext);
+
+typedef SDL_AsyncIOOutcome AsyncIOOutcome;
+extern APP_API ECS_COMPONENT_DECLARE(AsyncIOOutcome);

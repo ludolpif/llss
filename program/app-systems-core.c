@@ -10,9 +10,42 @@ void AppSystemsCoreImport(ecs_world_t *world) {
     ECS_MODULE(world, AppSystemsCore);
 
     // Tasks declarations, will run once per frame
+    ECS_SYSTEM(world, InjectIOAsyncEvents, EcsOnUpdate, 0);
     ECS_SYSTEM(world, ImGuiPrepareForNewFrame, RenderingPreImGui, 0);
     ECS_SYSTEM(world, UIMain, RenderingOnImGui, 0);
     ECS_SYSTEM(world, ImGuiRenderAndSubmit, RenderingPostImGui, 0);
+}
+
+void InjectIOAsyncEvents(ecs_iter_t *it) {
+    const AppSDLContext *app_sdl_context = ecs_singleton_get(it->world, AppSDLContext);
+    SDL_AsyncIOOutcome outcome;
+    if (SDL_GetAsyncIOResult(app_sdl_context->sdl_io_queue, &outcome)) {
+        ecs_entity_t e_ctx = (ecs_entity_t) outcome.userdata;
+        ecs_entity_t e_outcome;
+        switch ( outcome.result ) {
+            case SDL_ASYNCIO_COMPLETE: /**< request was completed without error */
+                //app_trace("%016"PRIu64" InjectIOAsyncEvents(): async IO for %s complete",
+                //        SDL_GetTicksNS(), ctx_name);
+                e_outcome = IOComplete;
+                break;
+            case SDL_ASYNCIO_FAILURE:  /**< request failed for some reason; check SDL_GetError()! */
+                app_warn("%016"PRIu64" InjectIOAsyncEvents(): async IO for %s failed: %s",
+                        SDL_GetTicksNS(), ecs_get_name(it->world, e_ctx), SDL_GetError());
+                e_outcome = IOFailure;
+                break;
+            case SDL_ASYNCIO_CANCELED: /**< request was canceled before completing. */
+                app_warn("%016"PRIu64" InjectIOAsyncEvents(): async IO for %s canceled",
+                        SDL_GetTicksNS(), ecs_get_name(it->world, e_ctx));
+                e_outcome = IOCanceled;
+                break;
+        }
+        // Ass AsyncIOOutcome component that is a direct mirror of SDL_AsyncIOOutcome struct
+        ecs_set_ptr(it->world, e_ctx, AsyncIOOutcome, &outcome);
+
+        // Set io state as pair for queries
+        // As IOState is tagged Exclusive, add_pair will replace the previous pair
+        ecs_add_pair(it->world, e_ctx, IOState, e_outcome);
+    }
 }
 
 void ImGuiPrepareForNewFrame(ecs_iter_t *it) {

@@ -31,20 +31,20 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     // Mods init and reload is defered outside of ecs_progress() so they can ECS_IMPORT() modules
     // while the world isn't in read-only mode. mod fini needs it too.
-    ecs_iter_t it = ecs_query_iter(world, ModReadyQuery);
+    ecs_iter_t it = ecs_query_iter(world, ModRunningNewerOnDiskQuery);
     while (ecs_query_next(&it)) {
-        ModInit(&it);
-    }
-    it = ecs_query_iter(world, ModRunningNewerOnDiskQuery);
-    while (ecs_query_next(&it)) {
-        ModReloadFromDisk(&it);
+        ModFini(&it);
     }
     it = ecs_query_iter(world, ModTerminatingQuery);
     while (ecs_query_next(&it)) {
-        ModFiniAndUnload(&it);
+        ModFini(&it);
+    }
+    it = ecs_query_iter(world, ModInitializableQuery);
+    while (ecs_query_next(&it)) {
+        ModInit(&it);
     }
 
-    // Custom method for targetting desired FPS in a non-standard videogame fashion
+    // Custom method for targetting desired FPS
     throttle(world);
 
     // TODO trigger QUIT here depending on an info from the ECS
@@ -85,7 +85,8 @@ void throttle(ecs_world_t *world) {
         // If main_framerate have changed 1 iteration ago, last_frameid may be greated than now_frameid
         skipped = (now_frameid > last_frameid)?(uint32_t)(now_frameid - last_frameid):0;
     } else {
-        app_warn("%016"PRIu64" SDL_AppIterate(), framerate changed from %"PRIi32"/%"PRIi32" to %"PRIi32"/%"PRIi32,
+        app_warn("%016"PRIu64" SDL_AppIterate(), framerate changed from "
+                "%"PRIi32"/%"PRIi32" to %"PRIi32"/%"PRIi32,
                 now_ns, prev_fr_num, prev_fr_den, fr_num, fr_den);
         sleep_max = convert_frameid_to_ns(1, fr_num, fr_den);
         sleep_ns = sleep_max;

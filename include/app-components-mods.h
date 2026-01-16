@@ -26,18 +26,23 @@
 APP_API void AppComponentsModsImport(ecs_world_t *world);
 
 extern APP_API ECS_TAG_DECLARE(ModState);
-extern APP_API ECS_ENTITY_DECLARE(ModAvailable);
-extern APP_API ECS_ENTITY_DECLARE(ModLoading);
-extern APP_API ECS_ENTITY_DECLARE(ModIncompatible);
-extern APP_API ECS_ENTITY_DECLARE(ModLoadFailed);
-extern APP_API ECS_ENTITY_DECLARE(ModReady);
-extern APP_API ECS_ENTITY_DECLARE(ModInitFailed);
-extern APP_API ECS_ENTITY_DECLARE(ModRunning);
-extern APP_API ECS_ENTITY_DECLARE(ModTerminating);
-extern APP_API ECS_ENTITY_DECLARE(ModTerminated);
+extern APP_API ECS_ENTITY_DECLARE(ModAvailable);     //  for  ModPrepareFromDisk
+extern APP_API ECS_ENTITY_DECLARE(ModCopying);       //during ModCopy
+extern APP_API ECS_ENTITY_DECLARE(ModLoadable);      //  for  ModLoad
+extern APP_API ECS_ENTITY_DECLARE(ModLoadFailed);    // after ModLoad
+extern APP_API ECS_ENTITY_DECLARE(ModIncompatible);  // after ModLoad
+extern APP_API ECS_ENTITY_DECLARE(ModInitializable); //  for  ModInit
+extern APP_API ECS_ENTITY_DECLARE(ModInitFailed);    // after ModInit
+extern APP_API ECS_ENTITY_DECLARE(ModRunning);       // after ModInit
+extern APP_API ECS_ENTITY_DECLARE(ModTerminating);   //  for  ModFini
+extern APP_API ECS_ENTITY_DECLARE(ModFiniFailed);    // after ModFini
+extern APP_API ECS_ENTITY_DECLARE(ModUnloadable);    // after ModFini
+extern APP_API ECS_ENTITY_DECLARE(ModUnloaded);      // after ModUnload
 
 extern APP_API ECS_TAG_DECLARE(ModFlags);
 extern APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
+
+extern APP_API ECS_TAG_DECLARE(ModIOAsync);
 
 typedef struct {
     char *name;

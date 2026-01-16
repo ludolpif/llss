@@ -27,32 +27,36 @@
 
 #if defined(SDL_PLATFORM_WINDOWS)
 #define APP_MOD_FILEEXT ".dll"
+#define APP_MOD_COPYONLOAD
 #elif defined(SDL_PLATFORM_APPLE)
 #define APP_MOD_FILEEXT ".dylib"
 #else
 #define APP_MOD_FILEEXT ".so"
+// #define APP_MOD_COPYONLOAD // Can help testing, but not necessary
 #endif
 
-extern ECS_QUERY_DECLARE(ModReadyQuery);
+extern ECS_QUERY_DECLARE(ModInitializableQuery);
 extern ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
 extern ECS_QUERY_DECLARE(ModTerminatingQuery);
 
 void AppSystemsModsImport(ecs_world_t *world);
 
-// Tasks
-void ModLookOnDisk(ecs_iter_t *it);
-
-// Systems
+// Systems run once per frame but only if entities that need attention are matching
 void ModPrepareFromDisk(ecs_iter_t *it);
 void ModPrepareAgainFromDisk(ecs_iter_t *it);
-void ModLoadFromDisk(ecs_iter_t *it);
-void ModLoadAgainFromDisk(ecs_iter_t *it);
+#ifdef APP_MOD_COPYONLOAD
+void ModCopy(ecs_iter_t *it);
+#endif
+void ModLoad(ecs_iter_t *it);
+void ModUnload(ecs_iter_t *it);
 
-// Unregistered Systems
+// Unregistered Systems to be run outside ecs_progress()
 void ModInit(ecs_iter_t *it);
-void ModReloadFromDisk(ecs_iter_t *it);
-void ModFiniAndUnload(ecs_iter_t *it);
+void ModFini(ecs_iter_t *it);
+
+// Task, run once per second 
+void ModLookOnDisk(ecs_iter_t *it);
 
 // mod-related utility functions
 SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const char *dirname, const char *fname);
-ecs_entity_t mod_tryload(ecs_world_t *world, ModOnDisk *d, ModInRAM *r);
+ecs_entity_t mod_tryload(const ModOnDisk *d, ModInRAM *r);

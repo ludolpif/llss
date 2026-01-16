@@ -19,6 +19,6 @@
 
 void AppSystemsCoreImport(ecs_world_t *world);
 
+void InjectIOAsyncEvents(ecs_iter_t *it);
 void ImGuiPrepareForNewFrame(ecs_iter_t *it);
 void ImGuiRenderAndSubmit(ecs_iter_t *it);
-

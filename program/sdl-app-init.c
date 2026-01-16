@@ -206,8 +206,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // FLECS init
     ecs_world_t *world = ecs_init();
     ecs_set_threads(world, ecs_worker_threads_count);
-    //ECS_IMPORT(world, FlecsStats); // Optional, enhance for https://www.flecs.dev/explorer
-
+#ifdef APP_FLECS_STATS
+    ECS_IMPORT(world, FlecsStats); // Optional, enhance for https://www.flecs.dev/explorer
+#endif
     ecs_log_set_level(0); // Increase verbosity level
     ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
 
