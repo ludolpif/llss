@@ -21,7 +21,7 @@ void InjectIOAsyncEvents(ecs_iter_t *it) {
     SDL_AsyncIOOutcome outcome;
     if (SDL_GetAsyncIOResult(app_sdl_context->sdl_io_queue, &outcome)) {
         ecs_entity_t e_ctx = (ecs_entity_t) outcome.userdata;
-        ecs_entity_t e_outcome;
+        ecs_entity_t e_outcome = IOFailure;
         switch ( outcome.result ) {
             case SDL_ASYNCIO_COMPLETE: /**< request was completed without error */
                 //app_trace("%016"PRIu64" InjectIOAsyncEvents(): async IO for %s complete",
@@ -37,6 +37,11 @@ void InjectIOAsyncEvents(ecs_iter_t *it) {
                 app_warn("%016"PRIu64" InjectIOAsyncEvents(): async IO for %s canceled",
                         SDL_GetTicksNS(), ecs_get_name(it->world, e_ctx));
                 e_outcome = IOCanceled;
+                break;
+            default:
+                app_warn("%016"PRIu64" InjectIOAsyncEvents(): async IO for %s unknown result: %"PRIi32,
+                        SDL_GetTicksNS(), ecs_get_name(it->world, e_ctx), outcome.result);
+                e_outcome = IOFailure;
                 break;
         }
         // Ass AsyncIOOutcome component that is a direct mirror of SDL_AsyncIOOutcome struct
