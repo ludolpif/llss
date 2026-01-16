@@ -72,6 +72,11 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>%(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy /Y "$(ProjectDir)..\lib\platform\sdl3-devel-vc\lib\$(Platform)\SDL3.dll" "$(TargetDir)"
+</Command>
+      <Message>App need SDL3.dll available and search path in current dir is open</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -96,6 +101,13 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>%(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy /Y "$(ProjectDir)..\lib\platform\sdl3-devel-vc\lib\$(Platform)\SDL3.dll" "$(TargetDir)"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>App need SDL3.dll available and search path in current dir is open</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="alloc.c" />
