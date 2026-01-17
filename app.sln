@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "program", "program\app.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-template", "mods\mod-template\program\mod-template.vcxproj", "{ABCDEF01-2345-6789-ABCD-EF0123456789}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-scratchpad", "mods\mod-scratchpad\program\mod-scratchpad.vcxproj", "{17D3CE4A-7533-4861-AE31-5ACF25BD537A}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-uitheme-rlyeh3", "mods\mod-uitheme-rlyeh3\program\mod-uitheme-rlyeh3.vcxproj", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
 EndProject
 Global
@@ -23,6 +25,10 @@ Global
 		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Debug|x64.Build.0 = Debug|x64
 		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Release|x64.ActiveCfg = Release|x64
 		{ABCDEF01-2345-6789-ABCD-EF0123456789}.Release|x64.Build.0 = Release|x64
+		{17D3CE4A-7533-4861-AE31-5ACF25BD537A}.Debug|x64.ActiveCfg = Debug|x64
+		{17D3CE4A-7533-4861-AE31-5ACF25BD537A}.Debug|x64.Build.0 = Debug|x64
+		{17D3CE4A-7533-4861-AE31-5ACF25BD537A}.Release|x64.ActiveCfg = Release|x64
+		{17D3CE4A-7533-4861-AE31-5ACF25BD537A}.Release|x64.Build.0 = Release|x64
 		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Debug|x64.ActiveCfg = Debug|x64
 		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Debug|x64.Build.0 = Debug|x64
 		{37C290AD-5F29-408A-80EF-FC4837176F2E}.Release|x64.ActiveCfg = Release|x64

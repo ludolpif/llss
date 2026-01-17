@@ -2,6 +2,8 @@
 
 - Licence requirement about the program distribute it's sources
 
+- choose were seek for userdata/config and set ImGui io.IniFilename accordingly
+
 - try https://wiki.libsdl.org/SDL3/README-highdpi
 - read https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/Latency.c (SDL_SetGPUAllowedFramesInFlight)
 

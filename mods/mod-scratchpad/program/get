@@ -1,0 +1,77 @@
+#!/bin/sh
+#
+# This file is part of LLSS.
+#
+# LLSS is free software: you can redistribute it and/or modify it under the terms of the
+# Affero GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
+#
+# LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with LLSS.
+# If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
+#
+# Copyright 2025 ludolpif <ludolpif@gmail.com>
+#
+SolutionDir="../../../"
+
+cflags() {
+	case "$1" in
+		Debug|Release) ;;
+		*) _usage ;;
+	esac
+	solution=`${SolutionDir}get --cflags $1`
+	project="-Wall -Wformat -std=gnu99 -fvisibility=hidden -fPIC"
+	project="$project
+	-I${SolutionDir}lib/ui
+	-I${SolutionDir}lib/ui/dear_bindings_generated
+	-I${SolutionDir}lib/ui/imgui
+	-I${SolutionDir}lib/ui/dear_bindings_generated/backends
+	-I${SolutionDir}lib/ui/imgui/backends
+	-I${SolutionDir}lib/ecs/flecs
+	-I${SolutionDir}include
+	"
+	libsdl3=`pkg-config --cflags sdl3`
+	echo $solution $project $libsdl3
+}
+ldflags() {
+	case "$1" in
+		Debug|Release) ;;
+		*) _usage ;;
+	esac
+	solution=`${SolutionDir}get --ldflags $1`
+	soname=$(soname $1)
+	project="-Wl,--default-symver -Wl,-soname,$soname -shared"
+	case $(uname -s) in
+		Linux)      dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
+		Darwin)     dynload="-Wl,-rpath=.:.. -Wl,-Bsymbolic" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+	echo $solution $project $dynload
+}
+ldlibs() {
+	echo
+}
+soname() {
+	name="$(basename $(realpath ..))"
+	suffix=
+	# Suffix may be used to have a -debug or versionning, not decided yet. It will implies globbing in mod-host.c
+	case $(uname -s) in
+		Linux)      echo "$name$suffix.so" ;;
+		Darwin)     echo "$name$suffix.dylib" ;;
+		*)          echo "Unknown platform" >&2
+	esac
+}
+_usage() {
+	echo "Usage $0 (--cflags|--ldflags|--ldlibs|--soname) [Debug|Release]" >&2
+	exit 1
+}
+case "$1" in
+	--cflags) cflags "$2" ;;
+	--ldflags) ldflags "$2" ;;
+	--ldlibs) ldlibs ;;
+	--soname) soname ;;
+	*) _usage ;;
+esac

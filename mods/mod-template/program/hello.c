@@ -32,7 +32,7 @@ void ModTemplateUIHello(ecs_iter_t *it) {
 void ModTemplateUIInjectDemo(ecs_iter_t *it) {
     ModTemplateUIState *data = ecs_singleton_get_mut(it->world, ModTemplateUIState);
 
-    ImGui_Begin("Hello, world!", NULL, 0);
+    ImGui_Begin("Main", NULL, 0);
     ImGui_Checkbox("mod-template Window", &data->show_template_window);
     ImGui_End();
 };

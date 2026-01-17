@@ -34,7 +34,7 @@ void UIMain(ecs_iter_t *it) {
         static float f = 0.0f;
         static int counter = 0;
 
-        ImGui_Begin("Hello, world!", NULL, 0);                 // Create a window called "Hello, world!" and append into it.
+        ImGui_Begin("Main", NULL, 0);                          // Create a window called "Main" and append into it.
 
         ImGui_Text("This is some useful text.");               // Display some text (you can use a format strings too)
         ImGui_Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state

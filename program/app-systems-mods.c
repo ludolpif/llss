@@ -330,6 +330,10 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     char *mod_name = NULL;
     char *so_realpath = NULL;
 
+    // Silently skip mod-template
+    if ( SDL_strcmp("mod-template", fname)==0 ) {
+        goto bailout;
+    }
     if (!SDL_asprintf(&mod_dirpath, "%s%s", dirname, fname)) {
         app_error(LOG_PREFIX ": SDL_asprintf(&mod_dirpath, \"%%s%%s\",...): %s",
                 SDL_GetTicksNS(), dirname, fname, SDL_GetError());
