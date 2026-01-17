@@ -32,7 +32,7 @@ Avaiable killer features for modders:
 Build instructions for:
 - [GNU/Linux](doc/BUILDING-Linux.md) (which I use)
 - [Windows 10/11](doc/BUILDING-Windows.md) (which it works)
-- [Mac OS 15/26](doc/BUILDING-MacOS.md) (which I barely it make work for now)
+- [Mac OS 15/26](doc/BUILDING-MacOS.md) (which I try to make it work for now)
 
 Code and other help/contribution instructions here: [CONTRIBUTING.md](doc/CONTRIBUTING.md).
 
