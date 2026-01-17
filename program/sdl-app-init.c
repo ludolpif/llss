@@ -77,7 +77,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // Create SDL main_window graphics context
     float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
     SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-    SDL_Window* main_window = SDL_CreateWindow(APP_METADATA_NAME_STRING,
+    SDL_Window *main_window = SDL_CreateWindow(APP_METADATA_NAME_STRING,
             (int)(APP_UI_DEFAULT_WIDTH * main_scale),
             (int)(APP_UI_DEFAULT_HEIGHT * main_scale),
             window_flags);
@@ -87,7 +87,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
     // Assume this app will run on a single GPU and need to be restarted to change it
     bool gpu_device_debug_mode = true;
-    SDL_GPUDevice* gpu_device = SDL_CreateGPUDevice(
+    SDL_GPUDevice *gpu_device = SDL_CreateGPUDevice(
             SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_METALLIB,
             gpu_device_debug_mode, NULL);
     if (gpu_device == NULL)
@@ -153,7 +153,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // This macro calls ImGui::DebugCheckVersionAndDataLayout() and try to detect ABI problems
     CIMGUI_CHECKVERSION();
     ImGui_CreateContext(NULL);
-    ImGuiContext* imgui_context = ImGui_GetCurrentContext();
+    ImGuiContext *imgui_context = ImGui_GetCurrentContext();
     ImGuiIO *imgui_io = ImGui_GetIO();
     imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     // imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //TODO need more code in sdl-app-events.c
@@ -163,7 +163,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     //ImGui_StyleColorsLight(NULL);
 
     // Setup scaling
-    ImGuiStyle* style = ImGui_GetStyle();
+    ImGuiStyle *style = ImGui_GetStyle();
     // Bake a fixed style scale. (until we have a solution for dynamic style scaling,
     //  changing this requires resetting Style + calling this again)
     ImGuiStyle_ScaleAllSizes(style, main_scale);
