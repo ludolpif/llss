@@ -67,9 +67,57 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         //TODO pass to ECS
       }
       break;
+    case SDL_EVENT_USER:
+      switch ( event->user.code ) {
+#ifdef HAVE_INOTIFY_H
+          case APP_USER_EVENT_INOTIFY:
+              const struct inotify_event ievent = (const struct inotify_event *) event->user.data1;
+            /* Afficher le type d’événement. */
+            if (event->mask & IN_OPEN)
+                printf("IN_OPEN: ");
+            if (event->mask & IN_CLOSE_NOWRITE)
+                printf("IN_CLOSE_NOWRITE: ");
+            if (event->mask & IN_CLOSE_WRITE)
+                printf("IN_CLOSE_WRITE: ");
+
+            /* Afficher le nom du répertoire surveillé. */
+            for (size_t i = 1; i < argc; ++i) {
+                if (wd[i] == event->wd) {
+                    printf("%s/", argv[i]);
+                    break;
+                }
+            }
+
+            /* Afficher le nom du fichier. */
+            if (event->len)
+                printf("%s", event->name);
+
+            /* Afficher le type d’objet de système de fichiers. */
+            if (event->mask & IN_ISDIR)
+                printf(" [répertoire]\n");
+            else
+                printf(" [fichier]\n");
+            break;
+#endif /*HAVE_INOTIFY_H*/
+          default:
+            //TODO log?
+        }
     default:
-      //TODO pass to ECS
+      //TODO log?
       break;
   }
   return then;
 }
+
+#ifdef HAVE_INOTIFY_H
+void push_inotify_event_to_sdl_queue(const struct inotify_event *ievent) {
+    SDL_Event user_event;
+    SDL_zero(user_event);  /* SDL will copy this entire struct! Initialize to keep memory checkers happy. */
+    user_event.type = SDL_EVENT_USER;
+    user_event.user.code = APP_USER_EVENT_INOTIFY;
+    user_event.user.data1 = ievent;
+    user_event.user.data2 = NULL;
+    SDL_PushEvent(&user_event);
+}
+#endif
+

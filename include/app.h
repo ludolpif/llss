@@ -126,6 +126,14 @@ typedef enum app_logcategory {
 #define app_critical(...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 
 //-----------------------------------------------------------------------------
+// [SECTION] Additionnal SDL Events definitions
+//-----------------------------------------------------------------------------
+typedef enum app_sdl_user_event {
+    APP_USER_EVENT_INVALID,
+    APP_USER_EVENT_INOTIFY
+} app_sdl_user_event_t;
+
+//-----------------------------------------------------------------------------
 // [SECTION] Structures for global-like plain old data
 //-----------------------------------------------------------------------------
 extern APP_API SDL_LogPriority logpriority_earlyskip;
