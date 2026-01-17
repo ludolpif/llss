@@ -27,9 +27,9 @@ What APIs are available for modding?
 
 ## How it works at a coarse level?
 
-- `main()` entrypoint is in `program/main.c` compilation unit but not written by us, but written by SDL3 authors.
-  - they take care of OS specificities (for MacOS, be a Cocoa application, for Windows define `WinMain()`...
-- SDL3 `main()` will do this in a portable and error checked manner:
+- `main()` entrypoint is in `program/main.c` compilation unit but not written by us, but by SDL3 authors
+  - they take care of OS specificities (for MacOS, be a Cocoa application, for Windows define `WinMain()`...)
+- SDL3 `main()` will do this in a portable and error-checked manner:
 ```c
 int main(...) {
     enum SDL_AppResult res;             // https://wiki.libsdl.org/SDL3/SDL_AppResult
@@ -47,7 +47,7 @@ int main(...) {
 }
 ```
 - data is stored in plain C structs but we give many informations to FLECS to read/write/serialize
-  - FLECS provide macros and functions to do that. See `include/app-components-*.h'.
+  - FLECS provide macros and functions to do that. See `include/app-components-*.h`.
 - our `SDL_AppInit()` will init many little things, but the big ones are:
 ```c
 SDL_AppResult SDL_AppInit(...) {
@@ -99,8 +99,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     return SDL_APP_CONTINUE;
 }
 ```
-- mods will auto-load after the first rendered frames because `ECS_IMPORT()`ed systems define this behavor
+- mods will auto-load after the first rendered frames because ECS\_IMPORTed systems define this behavor
   - you can watch your mod state using FLECS Explorer
+  - the mod hot-reloading is implemented in `program/app-systems-mods.c`
 
 ![Screenshot of FLECS explorer for mod state checking](/doc/assets/images/screen-flecs-explorer-mod-state.png)
 
@@ -110,3 +111,10 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   - ECS is not using the usual Object-Oriented way of thinking and it's overwhelming to "unlearn" at first try
   - Official FLECS newcomer documentation is great, but it takes a for weeks to be good at it
   - https://www.flecs.dev/flecs/#what-is-an-entity-component-system
+
+- FLECS 
+  - use many conventions and you need to know them (some use `PascalCase`, some `snaked_case`)
+  - translate modules names like `ModScratchpadCompositing` and create namespaced entities in `mod.scratchpad.compositing` tree.
+  - suggests to make some `*.components.*` modules for data and separate `*.systems.*`
+  - we suggest that all original program go in `app.*` and all mods FLECS modules go in `mod.*`
+  - So you should use `ModSomething` names to be in `mod.*` entity subtree
