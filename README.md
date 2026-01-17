@@ -26,8 +26,8 @@ Avaiable killer features for modders:
   - On Windows and MacOS: just rebuild the mod project from VS2022/XCode while app is running
   - On GNU/Linux just `cd llss/mods/mod-yourmod/program; make` while app is running
 - web UI to inspect and live modify ECS state
-  - Or while app running, follow this link: [explorer](https://www.flecs.dev/explorer/?host=localhost)
-  - On GNU/Linux, to run app and open the webpage: `cd llss/ ; make && make run-ecs-explorer`
+  - While the app is running, follow this link: [explorer](https://www.flecs.dev/explorer/?host=localhost)
+  - Or on GNU/Linux, to run app and open the webpage: `cd llss/ ; make && make run-ecs-explorer`
 
 Build instructions for:
 - [GNU/Linux](doc/BUILDING-Linux.md) (which I use)
