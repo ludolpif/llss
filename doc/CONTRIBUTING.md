@@ -68,7 +68,7 @@ SDL_AppResult SDL_AppInit(...) {
 }
 ```
 - now we have an initalized SDLGPU / ImGui / FLECS based-app, we need each video frame rendering
-  - this is not a simplified version, every is there, the ECS is central
+  - this is not a simplified version, everything is there, the ECS plays a central role
 ```c
 SDL_AppResult SDL_AppIterate(void *appstate) {
     ecs_world_t *world = (ecs_world_t *)appstate;
@@ -113,6 +113,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   - https://www.flecs.dev/flecs/#what-is-an-entity-component-system
 
 - FLECS 
+  - pipeline system will schedule every System execution based on it's query result (run if non empty)
   - use many conventions and you need to know them (some use `PascalCase`, some `snaked_case`)
   - translate modules names like `ModScratchpadCompositing` and create namespaced entities in `mod.scratchpad.compositing` tree.
   - suggests to make some `*.components.*` modules for data and separate `*.systems.*`
