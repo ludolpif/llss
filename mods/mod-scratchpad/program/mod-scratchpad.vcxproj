@@ -92,7 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hello.c" />
+    <ClCompile Include="compositing.c" />
     <ClCompile Include="mod.c" />
     <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
