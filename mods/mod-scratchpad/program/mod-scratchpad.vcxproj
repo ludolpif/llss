@@ -102,7 +102,7 @@
     <ClInclude Include="$(SolutionDir)\lib\ecs\flecs\flecs.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\imgui_config.h" />
-    <ClInclude Include="hello.h" />
+    <ClInclude Include="compositing.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\program\app.vcxproj">
