@@ -1,3 +1,5 @@
+// Compile implementation of some header-only libraries here
+#define DMON_IMPL
 #include "app.h" // No "utils.h", embeded in app.h
 
 APP_API uint64_t convert_ns_to_frameid(uint64_t ns, int32_t framerate_num, int32_t framerate_den) {
@@ -5,6 +7,14 @@ APP_API uint64_t convert_ns_to_frameid(uint64_t ns, int32_t framerate_num, int32
 }
 APP_API uint64_t convert_frameid_to_ns(uint64_t frameid, int32_t framerate_num, int32_t framerate_den) {
     return (frameid * 1000000000 * framerate_den ) / framerate_num;
+}
+
+void dmon_error_to_sdl_log_adapter(const char *msg) {
+    app_error("%016"PRIu64" DMON %s", SDL_GetTicksNS(), msg);
+}
+
+void dmon_debug_to_sdl_log_adapter(const char *msg) {
+    app_debug("%016"PRIu64" DMON %s", SDL_GetTicksNS(), msg);
 }
 
 //typedef void(* ecs_os_api_log_t) (int32_t level, const char *file, int32_t line, const char *msg)
@@ -44,4 +54,27 @@ void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, con
         default: app_trace(FLECS_LOG_VAARGS); break;
     }
 #undef FLECS_LOG_VAARGS
+}
+
+void push_filesystem_event_to_sdl_queue(dmon_watch_id watch_id, dmon_action action,
+        const char* rootdir, const char* filepath, const char* oldfilepath, void* user) {
+    AppDmonEvent *devent = SDL_calloc(1, sizeof(AppDmonEvent));
+    if (!devent) {
+        // TODO decide a global behavior about OOM
+        return;
+    }
+    devent->watch_id = watch_id;
+    devent->action = action;
+    devent->rootdir = rootdir;
+    devent->filepath = filepath;
+    devent->oldfilepath = oldfilepath;
+    devent->user = user;
+
+    SDL_Event user_event; // this is an union type, &(user_event) {...} syntax don't work
+    SDL_zero(user_event);
+    user_event.type = SDL_EVENT_USER;
+    user_event.user.code = APP_USER_EVENT_FILESYSTEM;
+    user_event.user.data1 = devent;
+    user_event.user.data2 = NULL;
+    SDL_PushEvent(&user_event);
 }

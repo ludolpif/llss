@@ -57,18 +57,37 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         // SDL_MouseMotionEvent motion
         // SDL_MouseButtonEvent button
         // SDL_MouseWheelEvent wheel
-        //TODO pass to ECS
+        // app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_MOUSE_*, unhandled event",
+        //        SDL_GetTicksNS());
       }
       break;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
       if (!imgui_io->WantCaptureKeyboard) {
         // SDL_KeyboardEvent key
-        //TODO pass to ECS
+          app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_KEY_*, unhandled event",
+                  SDL_GetTicksNS());
       }
       break;
+    case SDL_EVENT_USER:
+      switch ( event->user.code ) {
+          case APP_USER_EVENT_FILESYSTEM:
+              {} // C99 can't have declaration right after a label
+
+              // Create current event entity
+              ecs_entity_t parent = ecs_new_from_path(world, 0, "events.filesystem");
+              ecs_entity_t event_entity = ecs_entity(world, { .parent = parent });
+              ecs_set_ptr(world, event_entity, AppDmonEvent, event->user.data1);
+
+              //TODO SDL_free(dmon_event) when consumed;
+          default:
+              app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_USER, unknown event->user.code: %i",
+                      SDL_GetTicksNS(), event->user.code);
+        }
+      break;
     default:
-      //TODO pass to ECS
+      app_info("%016"PRIu64" SDL_AppEvent(): unknown event->type: %i",
+              SDL_GetTicksNS(), event->type);
       break;
   }
   return then;

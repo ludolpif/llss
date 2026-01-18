@@ -77,3 +77,14 @@ APP_API ECS_STRUCT(AppMainTimingContext, {
 
 typedef SDL_AsyncIOOutcome AsyncIOOutcome;
 extern APP_API ECS_COMPONENT_DECLARE(AsyncIOOutcome);
+
+typedef struct {
+    dmon_watch_id watch_id;
+    dmon_action action;
+    const char *rootdir;
+    const char *filepath;
+    const char *oldfilepath;
+    void *user;
+} AppDmonEvent;
+extern APP_API ECS_COMPONENT_DECLARE(AppDmonEvent);
+

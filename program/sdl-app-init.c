@@ -198,6 +198,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
         };
     cImGui_ImplSDLGPU3_Init(&init_info);
 
+    // Directory Monitor (inotify, ReadDirectoryChangesW, FSEvents abstraction)
+    dmon_init();
+    dmon_watch(SDL_GetBasePath(), push_filesystem_event_to_sdl_queue, DMON_WATCHFLAGS_RECURSIVE, NULL);
+
     //TODO load from config
     Sint32 fr_num = 60;
     Sint32 fr_den = 1;
@@ -269,6 +273,8 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
     const AppMainTimingContext *app_main_timing_context = ecs_singleton_get(world, AppMainTimingContext);
     Uint32 app_iterate_count = app_main_timing_context->app_iterate_count;
+
+    dmon_deinit();
 
     SDL_WaitForGPUIdle(app_sdl_context->gpu_device);
     cImGui_ImplSDL3_Shutdown();

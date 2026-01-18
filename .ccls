@@ -1,7 +1,9 @@
 -D_DEBUG
--std=c11
+-std=gnu99
 -fvisibility=hidden
 -Dapp_EXPORTS
+-Dapp_FlecsStats
+-Ilib/events/dmon
 -Ilib/ui
 -Ilib/ui/dear_bindings_generated
 -Ilib/ui/imgui

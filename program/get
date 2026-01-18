@@ -23,9 +23,11 @@ cflags() {
 		*) _usage ;;
 	esac
 	solution=`${SolutionDir}get --cflags $1`
-	project="-Wall -Wformat -std=c11 -fvisibility=hidden"
+	project="-Wall -Wformat -std=gnu99 -fvisibility=hidden"
 	project="$project
 	-Dapp_EXPORTS
+	-Dapp_FlecsStats
+	-I${SolutionDir}lib/events/dmon
 	-I${SolutionDir}lib/ui
 	-I${SolutionDir}lib/ui/dear_bindings_generated
 	-I${SolutionDir}lib/ui/imgui
@@ -78,4 +80,3 @@ case $1 in
 	--ldlibs) ldlibs "$2" ;;
 	*) _usage ;;
 esac
-

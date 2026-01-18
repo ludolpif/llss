@@ -19,17 +19,18 @@
  * Kept in one file to help searching... but long, so quick table of content.
  * Note: flecs.h and dcimgui.h do the same, check them too. For SDL3, check this link:
  * https://wiki.libsdl.org/SDL3/CategoryAPI
- *
- * [SECTION] Conventions
- * [SECTION] Libraries directly usable from mods
- * [SECTION] Boring stuff needed for symbol visibility
- * [SECTION] General and metadata macros definitions
- * [SECTION] Logging helpers and counters definitions
- * [SECTION] Structures for global-like plain old data
- * [SECTION] Mods API definition
- * [SECTION] ECS core components definitions
- * [SECTION] Utility functions
  */
+// Quick search table:
+// [SECTION] Conventions
+// [SECTION] General and metadata macro definitions
+// [SECTION] Boring stuff needed for symbol visibility
+// [SECTION] Logging helpers and counters definitions
+// [SECTION] Libraries directly usable from mods
+// [SECTION] Additionnal SDL Events definitions
+// [SECTION] Structures for global-like plain old data
+// [SECTION] Mods API definition
+// [SECTION] ECS Core definitions
+// [SECTION] Utility functions
 
 //-----------------------------------------------------------------------------
 // [SECTION] Conventions
@@ -47,23 +48,24 @@
  * - functions that are used as ECS System (like 'Move') use PascalCase
  */
 
-
 //-----------------------------------------------------------------------------
-// [SECTION] Libraries directly usable from mods
+// [SECTION] General and metadata macro definitions
 //-----------------------------------------------------------------------------
-#include <SDL3/SDL.h>
-//
-//TODO consider #define IMGUI_DEFINE_MATH_OPERATORS
-#define IMGUI_USER_CONFIG "imgui_config.h"
-#include "dcimgui.h"
+#include "version-app.h"
+#include "version-build-dep.h"
+// Following macros can't be in *-version.h as Microsoft res.exe can't cope with it (app.rc includes them)
+#define VERSION_TO_INT(a, b, c) (a*10000+b*100+c)
+#define    VERSION_MAJOR_FROM_INT(a) (a/10000)
+#define    VERSION_MINOR_FROM_INT(a) ((a%10000)/100)
+#define    VERSION_MICRO_FROM_INT(a) (a%100)
 
-//TODO in build-dep first
-//#define ecs_ftime_t double //Change to double precision for processes that can run for a long time (e.g. longer than a day).
-#include "flecs.h"
+#define APP_VERSION_INT VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
+#define BUILD_DEP_VERSION_INT VERSION_TO_INT(BUILD_DEP_VERSION_MAJOR,BUILD_DEP_VERSION_MINOR,BUILD_DEP_VERSION_PATCH)
 
 //-----------------------------------------------------------------------------
 // [SECTION] Boring stuff needed for symbol visibility
 //-----------------------------------------------------------------------------
+#include <SDL3/SDL_platform_defines.h>
 #ifdef app_EXPORTS
 # if defined(SDL_PLATFORM_WINDOWS)
 #  define APP_API __declspec(dllexport)
@@ -93,22 +95,9 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// [SECTION] General and metadata macro definitions
-//-----------------------------------------------------------------------------
-#include "version-app.h"
-#include "version-build-dep.h"
-// Following macros can't be in *-version.h as Microsoft res.exe can't cope with it (app.rc includes them)
-#define VERSION_TO_INT(a, b, c) (a*10000+b*100+c)
-#define    VERSION_MAJOR_FROM_INT(a) (a/10000)
-#define    VERSION_MINOR_FROM_INT(a) ((a%10000)/100)
-#define    VERSION_MICRO_FROM_INT(a) (a%100)
-
-#define APP_VERSION_INT VERSION_TO_INT(APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH)
-#define BUILD_DEP_VERSION_INT VERSION_TO_INT(BUILD_DEP_VERSION_MAJOR,BUILD_DEP_VERSION_MINOR,BUILD_DEP_VERSION_PATCH)
-
-//-----------------------------------------------------------------------------
 // [SECTION] Logging helpers and counters definitions
 //-----------------------------------------------------------------------------
+#include <SDL3/SDL_stdinc.h>
 /* TODO
 typedef enum app_logcategory {
     APP_CATEGORY_CORE = SDL_LOG_CATEGORY_CUSTOM,
@@ -124,6 +113,48 @@ typedef enum app_logcategory {
 #define app_warn(...)     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_error(...)    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
 #define app_critical(...) SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, __VA_ARGS__)
+
+void dmon_error_to_sdl_log_adapter(const char *msg);
+void dmon_debug_to_sdl_log_adapter(const char *msg);
+void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg);
+
+//-----------------------------------------------------------------------------
+// [SECTION] Libraries directly usable from mods
+//-----------------------------------------------------------------------------
+#include <SDL3/SDL.h>
+//
+//TODO consider #define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_USER_CONFIG "imgui_config.h"
+#include "dcimgui.h"
+
+//TODO in build-dep first
+//#define ecs_ftime_t double //Change to double precision for processes that can run for a long time (e.g. longer than a day).
+#include "flecs.h"
+
+// https://github.com/septag/dmon
+#define DMON_MALLOC SDL_malloc
+#define DMON_FREE SDL_free
+#define DMON_REALLOC SDL_realloc
+#define DMON_ASSERT SDL_assert
+#define _DMON_LOG_ERRORF(str, ...) do { char msg[512]; SDL_snprintf(msg, sizeof(msg), str, __VA_ARGS__); DMON_LOG_ERROR(msg); } while(SDL_NULL_WHILE_LOOP_CONDITION);
+#define _DMON_LOG_DEBUGF(str, ...) do { char msg[512]; SDL_snprintf(msg, sizeof(msg), str, __VA_ARGS__); DMON_LOG_DEBUG(msg); } while(SDL_NULL_WHILE_LOOP_CONDITION);
+#define DMON_LOG_ERROR dmon_error_to_sdl_log_adapter
+#define DMON_LOG_DEBUG dmon_debug_to_sdl_log_adapter
+#define DMON_API_DECL APP_API
+#define DMON_API_IMPL APP_API
+#define DMON_MAX_PATH 260
+#define DMON_MAX_WATCHES 64
+#define DMON_SLEEP_INTERVAL 100
+// TODO uninvestigated deadlock if DMON_SLEEP_INTERVAL 1000
+#include "dmon.h"
+
+//-----------------------------------------------------------------------------
+// [SECTION] Additionnal SDL Events definitions
+//-----------------------------------------------------------------------------
+typedef enum {
+    APP_USER_EVENT_INVALID,
+    APP_USER_EVENT_FILESYSTEM,
+} app_sdl_user_event_t;
 
 //-----------------------------------------------------------------------------
 // [SECTION] Structures for global-like plain old data
@@ -194,4 +225,5 @@ APP_API uint64_t convert_frameid_to_ns(uint64_t frameid, int32_t framerate_num, 
 #define CONVERT_FRAMEID_TO_NS(frameid, framerate_num, framerate_den) \
     ( ( ( (uint64_t)frameid) * 1000000000 * framerate_den ) / framerate_num )
 
-void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, const char *msg);
+void push_filesystem_event_to_sdl_queue(dmon_watch_id watch_id, dmon_action action,
+        const char* rootdir, const char* filepath, const char* oldfilepath, void* user);

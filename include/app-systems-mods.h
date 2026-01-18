@@ -54,7 +54,8 @@ void ModUnload(ecs_iter_t *it);
 void ModInit(ecs_iter_t *it);
 void ModFini(ecs_iter_t *it);
 
-// Task, run once per second 
+// Tasks
+void ModSetFSWatcher(ecs_iter_t *it);
 void ModLookOnDisk(ecs_iter_t *it);
 
 // mod-related utility functions

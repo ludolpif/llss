@@ -23,7 +23,7 @@ void ModScratchpadUIHello(ecs_iter_t *it) {
     if (!data->show_scratchpad_window) return; // TODO make it as query filter ?
 
     ImGui_Begin("ModScratchpadCompositing", &data->show_scratchpad_window, ImGuiWindowFlags_NoFocusOnAppearing);
-    ImGui_Text("Hello from mod-scratchpad v2!");
+    ImGui_Text("Hello from mod-scratchpad v3!");
     if (ImGui_Button("Close Me"))
         data->show_scratchpad_window = false;
     ImGui_End();

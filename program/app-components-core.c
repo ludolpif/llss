@@ -15,6 +15,7 @@ APP_API ECS_COMPONENT_DECLARE(AppMemoryFuncs);
 APP_API ECS_COMPONENT_DECLARE(AppSDLContext);
 APP_API ECS_COMPONENT_DECLARE(AppImGuiContext);
 APP_API ECS_COMPONENT_DECLARE(AsyncIOOutcome);
+APP_API ECS_COMPONENT_DECLARE(AppDmonEvent);
 
 APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     // https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
@@ -99,6 +100,18 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
             { .name = "bytes_requested", .type = ecs_id(ecs_u64_t) },
             { .name = "bytes_transferred", .type = ecs_id(ecs_u64_t) },
             { .name = "userdata", .type = ecs_id(ecs_uptr_t) },
+        }
+    });
+    ECS_COMPONENT_DEFINE(world, AppDmonEvent);
+    ecs_struct(world, {
+        .entity = ecs_id(AppDmonEvent),
+        .members = {
+            { .name = "watch_id", .type = ecs_id(ecs_u32_t) },
+            { .name = "action", .type = ecs_id(ecs_i32_t) },
+            { .name = "rootdir", .type = ecs_id(ecs_string_t) },
+            { .name = "filepath", .type = ecs_id(ecs_string_t) },
+            { .name = "oldfilepath", .type = ecs_id(ecs_string_t) },
+            { .name = "user", .type = ecs_id(ecs_uptr_t) },
         }
     });
 }

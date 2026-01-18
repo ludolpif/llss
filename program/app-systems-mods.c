@@ -72,10 +72,13 @@ void AppSystemsModsImport(ecs_world_t *world) {
         (app.components.mods.ModState, app.components.mods.ModUnloadable)
         );
 
+    // One shot Tasks
+    ECS_SYSTEM(world, ModSetFSWatcher, EcsOnStart, 0);
+
     // Periodic Tasks
     // ECS_SYSTEM(world, ModLookOnDisk, EcsOnUpdate, 0); does not set .interval = ...
-    /*ecs_entity_t ecs_id(ModLookOnDisk) = */ ecs_system(world, { /* ecs_system_desc_t */
-        .entity = ecs_entity(world, { /* ecs_entity_desc_t */
+    ecs_system(world, {
+        .entity = ecs_entity(world, {
             .name = "ModLookOnDisk",
             .add = ecs_ids( ecs_dependson(EcsOnUpdate) )
         }),
@@ -300,7 +303,19 @@ void ModFini(ecs_iter_t *it) {
     }
 }
 
-// Task, run once per second TODO use libevent to watch folder
+// Task, run once at startup
+void ModSetFSWatcher(ecs_iter_t *it) {
+    if (!mods_basepath) {
+        if (!SDL_asprintf(&mods_basepath, APP_MOD_PATH_FROM_BASEPATH, SDL_GetBasePath())) {
+            app_error("%016"PRIu64" ModSetFSWatcher(): SDL_asprintf(&mods_basepath, ...) failed",
+                    SDL_GetTicksNS());
+            return;
+        }
+    }
+    dmon_watch(mods_basepath, push_filesystem_event_to_sdl_queue, DMON_WATCHFLAGS_RECURSIVE, "mods");
+}
+
+// Task, run once per second
 void ModLookOnDisk(ecs_iter_t *it) {
     if (!mods_basepath) {
         if (!SDL_asprintf(&mods_basepath, APP_MOD_PATH_FROM_BASEPATH, SDL_GetBasePath())) {
@@ -326,7 +341,6 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     SDL_PathInfo info;
     char *mod_dirpath = NULL;
     char *so_path = NULL;
-    char *mod_entity_name = NULL;
     char *mod_name = NULL;
     char *so_realpath = NULL;
 
@@ -364,12 +378,6 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
         goto bailout;
     }
     // Prepare some strings for the ModOnDisk component
-    //FIXME This seems to be a bad method, at least in Explorer parent entities keep blinking
-    if (!SDL_asprintf(&mod_entity_name, "mod.meta.%s", fname)) {
-        app_error(LOG_PREFIX ": SDL_asprintf(&mod_entity_name, ...): %s",
-                SDL_GetTicksNS(), dirname, fname, SDL_GetError());
-        goto bailout;
-    }
     mod_name = SDL_strdup(fname);
     if (!mod_name) {
         app_error(LOG_PREFIX ": SDL_strdup(fname): %s",
@@ -377,7 +385,8 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
         goto bailout;
     }
     // Create or refresh the current mod entity
-    ecs_entity_t mod = ecs_entity(world, { .name = mod_entity_name });
+    ecs_entity_t parent = ecs_new_from_path(world, 0, "mod.meta");
+    ecs_entity_t mod = ecs_entity(world, { .name = fname, .parent = parent });
     const ModOnDisk *d = ecs_get(world, mod, ModOnDisk);
     ecs_i32_t load_id = 0;
     if ( d ) {
@@ -421,7 +430,6 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
 
 bailout:
     SDL_free(mod_name);
-    SDL_free(mod_entity_name);
     SDL_free(so_path);
     SDL_free(mod_dirpath);
 
