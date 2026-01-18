@@ -30,6 +30,7 @@
 #define APP_UI_DEFAULT_HEIGHT 720
 
 APP_API SDL_LogPriority logpriority_earlyskip;
+APP_API Uint32 APP_USER_EVENT_FILESYSTEM;
 
 // Implementations
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
@@ -148,6 +149,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
             (present_mode==SDL_GPU_PRESENTMODE_MAILBOX)?"MAILBOX":(
                 (present_mode==SDL_GPU_PRESENTMODE_IMMEDIATE)?"IMMEDIATE":(
                     (present_mode==SDL_GPU_PRESENTMODE_VSYNC)?"VSYNC":"UNKNOWN")));
+    // Register user-defined SDL events types
+    APP_USER_EVENT_FILESYSTEM = SDL_RegisterEvents(1);
+    if (!APP_USER_EVENT_FILESYSTEM)
+        app_failure("SDL_RegisterEvents(1) for APP_USER_EVENT_FILESYSTEM: %s", SDL_GetError());
 
     // Setup Dear ImGui context
     // This macro calls ImGui::DebugCheckVersionAndDataLayout() and try to detect ABI problems

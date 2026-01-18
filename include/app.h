@@ -26,7 +26,6 @@
 // [SECTION] Boring stuff needed for symbol visibility
 // [SECTION] Logging helpers and counters definitions
 // [SECTION] Libraries directly usable from mods
-// [SECTION] Additionnal SDL Events definitions
 // [SECTION] Structures for global-like plain old data
 // [SECTION] Mods API definition
 // [SECTION] ECS Core definitions
@@ -149,17 +148,10 @@ void flecs_to_sdl_log_adapter(int32_t level, const char *file, int32_t line, con
 #include "dmon.h"
 
 //-----------------------------------------------------------------------------
-// [SECTION] Additionnal SDL Events definitions
-//-----------------------------------------------------------------------------
-typedef enum {
-    APP_USER_EVENT_INVALID,
-    APP_USER_EVENT_FILESYSTEM,
-} app_sdl_user_event_t;
-
-//-----------------------------------------------------------------------------
 // [SECTION] Structures for global-like plain old data
 //-----------------------------------------------------------------------------
 extern APP_API SDL_LogPriority logpriority_earlyskip;
+extern APP_API Uint32 APP_USER_EVENT_FILESYSTEM;
 
 //-----------------------------------------------------------------------------
 // [SECTION] Mods API definition

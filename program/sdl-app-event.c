@@ -17,6 +17,8 @@
 #include "app.h"
 #include "dcimgui_impl_sdl3.h"
 
+bool consume_user_defined_events(ecs_world_t *world, SDL_Event *event, Uint32 type);
+
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   ecs_world_t *world = (ecs_world_t *)appstate;
 
@@ -64,31 +66,29 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
       if (!imgui_io->WantCaptureKeyboard) {
-        // SDL_KeyboardEvent key
+          // SDL_KeyboardEvent key
           app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_KEY_*, unhandled event",
                   SDL_GetTicksNS());
       }
       break;
-    case SDL_EVENT_USER:
-      switch ( event->user.code ) {
-          case APP_USER_EVENT_FILESYSTEM:
-              {} // C99 can't have declaration right after a label
-
-              // Create current event entity
-              ecs_entity_t parent = ecs_new_from_path(world, 0, "events.filesystem");
-              ecs_entity_t event_entity = ecs_entity(world, { .parent = parent });
-              ecs_set_ptr(world, event_entity, AppDmonEvent, event->user.data1);
-
-              //TODO SDL_free(dmon_event) when consumed;
-          default:
-              app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_USER, unknown event->user.code: %i",
-                      SDL_GetTicksNS(), event->user.code);
-        }
-      break;
     default:
-      app_info("%016"PRIu64" SDL_AppEvent(): unknown event->type: %i",
-              SDL_GetTicksNS(), event->type);
+      if (!consume_user_defined_events(world, event, event->type)) {
+          app_info("%016"PRIu64" SDL_AppEvent(): unhandled event->type: %i",
+                  SDL_GetTicksNS(), event->type);
+      }
       break;
   }
   return then;
+}
+
+//TODO find a solution that allows plugin to do this too, and find a good way to represent it in the ECS
+bool consume_user_defined_events(ecs_world_t *world, SDL_Event *event, Uint32 type) {
+    if ( type == APP_USER_EVENT_FILESYSTEM ) {
+      // Create current event entity
+      ecs_entity_t parent = ecs_new_from_path(world, 0, "events.filesystem");
+      ecs_entity_t event_entity = ecs_entity(world, { .parent = parent });
+      ecs_set_ptr(world, event_entity, AppDmonEvent, event->user.data1);
+      return true;
+    }
+    return false;
 }
