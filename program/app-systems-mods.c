@@ -1,10 +1,7 @@
+#define APP_SYSTEMS_MODS_IMPL
 #include "app-systems-mods.h"
-#include "app-components-core.h"
 
-// ECS cached queries forward declarations
-ECS_QUERY_DECLARE(ModInitializableQuery);
-ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
-ECS_QUERY_DECLARE(ModTerminatingQuery);
+#include "app-components-core.h"
 
 //XXX make it part of world
 char *mods_basepath = NULL;

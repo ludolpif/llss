@@ -1,29 +1,6 @@
 #define APP_COMPONENTS_MODS_IMPL
 #include "app-components-mods.h"
 
-//TODO we may get rid to duplicate this with an extern/empty macro ifdef APP_COMPONENTS_MODS_IMPL
-APP_API ECS_TAG_DECLARE(ModState);
-APP_API ECS_ENTITY_DECLARE(ModAvailable);     //  for  ModPrepareFromDisk
-APP_API ECS_ENTITY_DECLARE(ModCopying);       //during ModCopy
-APP_API ECS_ENTITY_DECLARE(ModLoadable);      //  for  ModLoad
-APP_API ECS_ENTITY_DECLARE(ModLoadFailed);    // after ModLoad
-APP_API ECS_ENTITY_DECLARE(ModIncompatible);  // after ModLoad
-APP_API ECS_ENTITY_DECLARE(ModInitializable); //  for  ModInit
-APP_API ECS_ENTITY_DECLARE(ModInitFailed);    // after ModInit
-APP_API ECS_ENTITY_DECLARE(ModRunning);       // after ModInit
-APP_API ECS_ENTITY_DECLARE(ModTerminating);   //  for  ModFini
-APP_API ECS_ENTITY_DECLARE(ModFiniFailed);    // after ModFini
-APP_API ECS_ENTITY_DECLARE(ModUnloadable);    // after ModFini
-APP_API ECS_ENTITY_DECLARE(ModUnloaded);    // after ModUnload
-
-APP_API ECS_TAG_DECLARE(ModFlags);
-APP_API ECS_ENTITY_DECLARE(ModNewerOnDisk);
-
-APP_API ECS_TAG_DECLARE(ModIOAsync);
-
-APP_API ECS_COMPONENT_DECLARE(ModOnDisk);
-APP_API ECS_COMPONENT_DECLARE(ModInRAM);
-
 void AppComponentsModsImport(ecs_world_t *world) {
     // https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
     // See the "modules" example

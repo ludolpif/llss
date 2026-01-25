@@ -1,3 +1,4 @@
+#define APP_SYSTEMS_CORE_IMPL
 #include "app-systems-core.h"
 #include "ui-main.h"
 #include "dcimgui_impl_sdl3.h"

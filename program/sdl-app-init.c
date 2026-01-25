@@ -38,6 +38,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     alloc_count_install_hooks();
 
     // Configure logging
+#ifdef _DEBUG
+    // Set default logging as SDL3 default logging, but with app=trace instead of app=info
+    SDL_SetHint(SDL_HINT_LOGGING, "app=trace,assert=warn,test=verbose,*=error");
+#endif
     logpriority_earlyskip = SDL_GetLogPriority(SDL_LOG_CATEGORY_APPLICATION);
     SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_TRACE, ECS_GREY   "TRACE " ECS_NORMAL);
     SDL_SetLogPriorityPrefix(SDL_LOG_PRIORITY_VERBOSE, ECS_GREY "VERB  " ECS_NORMAL);
@@ -161,7 +165,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     ImGuiContext *imgui_context = ImGui_GetCurrentContext();
     ImGuiIO *imgui_io = ImGui_GetIO();
     imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    // imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //TODO need more code in sdl-app-events.c
+    imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
     // Setup Dear ImGui style
     ImGui_StyleColorsDark(NULL);
@@ -254,6 +258,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
             .main_frame_start_ns = 0,
             .main_frameid = 0,
             });
+
+    // Set global app state. As AppState is tagged Exclusive, add_pair will replace the previous pair
+    ecs_add_pair(world, ecs_id(AppSDLContext), AppState, AppStateIdling);
 
     // ECS First frame. This runs both the Startup, Update and user-defined systems
     ecs_progress(world, 0.0f);

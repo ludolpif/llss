@@ -1,22 +1,6 @@
 #define APP_COMPONENTS_CORE_IMPL
 #include "app-components-core.h"
 
-// Phases for pipelines
-APP_API ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
-
-// Elements for async IO state
-APP_API ECS_TAG_DECLARE(IOState);
-APP_API ECS_ENTITY_DECLARE(IOComplete);
-APP_API ECS_ENTITY_DECLARE(IOFailure);
-APP_API ECS_ENTITY_DECLARE(IOCanceled);
-
-// Components not using ECS_STRUCT() in .h file (for custom type reflection)
-APP_API ECS_COMPONENT_DECLARE(AppMemoryFuncs);
-APP_API ECS_COMPONENT_DECLARE(AppSDLContext);
-APP_API ECS_COMPONENT_DECLARE(AppImGuiContext);
-APP_API ECS_COMPONENT_DECLARE(AsyncIOOutcome);
-APP_API ECS_COMPONENT_DECLARE(AppDmonEvent);
-
 APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     // https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
     // See the "modules" example
@@ -49,6 +33,14 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     ECS_ENTITY_DEFINE(world, IOComplete);
     ECS_ENTITY_DEFINE(world, IOFailure);
     ECS_ENTITY_DEFINE(world, IOCanceled);
+
+    ECS_TAG_DEFINE(world, AppState);
+    ecs_add_id(world, AppState, EcsExclusive);
+    ECS_ENTITY_DEFINE(world, AppStateIdling);
+    ECS_ENTITY_DEFINE(world, AppStateStreamingOrRecording);
+    ECS_ENTITY_DEFINE(world, AppStateQuitResquested);
+    ECS_ENTITY_DEFINE(world, AppStateSuccess);
+    ECS_ENTITY_DEFINE(world, AppStateFailure);
 
     // Using ECS_STRUCT + ECS_META_COMPONENT when possible, if struct of primivite types
     // See type names at flecs.h "Primitive type definitions" section
@@ -88,6 +80,18 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
         }
     });
 
+    ECS_META_COMPONENT(world, AppActionRequested);
+
+    ECS_COMPONENT_DEFINE(world, AppHotkeyBinding);
+    ecs_struct(world, {
+        .entity = ecs_id(AppHotkeyBinding),
+        .members = {
+            { .name = "key_chord", .type = ecs_id(ecs_i32_t) },
+            { .name = "flags",     .type = ecs_id(ecs_i32_t) },
+            { .name = "action",    .type = ecs_id(ecs_entity_t) },
+        }
+    });
+
     ECS_COMPONENT_DEFINE(world, AsyncIOOutcome);
     ecs_struct(world, {
         .entity = ecs_id(AsyncIOOutcome),
@@ -102,6 +106,7 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
             { .name = "userdata", .type = ecs_id(ecs_uptr_t) },
         }
     });
+
     ECS_COMPONENT_DEFINE(world, AppDmonEvent);
     ecs_struct(world, {
         .entity = ecs_id(AppDmonEvent),

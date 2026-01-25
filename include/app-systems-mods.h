@@ -35,9 +35,16 @@
 // #define APP_MOD_COPYONLOAD // Can help testing, but not necessary
 #endif
 
-extern ECS_QUERY_DECLARE(ModInitializableQuery);
-extern ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
-extern ECS_QUERY_DECLARE(ModTerminatingQuery);
+#undef ONCE
+#ifndef APP_SYSTEMS_MODS_IMPL
+#define ONCE extern
+#else
+#define ONCE
+#endif
+
+ONCE ECS_QUERY_DECLARE(ModInitializableQuery);
+ONCE ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
+ONCE ECS_QUERY_DECLARE(ModTerminatingQuery);
 
 void AppSystemsModsImport(ecs_world_t *world);
 

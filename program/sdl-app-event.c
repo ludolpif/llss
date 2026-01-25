@@ -21,13 +21,6 @@ bool consume_user_defined_events(ecs_world_t *world, SDL_Event *event, Uint32 ty
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   ecs_world_t *world = (ecs_world_t *)appstate;
-
-  const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
-  const AppImGuiContext *app_imgui_context = ecs_singleton_get(world, AppImGuiContext);
-  SDL_Window *main_window = app_sdl_context->main_window;
-  ImGuiIO *imgui_io = app_imgui_context->imgui_io;
-
-  SDL_AppResult then = SDL_APP_CONTINUE;
   /* From ImGui SDL3 integration examples:
    *  Poll and handle events (inputs, window resize, etc.)
    *  You can read the io->WantCaptureMouse, io->WantCaptureKeyboard flags to tell
@@ -39,56 +32,48 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
    * Generally you may always pass all inputs to dear imgui,
    *  and hide them from your application based on those two flags.
    */
-  cImGui_ImplSDL3_ProcessEvent(event);
-  switch (event->type) {
-    case SDL_EVENT_QUIT:
-      then = SDL_APP_SUCCESS;
-      //TODO pass to ECS
-      break;
-    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-      if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
-         then = SDL_APP_SUCCESS;
-         //TODO pass to ECS
-       }
-      break;
-    case SDL_EVENT_MOUSE_MOTION:
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    case SDL_EVENT_MOUSE_BUTTON_UP:
-    case SDL_EVENT_MOUSE_WHEEL:
-      if (!imgui_io->WantCaptureMouse) {
-        // SDL_MouseMotionEvent motion
-        // SDL_MouseButtonEvent button
-        // SDL_MouseWheelEvent wheel
-        // app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_MOUSE_*, unhandled event",
-        //        SDL_GetTicksNS());
-      }
-      break;
-    case SDL_EVENT_KEY_DOWN:
-    case SDL_EVENT_KEY_UP:
-      if (!imgui_io->WantCaptureKeyboard) {
-          // SDL_KeyboardEvent key
-          app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_KEY_*, unhandled event",
-                  SDL_GetTicksNS());
-      }
-      break;
-    default:
-      if (!consume_user_defined_events(world, event, event->type)) {
-          app_info("%016"PRIu64" SDL_AppEvent(): unhandled event->type: %i",
-                  SDL_GetTicksNS(), event->type);
-      }
-      break;
+  if ( cImGui_ImplSDL3_ProcessEvent(event) ) {
+      // ImGui has processed current event, so don't try to process it furthuermore at SDL level
+      return SDL_APP_CONTINUE;
   }
-  return then;
+
+  const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
+  SDL_Window *main_window = app_sdl_context->main_window;
+
+  switch (event->type) {
+      case SDL_EVENT_QUIT:
+          app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_QUIT", SDL_GetTicksNS());
+          ecs_add_pair(world, ecs_id(AppSDLContext), AppState, AppStateSuccess);
+          break;
+      case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+          if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
+              app_info("%016"PRIu64" SDL_AppEvent(): main_window SDL_EVENT_WINDOW_CLOSE_REQUESTED", SDL_GetTicksNS());
+              // If we continue here, there will be also an SDL_EVENT_QUIT event
+          }
+          break;
+      case SDL_EVENT_DROP_FILE:
+          app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_DROP_FILE: %s",
+                  SDL_GetTicksNS(), event->drop.data);
+          break;
+      default:
+          if (!consume_user_defined_events(world, event, event->type)) {
+              app_info("%016"PRIu64" SDL_AppEvent(): unhandled event->type: 0x%x",
+                      SDL_GetTicksNS(), event->type);
+          }
+          break;
+  }
+  // See sdl-app-iterate.c for SDL_APP_SUCCESS / SDL_APP_FAILURE cases
+  return SDL_APP_CONTINUE;
 }
 
 //TODO find a solution that allows plugin to do this too, and find a good way to represent it in the ECS
 bool consume_user_defined_events(ecs_world_t *world, SDL_Event *event, Uint32 type) {
     if ( type == APP_USER_EVENT_FILESYSTEM ) {
-      // Create current event entity
-      ecs_entity_t parent = ecs_new_from_path(world, 0, "events.filesystem");
-      ecs_entity_t event_entity = ecs_entity(world, { .parent = parent });
-      ecs_set_ptr(world, event_entity, AppDmonEvent, event->user.data1);
-      return true;
+        // Create current event entity
+        ecs_entity_t parent = ecs_new_from_path(world, 0, "events.filesystem");
+        ecs_entity_t event_entity = ecs_entity(world, { .parent = parent });
+        ecs_set_ptr(world, event_entity, AppDmonEvent, event->user.data1);
+        return true;
     }
     return false;
 }
