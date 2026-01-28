@@ -20,55 +20,55 @@
 bool consume_user_defined_events(ecs_world_t *world, SDL_Event *event, Uint32 type);
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-  ecs_world_t *world = (ecs_world_t *)appstate;
-  /* From ImGui SDL3 integration examples:
-   *  Poll and handle events (inputs, window resize, etc.)
-   *  You can read the io->WantCaptureMouse, io->WantCaptureKeyboard flags to tell
-   *   if dear imgui wants to use your inputs.
-   *  When io->WantCaptureMouse is true, do not dispatch mouse input data to your main application,
-   *   or clear/overwrite your copy of the mouse data.
-   *  When io->WantCaptureKeyboard is true, do not dispatch keyboard input data to your main
-   *   application, or clear/overwrite your copy of the keyboard data.
-   * Generally you may always pass all inputs to dear imgui,
-   *  and hide them from your application based on those two flags.
-   */
-  if ( cImGui_ImplSDL3_ProcessEvent(event) ) {
-      // ImGui has processed current event, so don't try to process it furthuermore at SDL level
-      return SDL_APP_CONTINUE;
-  }
+    ecs_world_t *world = (ecs_world_t *)appstate;
+    /* From ImGui SDL3 integration examples:
+     *  Poll and handle events (inputs, window resize, etc.)
+     *  You can read the io->WantCaptureMouse, io->WantCaptureKeyboard flags to tell
+     *   if dear imgui wants to use your inputs.
+     *  When io->WantCaptureMouse is true, do not dispatch mouse input data to your main application,
+     *   or clear/overwrite your copy of the mouse data.
+     *  When io->WantCaptureKeyboard is true, do not dispatch keyboard input data to your main
+     *   application, or clear/overwrite your copy of the keyboard data.
+     * Generally you may always pass all inputs to dear imgui,
+     *  and hide them from your application based on those two flags.
+     */
+    if ( cImGui_ImplSDL3_ProcessEvent(event) ) {
+        // ImGui has processed current event, so don't try to process it furthuermore at SDL level
+        return SDL_APP_CONTINUE;
+    }
 
-  const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
-  SDL_Window *main_window = app_sdl_context->main_window;
+    const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
+    SDL_Window *main_window = app_sdl_context->main_window;
 
-  switch (event->type) {
-      case SDL_EVENT_QUIT:
-          app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_QUIT", SDL_GetTicksNS());
-          if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateWaitingUserReply) ) {
-              // User has already been solicited, and doesn't have replied, forcibly quit
-              ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted);
-          } else {
-              ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateResquested);
-          }
-          break;
-      case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-          if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
-              app_info("%016"PRIu64" SDL_AppEvent(): main_window SDL_EVENT_WINDOW_CLOSE_REQUESTED", SDL_GetTicksNS());
-              // If we continue here, there will be also an SDL_EVENT_QUIT event
-          }
-          break;
-      case SDL_EVENT_DROP_FILE:
-          app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_DROP_FILE: %s",
-                  SDL_GetTicksNS(), event->drop.data);
-          break;
-      default:
-          if (!consume_user_defined_events(world, event, event->type)) {
-              app_info("%016"PRIu64" SDL_AppEvent(): unhandled event->type: 0x%x",
-                      SDL_GetTicksNS(), event->type);
-          }
-          break;
-  }
-  // See sdl-app-iterate.c for SDL_APP_SUCCESS / SDL_APP_FAILURE cases
-  return SDL_APP_CONTINUE;
+    switch (event->type) {
+        case SDL_EVENT_QUIT:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_QUIT", SDL_GetTicksNS());
+            if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateWaitingUserReply) ) {
+                // User has already been solicited, and doesn't have replied, forcibly quit
+                ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted);
+            } else {
+                ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateResquested);
+            }
+            break;
+        case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+            if ( event->window.windowID == SDL_GetWindowID(main_window) ) {
+                app_info("%016"PRIu64" SDL_AppEvent(): main_window SDL_EVENT_WINDOW_CLOSE_REQUESTED", SDL_GetTicksNS());
+                // If we continue here, there will be also an SDL_EVENT_QUIT event
+            }
+            break;
+        case SDL_EVENT_DROP_FILE:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_DROP_FILE: %s",
+                    SDL_GetTicksNS(), event->drop.data);
+            break;
+        default:
+            if (!consume_user_defined_events(world, event, event->type)) {
+                app_info("%016"PRIu64" SDL_AppEvent(): unhandled event->type: 0x%x",
+                        SDL_GetTicksNS(), event->type);
+            }
+            break;
+    }
+    // See sdl-app-iterate.c for SDL_APP_SUCCESS / SDL_APP_FAILURE cases
+    return SDL_APP_CONTINUE;
 }
 
 //TODO find a solution that allows plugin to do this too, and find a good way to represent it in the ECS
