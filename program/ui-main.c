@@ -187,6 +187,6 @@ void CustomStatusWidget(ecs_i32_t app_status) {
             default: color = IM_COL32(200, 200, 200, 255); break;
         }
         ImDrawList_AddCircleFilled(draw_list, center, radius, color, 16);
-        ImGui_Dummy((ImVec2){radius*2.0, radius*2.0});
+        ImGui_Dummy((ImVec2){radius*2.0f, radius*2.0f});
 }
 

@@ -19,6 +19,8 @@ You barely can't yet.
 - This software will never be production-ready while I am the (sole) developer. Jump in !
 - I want to find, reserve then change to a better project name if I feel it can really reach users one day
 
+![Screenshot of LLSS v0.6.2.0 main window (WIP)](https://ludolpif.fr/pub/llss/artifacts/llss-0.6.2.0-debian-trixie-lxqt.png)
+
 ## How to write it, mod it
 
 Avaiable killer features for modders:
