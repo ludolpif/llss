@@ -43,7 +43,12 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   switch (event->type) {
       case SDL_EVENT_QUIT:
           app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_QUIT", SDL_GetTicksNS());
-          ecs_add_pair(world, ecs_id(AppSDLContext), AppState, AppStateSuccess);
+          if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateWaitingUserReply) ) {
+              // User has already been solicited, and doesn't have replied, forcibly quit
+              ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted);
+          } else {
+              ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateResquested);
+          }
           break;
       case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
           if ( event->window.windowID == SDL_GetWindowID(main_window) ) {

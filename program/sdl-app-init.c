@@ -166,6 +166,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     ImGuiIO *imgui_io = ImGui_GetIO();
     imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     imgui_io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    imgui_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Setup Dear ImGui style
     ImGui_StyleColorsDark(NULL);

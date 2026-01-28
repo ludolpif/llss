@@ -1,9 +1,9 @@
 #define APP_VERSION_MAJOR 0
 #define APP_VERSION_MINOR 6
-#define APP_VERSION_PATCH 1
+#define APP_VERSION_PATCH 2
 #define APP_VERSION_BUILD 0
-#define APP_VERSION_STR  "0.6.1.0"
-#define APP_RC_FILEVER    0,6,1,0
+#define APP_VERSION_STR  "0.6.2.0"
+#define APP_RC_FILEVER    0,6,2,0
 
 #define APP_METADATA_NAME_STRING "llss"
 #define APP_METADATA_IDENTIFIER_STRING "fr.ludolpif.llss.app"

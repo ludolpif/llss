@@ -38,9 +38,14 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     ecs_add_id(world, AppState, EcsExclusive);
     ECS_ENTITY_DEFINE(world, AppStateIdling);
     ECS_ENTITY_DEFINE(world, AppStateStreamingOrRecording);
-    ECS_ENTITY_DEFINE(world, AppStateQuitResquested);
     ECS_ENTITY_DEFINE(world, AppStateSuccess);
     ECS_ENTITY_DEFINE(world, AppStateFailure);
+
+    ECS_TAG_DEFINE(world, AppQuitState);
+    ecs_add_id(world, AppQuitState, EcsExclusive);
+    ECS_ENTITY_DEFINE(world, AppQuitStateResquested);
+    ECS_ENTITY_DEFINE(world, AppQuitStateWaitingUserReply);
+    ECS_ENTITY_DEFINE(world, AppQuitStateAccepted);
 
     // Using ECS_STRUCT + ECS_META_COMPONENT when possible, if struct of primivite types
     // See type names at flecs.h "Primitive type definitions" section

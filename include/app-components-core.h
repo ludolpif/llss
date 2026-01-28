@@ -77,9 +77,13 @@ APP_API ECS_STRUCT(AppMainTimingContext, {
 APP_API ONCE ECS_TAG_DECLARE(AppState);
 APP_API ONCE ECS_ENTITY_DECLARE(AppStateIdling);
 APP_API ONCE ECS_ENTITY_DECLARE(AppStateStreamingOrRecording);
-APP_API ONCE ECS_ENTITY_DECLARE(AppStateQuitResquested);
 APP_API ONCE ECS_ENTITY_DECLARE(AppStateSuccess);
 APP_API ONCE ECS_ENTITY_DECLARE(AppStateFailure);
+
+APP_API ONCE ECS_TAG_DECLARE(AppQuitState);
+APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateResquested);
+APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateWaitingUserReply);
+APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateAccepted);
 
 // Elements for custom action triggering from ImGui input handling like
 // ImGui_Shortcut(ImGuiMod_Ctrl|ImGuiKey_Z, ImGuiInputFlags_RouteGlobal|ImGuiInputFlags_Repeat)

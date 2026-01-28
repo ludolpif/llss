@@ -48,6 +48,10 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     throttle(world);
 
     // Decide to quit or continue running from ECS, allowing mods to interact with this
+    if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted) ) {
+        // TODO there will be some shutdown to do or wait here
+        return SDL_APP_SUCCESS;
+    }
     if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppState, AppStateSuccess) ) {
         return SDL_APP_SUCCESS;
     }
