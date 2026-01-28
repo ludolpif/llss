@@ -15,7 +15,15 @@
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
 #include "ui-main.h"
+
+#ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable: 5287)
+#endif
 #include "dcimgui_internal.h" // Needed for unfinished DockBuilder API
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 // TODO rewire this data to ECS when ready
 static bool show_demo_window = false;
