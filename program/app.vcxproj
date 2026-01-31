@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClCompile Include="alloc.c" />
     <ClCompile Include="app-components-core.c" />
+    <ClCompile Include="app-components-composition.c" />
     <ClCompile Include="app-components-mods.c" />
     <ClCompile Include="app-systems-core.c" />
     <ClCompile Include="app-systems-mods.c" />
@@ -119,11 +120,11 @@
     <ClCompile Include="sdl-app-event.c" />
     <ClCompile Include="sdl-app-init.c" />
     <ClCompile Include="sdl-app-iterate.c" />
-    <ClCompile Include="ui-main.c" />
     <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\include\app-components-core.h" />
+    <ClInclude Include="$(SolutionDir)\include\app-components-composition.h" />
     <ClInclude Include="$(SolutionDir)\include\app-components-mods.h" />
     <ClInclude Include="$(SolutionDir)\include\app-systems-core.h" />
     <ClInclude Include="$(SolutionDir)\include\app-systems-mods.h" />
