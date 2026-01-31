@@ -15,10 +15,10 @@
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
 #include "app.h"
-#include "compositing.h"
+#include "ui-main.h"
 
-#define MOD_NAME "mod-scratchpad"
-#define MOD_ECS_PREFIX "mod.scratchpad"
+#define MOD_NAME "mod-ui-main"
+#define MOD_ECS_PREFIX "mod.ui.main"
 #define MOD_USES_IMGUI
 typedef struct {
     size_t running_struct_size;
@@ -68,8 +68,8 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, voi
         }
     }
 
-    ECS_IMPORT(world, ModScratchpadCompositing);
-    // It's query/lookup identifier is "mod.scratchpad.compositing"
+    ECS_IMPORT(world, ModUiMain);
+    // It's query/lookup identifier is "mod.ui.main"
 
     return MOD_RESULT_SUCCESS;
 }

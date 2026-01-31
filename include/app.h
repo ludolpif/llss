@@ -201,9 +201,9 @@ typedef mod_result_t (*mod_fini_v1_t)(uint32_t flags, void *userptr);
 //-----------------------------------------------------------------------------
 // [SECTION] ECS Core definitions
 //-----------------------------------------------------------------------------
-//TODO follow the hint to separate in components.* and systems.* to make replacable things
 //https://www.flecs.dev/flecs/md_docs_2DesignWithFlecs.html#modules-and-feature-swapping
 #include "app-components-core.h"
+#include "app-components-composition.h"
 #include "app-components-mods.h"
 
 //-----------------------------------------------------------------------------

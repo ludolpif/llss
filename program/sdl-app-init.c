@@ -228,11 +228,14 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
     ECS_IMPORT(world, AppSystemsCore); // Will call AppSystemsCoreImport function
     ECS_IMPORT(world, AppSystemsMods);
+    ECS_IMPORT(world, AppComponentsComposition);
 
     ecs_singleton_set(world, AppVersion, {
             .running_app_version = APP_VERSION_INT,
             .build_dep_version_compiled_against = BUILD_DEP_VERSION_INT
             });
+    ecs_doc_set_name(world, ecs_id(AppVersion), "Application Version");
+
     ecs_singleton_set(world, AppMemoryFuncs, {
             .sdl_malloc_func = alloc_count_malloc,
             .sdl_calloc_func = alloc_count_calloc,

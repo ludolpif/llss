@@ -4,6 +4,19 @@
 
 - choose were seek for userdata/config and set ImGui io.IniFilename accordingly
 
+- start cleaning up all mishandled memory ownership https://www.flecs.dev/flecs/md_docs_2Manual.html#memory-ownership
+  - If an operation accepts a const T*, the application retains ownership of the memory
+  - If an operation accepts a T*, ownership is transferred from application to framework
+  - If an operation returns a const T*, the framework retains ownership of the memory
+  - If an operation returns a T*, ownership is transferred from framework to application
+```
+The ecs_get_name operation is an example where the framework retains ownership:
+const char *name = ecs_get_name(world, e);
+The ecs_get_path operation is an example where the ownership is transferred to the application:
+char *path = ecs_get_path(world, e);
+ecs_os_free(path);
+```
+
 - try https://wiki.libsdl.org/SDL3/README-highdpi
 - read https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/Latency.c (SDL_SetGPUAllowedFramesInFlight)
 

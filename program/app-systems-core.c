@@ -1,8 +1,17 @@
 #define APP_SYSTEMS_CORE_IMPL
 #include "app-systems-core.h"
-#include "ui-main.h"
 #include "dcimgui_impl_sdl3.h"
 #include "dcimgui_impl_sdlgpu3.h"
+
+#ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable: 5287)
+#endif
+#include "dcimgui_internal.h" // Needed for unfinished DockBuilder API
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 
 void AppSystemsCoreImport(ecs_world_t *world) {
     // ECS_IMPORT Will call AppComponentsCoreImport(world) from app-components-core.c
@@ -11,9 +20,9 @@ void AppSystemsCoreImport(ecs_world_t *world) {
     ECS_MODULE(world, AppSystemsCore);
 
     // Tasks declarations, will run once per frame
-    ECS_SYSTEM(world, InjectIOAsyncEvents, EcsOnUpdate, 0);
+    ECS_SYSTEM(world, InjectIOAsyncEvents, EcsOnLoad, 0);
     ECS_SYSTEM(world, ImGuiPrepareForNewFrame, RenderingPreImGui, 0);
-    ECS_SYSTEM(world, UIMain, RenderingOnImGui, 0);
+    ECS_SYSTEM(world, ImGuiSetupDockSpace, RenderingOnImGui, 0);
     ECS_SYSTEM(world, ImGuiRenderAndSubmit, RenderingPostImGui, 0);
 }
 
@@ -58,6 +67,57 @@ void ImGuiPrepareForNewFrame(ecs_iter_t *it) {
     cImGui_ImplSDLGPU3_NewFrame();
     cImGui_ImplSDL3_NewFrame();
     ImGui_NewFrame();
+}
+
+void ImGuiSetupDockSpace(ecs_iter_t *it) {
+    const AppSDLContext *sdl_context = ecs_singleton_get_mut(it->world, AppSDLContext);
+    SDL_Window *main_window = sdl_context->main_window;
+    const ImGuiViewport* viewport = ImGui_GetMainViewport();
+
+    // Set a bunch of special properties for an always backgrounded and full-screened window
+    ImGui_SetNextWindowPos(viewport->WorkPos, 0);
+    ImGui_SetNextWindowSize(viewport->WorkSize, 0);
+    ImGui_SetNextWindowViewport(viewport->ID);
+    ImGui_PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui_PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    ImGui_PushStyleVarImVec2(ImGuiStyleVar_WindowPadding, (ImVec2){ 0.0f, 0.0f });
+
+    ImGui_Begin("DockspaceWithMenuBar", NULL, window_flags);
+    ImGui_PopStyleVarEx(3);
+    ImGuiID dockspace_id = ImGui_GetID("DockspaceWithMenuBar");
+    // TODO query all ECS defined global bindings and set it here, to have them always routable
+
+    // Create dockspace default layout settings if they were never defined
+    if (ImGui_DockBuilderGetNode(dockspace_id) == NULL) {
+        ImGui_DockBuilderAddNodeEx(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+        ImGui_DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+        ImGuiID dock_id_right = 0;
+        ImGuiID dock_id_main = dockspace_id;
+        ImGui_DockBuilderSplitNode(dock_id_main, ImGuiDir_Right, 0.20f, &dock_id_right, &dock_id_main);
+        ImGuiID dock_id_right_top = 0;
+        ImGuiID dock_id_right_bottom = 0;
+        ImGui_DockBuilderSplitNode(dock_id_right, ImGuiDir_Up, 0.50f, &dock_id_right_top, &dock_id_right_bottom);
+
+        ecs_iter_t it2 = ecs_query_iter(it->world, ActivateLayoutVariantsQuery);
+        while (ecs_query_next(&it2)) {
+            for (int i = 0; i < it2.count; i++) {
+                const char *name = ecs_get_name(it->world, it2.entities[i]);
+                ImGui_DockBuilderDockWindow(name, dock_id_main);
+            }
+        }
+        ImGui_DockBuilderDockWindow("Properties", dock_id_right_top);
+        ImGui_DockBuilderDockWindow("Layers", dock_id_right_bottom);
+        ImGui_DockBuilderFinish(dockspace_id);
+    }
+    // Submit dockspace
+    ImGui_DockSpace(dockspace_id);
+
+    // TODO query all ECS defined global bindings and set it here, to have them always routable
+
+    ImGui_End(); /* DockspaceWithMenuBar Window */
 }
 
 void ImGuiRenderAndSubmit(ecs_iter_t *it) {

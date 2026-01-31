@@ -15,11 +15,24 @@
  *
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
-#include "app-components-core.h"
+#include "app.h"
 
-void AppSystemsCoreImport(ecs_world_t *world);
+// FLECS Reflection system boilerplate
+#undef ECS_META_IMPL
+#undef ONCE
+#ifndef APP_COMPONENTS_COMPOSITION_IMPL
+#define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
+#define ONCE extern
+#else
+#define ONCE
+#endif
 
-void InjectIOAsyncEvents(ecs_iter_t *it);
-void ImGuiPrepareForNewFrame(ecs_iter_t *it);
-void ImGuiSetupDockSpace(ecs_iter_t *it);
-void ImGuiRenderAndSubmit(ecs_iter_t *it);
+APP_API void AppComponentsCompositionImport(ecs_world_t *world);
+
+APP_API ECS_STRUCT(LayoutVariant, {
+    int32_t aspect_ratio_num;  // AVRational aspect_ratio numerator
+    int32_t aspect_ratio_den;  // AVRational framerate denominator
+});
+
+APP_API ONCE ECS_QUERY_DECLARE(ActivateLayoutVariantsQuery);
+

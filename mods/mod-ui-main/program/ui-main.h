@@ -23,4 +23,18 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
-void UIMain(ecs_iter_t *it);
+// FLECS Reflection system boilerplate
+#undef ECS_META_IMPL
+#ifndef MOD_TEMPLATE_UI_MAIN_IMPL
+#define ECS_META_IMPL EXTERN // Ensure meta symbols are only defined once
+#endif
+
+void ModUiMainImport(ecs_world_t *world);
+
+// Components
+MOD_API ECS_STRUCT(ModUiMainState, {
+    bool show_demo_window;
+    bool show_help_window;
+    float statusbar_posx;
+});
+void ModUiMainTask(ecs_iter_t *it);

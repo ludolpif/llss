@@ -16,7 +16,8 @@
  */
 #include "app.h"
 #include "hello.h"
-
+#define MOD_NAME "mod-template"
+#define MOD_ECS_PREFIX "mod.template"
 #define MOD_USES_IMGUI
 /*
  * mod writer quickstart: no main(), no global variables.
@@ -80,7 +81,7 @@ MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
 }
 
 MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, void **userptr) {
-    app_debug("%016"PRIu64" mod-template mod_init_v1(%p, %"PRIu32", %p)",
+    app_debug("%016"PRIu64" "MOD_NAME" mod_init_v1(%p, %"PRIu32", %p)",
             SDL_GetTicksNS(), world, flags, *userptr);
 #ifdef MOD_USES_IMGUI
     // As ImGui use a global context for it's API calls, use heap to process data and we are in
@@ -121,16 +122,16 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, voi
 }
 
 MOD_API mod_result_t SDLCALL mod_fini_v1(uint32_t flags, void *userptr) {
-    app_debug("%016"PRIu64" mod-template mod_fini_v1(%"PRIu32", %p)",
+    app_debug("%016"PRIu64" "MOD_NAME" mod_fini_v1(%"PRIu32", %p)",
             SDL_GetTicksNS(), flags, userptr);
 
     mod_main_data_t *data = (mod_main_data_t *) userptr;
     ecs_world_t *world = data->world;
 
     // Remove all ECS items registered by this mod (if name/prefix convention was respected)
-    ecs_entity_t e_hello = ecs_lookup(world, "mod.template");
-    if (e_hello) {
-        ecs_delete(world, e_hello);
+    ecs_entity_t e_root = ecs_lookup(world, MOD_ECS_PREFIX);
+    if (e_root) {
+        ecs_delete(world, e_root);
         app_debug("%016"PRIu64" mod_fini_v1(): removed ECS items", SDL_GetTicksNS());
     }
 

@@ -46,6 +46,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateWaitingUserReply) ) {
                 // User has already been solicited, and doesn't have replied, forcibly quit
                 ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted);
+            } else if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateResquested) ) {
+                // The UI never display confirmation, but we are in a second SDL_EVENT_QUIT, forcibly quit
+                ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted);
             } else {
                 ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateResquested);
             }
