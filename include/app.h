@@ -210,6 +210,9 @@ typedef mod_result_t (*mod_fini_v1_t)(uint32_t flags, void *userptr);
 // [SECTION] Utility functions
 //-----------------------------------------------------------------------------
 
+// Placeholder for future l10n support
+APP_API const char * _(const char *string_to_localize);
+
 APP_API uint64_t convert_ns_to_frameid(uint64_t ns, int32_t framerate_num, int32_t framerate_den);
 APP_API uint64_t convert_frameid_to_ns(uint64_t frameid, int32_t framerate_num, int32_t framerate_den);
 

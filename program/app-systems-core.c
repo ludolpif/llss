@@ -70,8 +70,6 @@ void ImGuiPrepareForNewFrame(ecs_iter_t *it) {
 }
 
 void ImGuiSetupDockSpace(ecs_iter_t *it) {
-    const AppSDLContext *sdl_context = ecs_singleton_get_mut(it->world, AppSDLContext);
-    SDL_Window *main_window = sdl_context->main_window;
     const ImGuiViewport* viewport = ImGui_GetMainViewport();
 
     // Set a bunch of special properties for an always backgrounded and full-screened window
@@ -108,8 +106,8 @@ void ImGuiSetupDockSpace(ecs_iter_t *it) {
                 ImGui_DockBuilderDockWindow(name, dock_id_main);
             }
         }
-        ImGui_DockBuilderDockWindow("Properties", dock_id_right_top);
-        ImGui_DockBuilderDockWindow("Layers", dock_id_right_bottom);
+        ImGui_DockBuilderDockWindow(_("Properties###Properties"), dock_id_right_top);
+        ImGui_DockBuilderDockWindow(_("Layers###Layers"), dock_id_right_bottom);
         ImGui_DockBuilderFinish(dockspace_id);
     }
     // Submit dockspace

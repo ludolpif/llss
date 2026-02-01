@@ -21,6 +21,10 @@ ecs_os_free(path);
 - read https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/Latency.c (SDL_SetGPUAllowedFramesInFlight)
 
 - consider replacing every `SDL_PRIs32` `SDL_PRIs64` `SDL_PRIu32` `SDL_PRIu64`
+- consider OneOf, RelationShip, Target trait where I use Exclusive trait
+  - https://www.flecs.dev/flecs/md_docs_2ComponentTraits.html#oneof-trait
+  - https://www.flecs.dev/flecs/md_docs_2ComponentTraits.html#relationship-trait
+  - https://www.flecs.dev/flecs/md_docs_2ComponentTraits.html#target-trait
 
 - Artifact naming with commit hash when it is not a build from a tagged commit ?
   - Update metadata.h on the fly ?

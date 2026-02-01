@@ -28,6 +28,7 @@ void ModUiMainImport(ecs_world_t *world) {
         .show_help_window = false,
         .statusbar_posx = 10000.0f,
     });
+    ecs_add_id(world, ecs_id(ModUiMainState), Persisted);
 
     // Tasks definitions that will run once per frame
     ECS_SYSTEM(world, ModUiMainTask, RenderingOnImGui, 0);
@@ -92,20 +93,32 @@ void ModUiMainTask(ecs_iter_t *it) {
         ImGui_OpenPopup("Quit?", ImGuiPopupFlags_NoReopen);
     }
 
+    /*
+     * TODO put this at SceneLayout creation time (code does not exists yet)
+     * ecs_get_name() garanties unique names so it's good for ImGui windows str_id
+     * but user may want to rename scenes without loosing ImGui windows ID (to not loose some settings)
+     * or app defined ImGui Window like "Properties" or so could be localized and user can change lang
+     * so we store in in doc name the preformatted name as ImGui use it "Display Name###str_id"
+        if (!SDL_asprintf(&win_name, "%s###%s", display_name, strid)) {
+            app_error("%016"PRIu64" XXX(%s): SDL_asprintf(&win_name,...): %s",
+                    SDL_GetTicksNS(), SDL_GetError());
+        }
+     */
 
     // Submit empty windows for now
     ecs_iter_t it2 = ecs_query_iter(it->world, ActivateLayoutVariantsQuery);
     while (ecs_query_next(&it2)) {
         for (int i = 0; i < it2.count; i++) {
-            const char *name = ecs_get_name(it->world, it2.entities[i]);
-            ImGui_Begin(name, NULL, 0);
-            ImGui_TextUnformatted(ecs_doc_get_name(it->world, it2.entities[i]));
+            // ecs doc name have been feeded an ImGui compatible "Display Name###str_id"
+            const char *win_name = ecs_doc_get_name(it->world, it2.entities[i]);
+            ImGui_Begin(win_name, NULL, 0);
+            ImGui_TextUnformatted(ecs_get_name(it->world, it2.entities[i]));
             ImGui_End();
         }
     }
-    ImGui_Begin("Properties", NULL, 0);
+    ImGui_Begin(_("Properties###Properties"), NULL, 0);
     ImGui_End();
-    ImGui_Begin("Layers", NULL, 0);
+    ImGui_Begin(_("Layers###Layers"), NULL, 0);
     ImGui_End();
 
     if (ui_state->show_demo_window)
@@ -113,22 +126,23 @@ void ModUiMainTask(ecs_iter_t *it) {
 }
 
 void CustomMainMenu(ecs_world_t *world, ModUiMainState *ui_state) {
-        if (ImGui_BeginMenu("File")) {
-            if ( ImGui_MenuItem("Quit") ) {
+        if (ImGui_BeginMenu(_("File###Menu|File"))) {
+            if ( ImGui_MenuItem(_("Quit###Menu|Quit")) ) {
                 ecs_add_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateResquested);
             }
             ImGui_EndMenu();
         }
-        if (ImGui_BeginMenu("Edit")) {
-            ImGui_MenuItemEx("Preferences", NULL, false, true);
+        if (ImGui_BeginMenu(_("Edit###Edit"))) {
+            ImGui_MenuItemEx(_("Preferences###Menu|show_preferences_window"), NULL, false, true);
             ImGui_EndMenu();
         }
-        if (ImGui_BeginMenu("Options")) {
-            ImGui_MenuItemBoolPtr("Demo Window", NULL, &(ui_state->show_demo_window), true);
+        if (ImGui_BeginMenu(_("Options###Options"))) {
+            ImGui_MenuItemBoolPtr(_("Demo Window###Menu|Options|show_demo_window"), NULL, &(ui_state->show_demo_window), true);
+
             ImGui_EndMenu();
         }
-        if (ImGui_BeginMenu("Help")) {
-            ImGui_MenuItemBoolPtr("Help Window", NULL, &(ui_state->show_help_window), true);
+        if (ImGui_BeginMenu(_("Help###Help"))) {
+            ImGui_MenuItemBoolPtr(_("Help Window###Menu|show_help_window"), NULL, &(ui_state->show_help_window), true);
             ImGui_EndMenu();
         }
 }
@@ -137,13 +151,13 @@ void CustomStatusBar(SDL_Window *main_window) {
     //TODO consider putting it in a Window to let plugins append items on the status bar,
     //like a systray icon space or a browser extensions pinned items
     ImGui_BeginGroup();
-    ImGui_Text("Idling, %2.1f FPS", ImGui_GetIO()->Framerate);
+    ImGui_Text("%s, %2.1f FPS", _("Idling"), ImGui_GetIO()->Framerate);
 
     ImGui_SameLineEx(0.0f, 8.0f);
     CustomStatusWidget();
 
     ImGui_SetNextItemShortcut(ImGuiKey_F11, 0);
-    if ( ImGui_ArrowButton("Fullscreen", ImGuiDir_Up) ) {
+    if ( ImGui_ArrowButton(_("Fullscreen###Fullscreen"), ImGuiDir_Up) ) {
         bool borderless = SDL_GetWindowFlags(main_window) & SDL_WINDOW_BORDERLESS;
         if (borderless) SDL_RestoreWindow(main_window); else SDL_MaximizeWindow(main_window);
         SDL_SetWindowBordered(main_window, borderless);

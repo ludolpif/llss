@@ -2,6 +2,11 @@
 #define DMON_IMPL
 #include "app.h" // No "utils.h", embeded in app.h
 
+// Placeholder for future l10n support
+APP_API const char * _(const char *string_to_localize) {
+    return string_to_localize;
+}
+
 APP_API uint64_t convert_ns_to_frameid(uint64_t ns, int32_t framerate_num, int32_t framerate_den) {
     return (ns * framerate_num) / (1000000000 * framerate_den);
 }
