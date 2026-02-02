@@ -63,6 +63,28 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_DROP_FILE: %s",
                     SDL_GetTicksNS(), event->drop.data);
             break;
+        case SDL_EVENT_WINDOW_MOVED:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_MOVED", SDL_GetTicksNS());
+            break;
+        case SDL_EVENT_WINDOW_RESIZED:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_RESIZED", SDL_GetTicksNS());
+            break;
+        case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_ENTER_FULLSCREEN", SDL_GetTicksNS());
+            break;
+        case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_LEAVE_FULLSCREEN", SDL_GetTicksNS());
+            break;
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED", SDL_GetTicksNS());
+            break;
+        case SDL_EVENT_WINDOW_SAFE_AREA_CHANGED:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_SAFE_AREA_CHANGED", SDL_GetTicksNS());
+            break;
+        case SDL_EVENT_WINDOW_EXPOSED:
+            app_info("%016"PRIu64" SDL_AppEvent(): SDL_EVENT_WINDOW_EXPOSED", SDL_GetTicksNS());
+            break;
+
         default:
             if (!consume_user_defined_events(world, event, event->type)) {
                 app_info("%016"PRIu64" SDL_AppEvent(): unhandled event->type: 0x%x",

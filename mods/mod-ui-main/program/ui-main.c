@@ -28,7 +28,9 @@ void ModUiMainImport(ecs_world_t *world) {
         .show_help_window = false,
         .statusbar_posx = 10000.0f,
     });
-    ecs_add_id(world, ecs_id(ModUiMainState), Persisted);
+    //FIXME need to separate module definition and serializable entities
+    // by design, ecs_world_to_json() excludes modules by default
+    //ecs_add_id(world, ecs_id(ModUiMainState), Persisted);
 
     // Tasks definitions that will run once per frame
     ECS_SYSTEM(world, ModUiMainTask, RenderingOnImGui, 0);
@@ -158,9 +160,8 @@ void CustomStatusBar(SDL_Window *main_window) {
 
     ImGui_SetNextItemShortcut(ImGuiKey_F11, 0);
     if ( ImGui_ArrowButton(_("Fullscreen###Fullscreen"), ImGuiDir_Up) ) {
-        bool borderless = SDL_GetWindowFlags(main_window) & SDL_WINDOW_BORDERLESS;
-        if (borderless) SDL_RestoreWindow(main_window); else SDL_MaximizeWindow(main_window);
-        SDL_SetWindowBordered(main_window, borderless);
+        bool fullscreen = SDL_GetWindowFlags(main_window) & SDL_WINDOW_FULLSCREEN;
+        SDL_SetWindowFullscreen(main_window, !fullscreen);
 
         app_status = (app_status+1)%4; //TODO: remove this dummy color test
     }
