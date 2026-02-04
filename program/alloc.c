@@ -42,7 +42,7 @@ void alloc_count_install_hooks(void) {
     os_api.free_    = alloc_count_free_ecs;
     os_api.realloc_ = alloc_count_realloc_ecs;
     os_api.calloc_  = alloc_count_calloc_ecs;
-    os_api.strdup_  = alloc_count_strdup_ecs;
+    os_api.strdup_  = strdup_or_null; // using directly SDL_strdup will CRASH in ecs_init()
     // Should not be in alloc.c but it fails if done in a second ecs_os_set_api() call
     os_api.log_     = flecs_to_sdl_log_adapter;
     os_api.now_     = SDL_GetTicksNS; // Hopefully less confusing to use the same everywhere
@@ -176,10 +176,4 @@ void   SDLCALL alloc_count_free_userptr(void *mem, void *userptr) {
     } else {
         app_debug("%016"PRIu64" alloc_count_free_ecs_userptr(NULL) called", SDL_GetTicksNS());
     }
-}
-
-char * SDLCALL alloc_count_strdup_ecs(const char *s) {
-    // SDL_strdup uses SDL_malloc, accounting already done
-    return s?SDL_strdup(s):NULL;
-    // return SDL_strdup(s); // WILL CRASH in ecs_init()
 }

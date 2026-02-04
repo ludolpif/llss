@@ -2,6 +2,11 @@
 #define DMON_IMPL
 #include "app.h" // No "utils.h", embeded in app.h
 
+APP_API char * strdup_or_null(const char *s) {
+    // SDL_strdup uses SDL_malloc, accounting already done
+    return s?SDL_strdup(s):NULL;
+}
+
 // Placeholder for future l10n support
 APP_API const char * _(const char *string_to_localize) {
     return string_to_localize;
@@ -70,10 +75,10 @@ void push_filesystem_event_to_sdl_queue(dmon_watch_id watch_id, dmon_action acti
     }
     devent->watch_id = watch_id;
     devent->action = action;
-    devent->rootdir = rootdir;
-    devent->filepath = filepath;
-    devent->oldfilepath = oldfilepath;
-    devent->user = user;
+    devent->rootdir = strdup_or_null(rootdir);
+    devent->filepath = strdup_or_null(filepath);
+    devent->oldfilepath = strdup_or_null(oldfilepath);
+    devent->user = user; //XXX this may lead to a double free() situation?
 
     SDL_Event user_event; // this is an union type, &(user_event) {...} syntax don't work
     SDL_zero(user_event);

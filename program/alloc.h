@@ -39,4 +39,3 @@ void * SDLCALL alloc_count_realloc_ecs(void *mem, ecs_size_t size);
 void   SDLCALL alloc_count_free(void *mem);
 void   SDLCALL alloc_count_free_ecs(void *mem);
 void   SDLCALL alloc_count_free_userptr(void *mem, void *userptr);
-char * SDLCALL alloc_count_strdup_ecs(const char *s);
