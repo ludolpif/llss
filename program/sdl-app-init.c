@@ -91,7 +91,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_SetWindowPosition(main_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
     // Assume this app will run on a single GPU and need to be restarted to change it
-    bool gpu_device_debug_mode = true;
+    bool gpu_device_debug_mode = false;
+#ifdef _DEBUG
+    gpu_device_debug_mode = true;
+#endif
     SDL_GPUDevice *gpu_device = SDL_CreateGPUDevice(
             SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_METALLIB,
             gpu_device_debug_mode, NULL);
