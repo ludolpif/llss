@@ -13,3 +13,5 @@
 #define APP_METADATA_TYPE_STRING "application"
 #define APP_METADATA_DESCRIPTION "Libre Live Streaming Software (LLSS)"
 // Note: APP_METADATA_DESCRIPTION shows up on Windows Firewall popup as Application long name
+
+#define APP_LICENCE_NAME_STR "GNU AFFERO GENERAL PUBLIC LICENSE Version 3"
