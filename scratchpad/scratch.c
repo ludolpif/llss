@@ -10,6 +10,7 @@ ECS_STRUCT(ModOnDiskDraft, {
 });
 
 ECS_DTOR(ModOnDiskDraft, ptr, {
+    ecs_trace(__PRETTY_FUNCTION__);
     ecs_os_free(ptr->name);
     ecs_os_free(ptr->mod_dirpath);
     ecs_os_free(ptr->so_path);
@@ -17,6 +18,7 @@ ECS_DTOR(ModOnDiskDraft, ptr, {
 })
 
 ECS_MOVE(ModOnDiskDraft, dst, src, {
+    ecs_trace(__PRETTY_FUNCTION__);
     ecs_os_free(dst->name);
     ecs_os_free(dst->mod_dirpath);
     ecs_os_free(dst->so_path);
@@ -26,6 +28,7 @@ ECS_MOVE(ModOnDiskDraft, dst, src, {
 })
 
 ECS_COPY(ModOnDiskDraft, dst, src, {
+    ecs_trace(__PRETTY_FUNCTION__);
     ecs_os_free(dst->name);
     ecs_os_free(dst->mod_dirpath);
     ecs_os_free(dst->so_path);
@@ -82,8 +85,12 @@ bool tick_hook(ecs_world_t *world) {
     SDL_free(so_path);
     SDL_free(so_realpath);
 
+    const ModOnDiskDraft *d = ecs_get(world, mod, ModOnDiskDraft);
+    ecs_trace(".name: %s, .mod_dirpath: %s, .so_path: %s, .so_realpath: %s, .load_id: %d, .modify_time: %ld",
+            d->name, d->mod_dirpath, d->so_path, d->so_realpath, d->load_id, d->modify_time);
+
     load_id++;
-    return load_id < 500;
+    return load_id < 5;
 }
 
 void fini_hook(ecs_world_t *world) {
