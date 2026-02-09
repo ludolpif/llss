@@ -213,6 +213,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
     // Directory Monitor (inotify, ReadDirectoryChangesW, FSEvents abstraction)
     dmon_init();
+    //FIXME make a memory-safe good usage of *userptr
     dmon_watch(SDL_GetBasePath(), push_filesystem_event_to_sdl_queue, DMON_WATCHFLAGS_RECURSIVE, NULL);
 
     //TODO load from config
@@ -222,12 +223,27 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
     // FLECS init
     ecs_world_t *world = ecs_init();
+#ifdef NDEBUG
+    // Note: valgrind memcheck can have hard time to converge if FLECS use multiple threads
     ecs_set_threads(world, ecs_worker_threads_count);
+#else
+    (void) ecs_worker_threads_count;
+#endif
 #ifdef app_FlecsStats
     ECS_IMPORT(world, FlecsStats); // Optional, enhance for https://www.flecs.dev/explorer
 #endif
     ecs_log_set_level(0); // Increase verbosity level
     ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
+
+    // Primitive type alias to ease use of ECS_STRUCT with some our choosen libs
+    // See also built-in type names at flecs.h "Primitive type definitions" section
+    // TODO make this more visible to mod writers (but if in AppComponentsCore module, it's not available to AppComponentsMods module)
+    ecs_primitive_init(world, &(ecs_primitive_desc_t){
+            .entity = ecs_entity(world, { .name = "SDL_Time" }) , .kind = EcsI64 });
+    ecs_primitive_init(world, &(ecs_primitive_desc_t){
+            .entity = ecs_entity(world, { .name = "ImGuiKeyChord" }) , .kind = EcsI32 });
+    ecs_primitive_init(world, &(ecs_primitive_desc_t){
+            .entity = ecs_entity(world, { .name = "ImGuiInputFlags" }) , .kind = EcsI32 });
 
     ECS_IMPORT(world, AppSystemsCore); // Will call AppSystemsCoreImport function
     ECS_IMPORT(world, AppSystemsMods);
@@ -308,5 +324,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     ecs_log_set_level(-1);
     ecs_fini(world);
 
+    SDL_Quit(); // Also done by SDL but want do to do it before alloc_count_dump_counters()
     alloc_count_dump_counters(app_iterate_count, "end of SDL_AppQuit()");
 }
