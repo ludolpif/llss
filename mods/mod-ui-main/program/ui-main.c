@@ -36,6 +36,10 @@ void ModUiMainImport(ecs_world_t *world) {
     ECS_SYSTEM(world, ModUiMainTask, RenderingOnImGui, 0);
 }
 
+void ModUiMainCleanup(ecs_world_t *world) {
+    ecs_id(ModUiMainState) = 0;
+}
+
 // TODO rewire this data to ECS when ready
 static ecs_i32_t app_status = 0;
 

@@ -15,10 +15,10 @@
  * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
 #include "app.h"
-#include "ui-main.h"
+#include "compositing.h"
 
-#define MOD_NAME "mod-ui-main"
-#define MOD_ECS_PREFIX "mod.ui.main"
+#define MOD_NAME "mod-scratchpad"
+#define MOD_ECS_PREFIX "mod.scratchpad"
 #define MOD_USES_IMGUI
 typedef struct {
     size_t running_struct_size;
@@ -68,8 +68,8 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, voi
         }
     }
 
-    ECS_IMPORT(world, ModUiMain);
-    // It's query/lookup identifier is "mod.ui.main"
+    ECS_IMPORT(world, ModScratchpadCompositing);
+    // It's query/lookup identifier is "mod.scratchpad.compositing"
 
     return MOD_RESULT_SUCCESS;
 }
@@ -77,6 +77,7 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, voi
 MOD_API mod_result_t SDLCALL mod_fini_v1(uint32_t flags, void *userptr) {
     app_debug("%016"PRIu64" "MOD_NAME" mod_fini_v1(%"PRIu32", %p)",
             SDL_GetTicksNS(), flags, userptr);
+    if (!userptr) return MOD_RESULT_FAILURE;
 
     mod_main_data_t *data = (mod_main_data_t *) userptr;
     ecs_world_t *world = data->world;

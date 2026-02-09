@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="hello.c" />
-    <ClCompile Include="mod.c" />
+    <ClCompile Include="mod-template.c" />
     <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
   <ItemGroup>

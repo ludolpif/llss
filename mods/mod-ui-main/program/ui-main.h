@@ -30,6 +30,7 @@
 #endif
 
 void ModUiMainImport(ecs_world_t *world);
+void ModUiMainCleanup(ecs_world_t *world);
 
 // Components
 MOD_API ECS_STRUCT(ModUiMainState, {

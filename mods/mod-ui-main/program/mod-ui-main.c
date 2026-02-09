@@ -1,74 +1,28 @@
 /*
- * This file is part of Foobar.
+ * This file is part of LLSS.
  *
- * Foobar is free software: you can redistribute it and/or modify it under the terms of the
+ * LLSS is free software: you can redistribute it and/or modify it under the terms of the
  * Affero GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  *
- * Foobar is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Foobar.
+ * You should have received a copy of the GNU General Public License along with LLSS.
  * If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
  *
- * Copyright 2025 Author <author-contact@email-domain.tld>
+ * Copyright 2025 ludolpif <ludolpif@gmail.com>
  */
 #include "app.h"
-#include "hello.h"
-#define MOD_NAME "mod-template"
-#define MOD_ECS_PREFIX "mod.template"
-#define MOD_USES_IMGUI
-/*
- * mod writer quickstart: no main(), no global variables.
- * You have to implement a few mandatory hooks, export them. The app will call them.
- * You get access to the main app ecs_world_t *world and using to flecs API,
- *  you can register Entities, Components, Systems, Tasks, Observers
- *  to extend the data set known globally and extend the behavior of the app.
- *
- * MOD_API macro purpose: tag something to be exported or imported as a dynamic symbol.
- *  Note that the build system is configured to hide symbols by default.
- * SDLCALL macro purpose: set a function's calling conventions to C calling convention
- *  (unsure if really needed in this project scope, but SDL do it, important if you mix some C++)
- *
- * Parameters
- * void *userptr:
- *  from the app point of view: opaque data defined by the mod, and managed by the mod only.
- *  from the mod: points to a struct for private mod data in substitution of global variables.
- *   It's important because Windows, Mac, Linux have different behaviors about heap and
- *    namespace separation of dynamically loaded shared objects. Allow also some mod reload features.
- *   It's allocation/deallocation have to be done in mod_init_v1/mod_fini_v1 and optionnally in
- *   mod_reload_v1 using SDL_calloc()
- *
- * ecs_world_t *world:
- *  contains all core app and others mods informations and behaviors
- *  FLECS API allow the mod to create, modify and delete dynamic data and types
- *   and uses data defined by the core app or the other mods.
- */
+#include "ui-main.h"
 
+#define MOD_NAME "mod-ui-main"
+#define MOD_ECS_PREFIX "mod.ui.main"
+#define MOD_USES_IMGUI
 typedef struct {
     size_t running_struct_size;
     ecs_world_t *world;
-    /*
-     * Try to put a maximum of data in ECS (*world) instead of below.
-     *  ECS should contain *all* human-readable data (for the user and others mods).
-     * The remaining of this struct should be reserved only for pointers
-     *  and things that your mod dependencies needs to have internally.
-     */
-    //lib_something_internal_data_t lib_something;
-    //int32_t some_fixed_size_typed_data_for_the_mod1;
-    //mod_template_something_t *list_of_something;
-    //int32_t list_of_something_len;
-
-    /*
-     * When improving the mod, don't change previous members, add new ones below,
-     *  so you can hot-reload from previous to new version by
-     *  - checking running_struct_size againt current sizeof(mod_main_data_t)
-     *  - SDL_realloc()ing the data
-     *  - initializing the bottom of the struct with zeros
-     *  - put some useful default value to fields that equals to 0
-     *  - decide to reset some values
-     */
 } mod_main_data_t;
 
 MOD_API int32_t SDLCALL mod_handshake_v1(int32_t running_app_version) {
@@ -114,9 +68,8 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, voi
         }
     }
 
-    // ECS_IMPORT is valid because mod_init_v1() called outside ecs_progress() by sdl-app-iterate.c
-    ECS_IMPORT(world, ModTemplateHello); // Creates entity with Module component then many others
-                                         // It's query/lookup identifier is "mod.template.hello"
+    ECS_IMPORT(world, ModUiMain);
+    // It's query/lookup identifier is "mod.ui.main"
 
     return MOD_RESULT_SUCCESS;
 }
@@ -124,6 +77,7 @@ MOD_API mod_result_t SDLCALL mod_init_v1(ecs_world_t *world, uint32_t flags, voi
 MOD_API mod_result_t SDLCALL mod_fini_v1(uint32_t flags, void *userptr) {
     app_debug("%016"PRIu64" "MOD_NAME" mod_fini_v1(%"PRIu32", %p)",
             SDL_GetTicksNS(), flags, userptr);
+    if (!userptr) return MOD_RESULT_FAILURE;
 
     mod_main_data_t *data = (mod_main_data_t *) userptr;
     ecs_world_t *world = data->world;
@@ -135,15 +89,12 @@ MOD_API mod_result_t SDLCALL mod_fini_v1(uint32_t flags, void *userptr) {
         app_debug("%016"PRIu64" mod_fini_v1(): removed ECS items", SDL_GetTicksNS());
     }
 
+    ModUiMainCleanup(world);
+
     // here may need to add calls to shutdown to your mod's dependencies
 
     if (!(flags & MOD_FLAGS_RELOADING)) {
         SDL_free(userptr); // last operation to do
     }
     return MOD_RESULT_SUCCESS;
-}
-
-// This function will not be an exported dynamic symbol because MOD_API is absent
-int32_t some_private_func(int32_t a) {
-    return a;
 }
