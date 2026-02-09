@@ -15,7 +15,7 @@
 # Copyright 2025 ludolpif <ludolpif@gmail.com>
 #
 # For now, build for Windows and Mac uses VSCode MSBuild and XCode tools
-.PHONY: all clean program mods renderdoc run run-ecs-explorer run-pretty-log seergdb valgrind
+.PHONY: all clean program mods disasm renderdoc run run-ecs-explorer run-pretty-log seergdb valgrind valgrind-full
 
 # default value for command-line arguments (like make BUILD_TYPE=Release)
 BUILD_TYPE ?= Debug
@@ -38,6 +38,9 @@ clean:
 	$(MAKE) -C program clean BUILD_TYPE=$(BUILD_TYPE)
 	$(MAKE) -C mods clean BUILD_TYPE=$(BUILD_TYPE)
 
+disasm:
+	objdump -dS $(EXE)
+
 renderdoc:
 	SDL_LOGGING="$(SDL_LOGGING)" dev/renderdoc.sh `realpath .` $(EXE)
 
@@ -56,3 +59,6 @@ seergdb:
 
 valgrind:
 	SDL_LOGGING="$(SDL_LOGGING)" valgrind $(EXE) $(RUN_ARGS)
+
+valgrind-full:
+	SDL_LOGGING="$(SDL_LOGGING)" valgrind --leak-check=full $(EXE) $(RUN_ARGS)
