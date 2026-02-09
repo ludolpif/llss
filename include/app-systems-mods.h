@@ -43,6 +43,7 @@
 #endif
 
 ONCE ECS_QUERY_DECLARE(ModInitializableQuery);
+ONCE ECS_QUERY_DECLARE(ModRunningQuery);
 ONCE ECS_QUERY_DECLARE(ModRunningNewerOnDiskQuery);
 ONCE ECS_QUERY_DECLARE(ModTerminatingQuery);
 

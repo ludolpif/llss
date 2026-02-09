@@ -29,6 +29,7 @@
 
 APP_API void AppComponentsModsImport(ecs_world_t *world);
 
+/* Elements for states represented as exclusive relationships */
 APP_API ONCE ECS_TAG_DECLARE(ModState);
 APP_API ONCE ECS_ENTITY_DECLARE(ModAvailable);     //  for  ModPrepareFromDisk
 APP_API ONCE ECS_ENTITY_DECLARE(ModCopying);       //during ModCopy
@@ -43,20 +44,21 @@ APP_API ONCE ECS_ENTITY_DECLARE(ModFiniFailed);    // after ModFini
 APP_API ONCE ECS_ENTITY_DECLARE(ModUnloadable);    // after ModFini
 APP_API ONCE ECS_ENTITY_DECLARE(ModUnloaded);      // after ModUnload
 
+/* Elements for non-exclusive relationships */
 APP_API ONCE ECS_TAG_DECLARE(ModFlags);
 APP_API ONCE ECS_ENTITY_DECLARE(ModNewerOnDisk);
 
 APP_API ONCE ECS_TAG_DECLARE(ModIOAsync);
 
-typedef struct {
+/* Component definitions, with metadata for REST API */
+ECS_STRUCT(ModOnDisk, {
     char *name;
     char *mod_dirpath;
     char *so_path;
     char *so_realpath;
     SDL_Time modify_time;
-    ecs_i32_t load_id;
-} ModOnDisk;
-APP_API ONCE ECS_COMPONENT_DECLARE(ModOnDisk);
+    int32_t load_id;
+});
 
 typedef struct {
     void *shared_object;
@@ -67,3 +69,4 @@ typedef struct {
     mod_fini_v1_t mod_fini_v1;
 } ModInRAM;
 APP_API ONCE ECS_COMPONENT_DECLARE(ModInRAM);
+

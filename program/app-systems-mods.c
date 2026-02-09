@@ -1,3 +1,19 @@
+/*
+ * This file is part of LLSS.
+ *
+ * LLSS is free software: you can redistribute it and/or modify it under the terms of the
+ * Affero GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ *
+ * LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with LLSS.
+ * If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
+ *
+ * Copyright 2025 ludolpif <ludolpif@gmail.com>
+ */
 #define APP_SYSTEMS_MODS_IMPL
 #include "app-systems-mods.h"
 
@@ -17,13 +33,11 @@ void AppSystemsModsImport(ecs_world_t *world) {
         [inout] app.components.mods.ModInRAM,
         (app.components.mods.ModState, app.components.mods.ModInitializable)
         );
-    /*
-     * FIXME this ModRunningNewerOnDiskQuery is for a ModRunningNewerOnDiskQuery system
-     * that just make an "empty" transition without any conditions. Remove it but...
-     * Scopes currently have the following limitations:
-     * scopes can only be combined with Not operators (e.g. !{ ... }). Future versions of flecs
-     * will add support for combining scopes with Or operators (e.g. { ... } || { ... }).
-     */
+    ECS_QUERY_DEFINE(world, ModRunningQuery,
+        [in] app.components.mods.ModOnDisk,
+        [inout] app.components.mods.ModInRAM,
+        (app.components.mods.ModState, app.components.mods.ModRunning)
+        );
     ECS_QUERY_DEFINE(world, ModRunningNewerOnDiskQuery,
         [in] app.components.mods.ModOnDisk,
         [inout] app.components.mods.ModInRAM,
@@ -309,7 +323,8 @@ void ModSetFSWatcher(ecs_iter_t *it) {
             return;
         }
     }
-    dmon_watch(mods_basepath, push_filesystem_event_to_sdl_queue, DMON_WATCHFLAGS_RECURSIVE, "mods");
+    //FIXME make a memory-safe good usage of *userptr
+    dmon_watch(mods_basepath, push_filesystem_event_to_sdl_queue, DMON_WATCHFLAGS_RECURSIVE, NULL);
 }
 
 // Task, run once per second
@@ -338,7 +353,6 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     SDL_PathInfo info;
     char *mod_dirpath = NULL;
     char *so_path = NULL;
-    char *mod_name = NULL;
     char *so_realpath = NULL;
 
     // Silently skip mod-template
@@ -374,36 +388,25 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
         app_info(LOG_PREFIX ": %s isn't a file", SDL_GetTicksNS(), dirname, fname, so_path);
         goto bailout;
     }
-    // Prepare some strings for the ModOnDisk component
-    mod_name = SDL_strdup(fname);
-    if (!mod_name) {
-        app_error(LOG_PREFIX ": SDL_strdup(fname): %s",
-                SDL_GetTicksNS(), dirname, fname, SDL_GetError());
-        goto bailout;
-    }
     // Create or refresh the current mod entity
     ecs_entity_t parent = ecs_new_from_path(world, 0, "mod.meta");
     ecs_entity_t mod = ecs_entity(world, { .name = fname, .parent = parent });
     const ModOnDisk *d = ecs_get(world, mod, ModOnDisk);
     ecs_i32_t load_id = 0;
-    if ( d ) {
+    if (d) {
         load_id = d->load_id;
+#ifdef APP_MOD_COPYONLOAD
         so_realpath = d->so_realpath;
+#endif
     }
 #ifndef APP_MOD_COPYONLOAD
     // On all non-windows platform we directly load the shared object
     // On Windows, more steps are required as an open .dll is a locked file on disk by design
-    if (!so_realpath) {
-        so_realpath = SDL_strdup(so_path);
-        if (!so_realpath) {
-            app_error(LOG_PREFIX ": SDL_strdup(so_path): %s",
-                    SDL_GetTicksNS(), dirname, fname, SDL_GetError());
-            goto bailout;
-        }
-    }
+    so_realpath = so_path;
 #endif
+    // This will call ModOnDisk copy hook, duplicating all values on heap, no ownership taken
     ecs_set(world, mod, ModOnDisk, {
-        .name = mod_name,
+        .name = ECS_CONST_CAST(char *, fname),
         .mod_dirpath = mod_dirpath,
         .so_path = so_path,
         .so_realpath = so_realpath,
@@ -423,14 +426,11 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
         ecs_add_pair(world, mod, ModFlags, ModNewerOnDisk);
     }
 
-    return SDL_ENUM_CONTINUE;
-
 bailout:
-    SDL_free(mod_name);
     SDL_free(so_path);
     SDL_free(mod_dirpath);
 
-    // On failure path for this mod, we want to examine the next one
+    // On success and on failure path for this mod, we want to examine the next one
     return SDL_ENUM_CONTINUE;
 #undef LOG_PREFIX
 }
@@ -439,8 +439,7 @@ bailout:
 ecs_entity_t /* ModState */ mod_tryload(const ModOnDisk *d, ModInRAM *r) {
     r->shared_object = SDL_LoadObject(d->so_realpath);
     if (!r->shared_object) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadObject(): %s",
-                SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), SDL_GetError());
         return ModLoadFailed;
     }
     r->modify_time_when_loaded = d->modify_time;
@@ -449,8 +448,7 @@ ecs_entity_t /* ModState */ mod_tryload(const ModOnDisk *d, ModInRAM *r) {
     mod_handshake_v1_t mod_handshake_v1 =
         (mod_handshake_v1_t) SDL_LoadFunction(r->shared_object, "mod_handshake_v1");
     if (!mod_handshake_v1) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_handshake_v1): %s",
-                SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), SDL_GetError());
         SDL_UnloadObject(r->shared_object);
         return ModLoadFailed;
     }
@@ -474,8 +472,7 @@ ecs_entity_t /* ModState */ mod_tryload(const ModOnDisk *d, ModInRAM *r) {
     // load mod_init_v1(), don't run it now, world is read-only and mod is allowed to ECS_IMPORT()
     r->mod_init_v1 = (mod_init_v1_t) SDL_LoadFunction(r->shared_object, "mod_init_v1");
     if (!r->mod_init_v1) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_init_v1): %s",
-                SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), SDL_GetError());
         SDL_UnloadObject(r->shared_object);
         return ModLoadFailed;
     }
@@ -483,8 +480,7 @@ ecs_entity_t /* ModState */ mod_tryload(const ModOnDisk *d, ModInRAM *r) {
     // load mod_fini_v1()
     r->mod_fini_v1 = (mod_fini_v1_t) SDL_LoadFunction(r->shared_object, "mod_fini_v1");
     if (!r->mod_fini_v1) {
-        app_warn("%016"PRIu64" mod_tryload(): SDL_LoadFunction(..., mod_fini_v1): %s",
-                SDL_GetTicksNS(), SDL_GetError());
+        app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), SDL_GetError());
         SDL_UnloadObject(r->shared_object);
         return ModLoadFailed;
     }
