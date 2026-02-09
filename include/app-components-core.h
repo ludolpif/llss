@@ -27,19 +27,36 @@
 #define ONCE
 #endif
 
+// Runtime module init, defined in program/app-component-core.c
 APP_API void AppComponentsCoreImport(ecs_world_t *world);
 
-// Phases for pipelines
+/* Phases for pipelines */
 APP_API ONCE ecs_entity_t RenderingPreImGui, RenderingOnImGui, RenderingPostImGui;
 
-// Singletons components
+/* Elements for states represented as exclusive relationships */
+APP_API ONCE ECS_TAG_DECLARE(AppState);
+APP_API ONCE ECS_ENTITY_DECLARE(AppStateIdling);
+APP_API ONCE ECS_ENTITY_DECLARE(AppStateStreamingOrRecording);
+
+APP_API ONCE ECS_TAG_DECLARE(AppQuitState);
+APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateResquested);
+APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateWaitingUserReply);
+APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateAccepted);
+
+APP_API ONCE ECS_TAG_DECLARE(IOState);
+APP_API ONCE ECS_ENTITY_DECLARE(IOComplete);
+APP_API ONCE ECS_ENTITY_DECLARE(IOFailure);
+APP_API ONCE ECS_ENTITY_DECLARE(IOCanceled);
+
+/* Component definitions, with metadata for REST API and/or persistence */
+
+// Singletons components (excluded from ecs_world_to_json() by FLECS design as in 4.1.4)
 APP_API ECS_STRUCT(AppVersion, {
     int32_t running_app_version;
     int32_t build_dep_version_compiled_against;
 });
 
 typedef struct {
-    // TODO this approach don't cover per-thread arena
     SDL_malloc_func sdl_malloc_func;
     SDL_calloc_func sdl_calloc_func;
     SDL_realloc_func sdl_realloc_func;
@@ -73,41 +90,24 @@ APP_API ECS_STRUCT(AppMainTimingContext, {
     uint64_t main_frameid; // Unique identifier for current frame, garanted monotonic until main_framerate changes
 });
 
-// Elements for global application state, to show quit confirmation dialog boxes
-APP_API ONCE ECS_TAG_DECLARE(AppState);
-APP_API ONCE ECS_ENTITY_DECLARE(AppStateIdling);
-APP_API ONCE ECS_ENTITY_DECLARE(AppStateStreamingOrRecording);
-APP_API ONCE ECS_ENTITY_DECLARE(AppStateSuccess);
-APP_API ONCE ECS_ENTITY_DECLARE(AppStateFailure);
-
-APP_API ONCE ECS_TAG_DECLARE(AppQuitState);
-APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateResquested);
-APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateWaitingUserReply);
-APP_API ONCE ECS_ENTITY_DECLARE(AppQuitStateAccepted);
+/* Regular components */
 
 // Elements for custom action triggering from ImGui input handling like
 // ImGui_Shortcut(ImGuiMod_Ctrl|ImGuiKey_Z, ImGuiInputFlags_RouteGlobal|ImGuiInputFlags_Repeat)
-APP_API ONCE ECS_TAG_DECLARE(AppAction);
-
 APP_API ECS_STRUCT(AppActionRequested, {
     ecs_entity_t source; // Could be an hotkey, an event from an API or a script
 });
 
-typedef struct {
+APP_API ECS_STRUCT(AppHotkeyBinding, {
     ImGuiKeyChord key_chord;
     ImGuiInputFlags flags;
     ecs_entity_t action;
-} AppHotkeyBinding;
-APP_API ONCE ECS_COMPONENT_DECLARE(AppHotkeyBinding);
+});
 
-// Elements for async IO state
-APP_API ONCE ECS_TAG_DECLARE(IOState);
-APP_API ONCE ECS_ENTITY_DECLARE(IOComplete);
-APP_API ONCE ECS_ENTITY_DECLARE(IOFailure);
-APP_API ONCE ECS_ENTITY_DECLARE(IOCanceled);
-
+// Elements for SDL async IO handling from the ECS
 typedef SDL_AsyncIOOutcome AsyncIOOutcome;
 APP_API ONCE ECS_COMPONENT_DECLARE(AsyncIOOutcome);
+
 
 // Elements for file an directory monitor events (inotify, ReadDirectoryChangesW(), fswatch)
 typedef struct {

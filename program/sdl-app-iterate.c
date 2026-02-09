@@ -29,8 +29,22 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     // without recompiling this program
     ecs_progress(world, 0.0f);
 
-    // Mods init and reload is defered outside of ecs_progress() so they can ECS_IMPORT() modules
-    // while the world isn't in read-only mode. mod fini needs it too.
+    // Decide to quit or continue running from ECS, allowing mods to interact with this
+    if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted) ) {
+        // Terminate all mods to let them persist some state and make memory leak checkers useful
+        ecs_iter_t it = ecs_query_iter(world, ModRunningQuery);
+        while (ecs_query_next(&it)) {
+            ModFini(&it);
+        }
+        it = ecs_query_iter(world, ModTerminatingQuery);
+        while (ecs_query_next(&it)) {
+            ModFini(&it);
+        }
+        return SDL_APP_SUCCESS;
+    }
+
+    // ModInit() and ModFini() are done outside of ecs_progress() so they can ECS_IMPORT() modules
+    // while the world isn't in read-only mode.
     ecs_iter_t it = ecs_query_iter(world, ModRunningNewerOnDiskQuery);
     while (ecs_query_next(&it)) {
         ModFini(&it);
@@ -47,17 +61,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     // Custom method for targetting desired FPS
     throttle(world);
 
-    // Decide to quit or continue running from ECS, allowing mods to interact with this
-    if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted) ) {
-        // TODO there will be some shutdown to do or wait here
-        return SDL_APP_SUCCESS;
-    }
-    if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppState, AppStateSuccess) ) {
-        return SDL_APP_SUCCESS;
-    }
-    if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppState, AppStateFailure) ) {
-        return SDL_APP_FAILURE;
-    }
     return SDL_APP_CONTINUE;
 }
 
@@ -67,7 +70,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
  * We want to snap PTS (Presentation TimeStamps) for all streams to a multiple of the framerate
  * Here we throttle not to minimize framedrops at all costs, but to snap frame start to SDL Ticks.
  *
- * If main_framerate is 1/60, and render time 20ms (out of 16ms budget for 60 FPS), this code will
+ * If main_framerate is 60/1, and render time 20ms (out of 16ms budget for 60 FPS), this code will
  * go for 30 FPS because it will wait 2*1/60-0.02s <=> 32-20ms <=> 12ms each loop to keep aligned.
  */
 void throttle(ecs_world_t *world) {

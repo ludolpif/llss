@@ -1,3 +1,19 @@
+/*
+ * This file is part of LLSS.
+ *
+ * LLSS is free software: you can redistribute it and/or modify it under the terms of the
+ * Affero GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ *
+ * LLSS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with LLSS.
+ * If not, see <https://www.gnu.org/licenses/>. See LICENSE file at root of this git repo.
+ *
+ * Copyright 2025 ludolpif <ludolpif@gmail.com>
+ */
 #define APP_COMPONENTS_CORE_IMPL
 #include "app-components-core.h"
 
@@ -6,7 +22,7 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     // See the "modules" example
     ECS_MODULE(world, AppComponentsCore);
 
-    // Phases for pipelines
+    /* Phases for pipelines */
     RenderingPreImGui = ecs_entity_init(world, &(ecs_entity_desc_t){
             .name = "RenderingPreImGui",
             .add = ecs_ids(EcsPhase)
@@ -25,21 +41,11 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
             });
     ecs_add_pair(world, RenderingPostImGui, EcsDependsOn, RenderingOnImGui);
 
-    // Elements for async IO state
-    ECS_TAG_DEFINE(world, IOState);
-    // Register IOState as exclusive relationship. This ensures that an entity
-    // can only belong to a single IOState.
-    ecs_add_id(world, IOState, EcsExclusive);
-    ECS_ENTITY_DEFINE(world, IOComplete);
-    ECS_ENTITY_DEFINE(world, IOFailure);
-    ECS_ENTITY_DEFINE(world, IOCanceled);
-
+    /* Elements for states represented as exclusive relationships */
     ECS_TAG_DEFINE(world, AppState);
     ecs_add_id(world, AppState, EcsExclusive);
     ECS_ENTITY_DEFINE(world, AppStateIdling);
     ECS_ENTITY_DEFINE(world, AppStateStreamingOrRecording);
-    ECS_ENTITY_DEFINE(world, AppStateSuccess);
-    ECS_ENTITY_DEFINE(world, AppStateFailure);
 
     ECS_TAG_DEFINE(world, AppQuitState);
     ecs_add_id(world, AppQuitState, EcsExclusive);
@@ -47,8 +53,15 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     ECS_ENTITY_DEFINE(world, AppQuitStateWaitingUserReply);
     ECS_ENTITY_DEFINE(world, AppQuitStateAccepted);
 
-    // Using ECS_STRUCT + ECS_META_COMPONENT when possible, if struct of primivite types
-    // See type names at flecs.h "Primitive type definitions" section
+    ECS_TAG_DEFINE(world, IOState);
+    ecs_add_id(world, IOState, EcsExclusive);
+    ECS_ENTITY_DEFINE(world, IOComplete);
+    ECS_ENTITY_DEFINE(world, IOFailure);
+    ECS_ENTITY_DEFINE(world, IOCanceled);
+
+    /* Component definitions, with metadata for REST API and/or persistence */
+
+    // Singletons components (excluded from ecs_world_to_json() by FLECS design as in 4.1.4)
     ECS_META_COMPONENT(world, AppVersion);
     ECS_META_COMPONENT(world, AppMainTimingContext);
 
@@ -80,22 +93,14 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     ecs_struct(world, {
         .entity = ecs_id(AppImGuiContext),
         .members = {
-            { .name = "imgui_context",  .type = ecs_id(ecs_uptr_t) },
-            { .name = "imgui_io",   .type = ecs_id(ecs_uptr_t) },
+            { .name = "imgui_context", .type = ecs_id(ecs_uptr_t) },
+            { .name = "imgui_io",      .type = ecs_id(ecs_uptr_t) },
         }
     });
 
+    /* Regular components */
     ECS_META_COMPONENT(world, AppActionRequested);
-
-    ECS_COMPONENT_DEFINE(world, AppHotkeyBinding);
-    ecs_struct(world, {
-        .entity = ecs_id(AppHotkeyBinding),
-        .members = {
-            { .name = "key_chord", .type = ecs_id(ecs_i32_t) },
-            { .name = "flags",     .type = ecs_id(ecs_i32_t) },
-            { .name = "action",    .type = ecs_id(ecs_entity_t) },
-        }
-    });
+    ECS_META_COMPONENT(world, AppHotkeyBinding);
 
     ECS_COMPONENT_DEFINE(world, AsyncIOOutcome);
     ecs_struct(world, {
