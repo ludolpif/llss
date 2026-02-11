@@ -57,14 +57,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;app_FlecsStats;app_EXPORTS;flecs_EXPORTS;imgui_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;app_FlecsStats;app_EXPORTS;flecs_EXPORTS;imgui_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\platform\sdl3-devel-vc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)program\$(Platform)\$(Configuration);$(SolutionDir)lib\ecs\$(Platform)\$(Configuration);$(SolutionDir)lib\ui\$(Platform)\$(Configuration);$(SolutionDir)\lib\platform\sdl3-devel-vc\lib\$(Platform)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ImGuiLib.lib;flecs.lib;opengl32.lib;SDL3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
