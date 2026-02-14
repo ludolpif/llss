@@ -63,6 +63,7 @@
       <Filter>Internal Dependencies</Filter>
     </ClInclude>
     <ClInclude Include="alloc.h" />
+    <ClInclude Include="ui-main.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Internal Dependencies">

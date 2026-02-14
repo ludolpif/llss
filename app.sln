@@ -3,15 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "program", "program\app.vcxproj", "{4E4536B5-7943-4153-B43A-1D196B9FC220}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app", "program\app.vcxproj", "{4E4536B5-7943-4153-B43A-1D196B9FC220}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-template", "mods\mod-template\program\mod-template.vcxproj", "{ABCDEF01-2345-6789-ABCD-EF0123456789}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E4536B5-7943-4153-B43A-1D196B9FC220} = {4E4536B5-7943-4153-B43A-1D196B9FC220}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-scratchpad", "mods\mod-scratchpad\program\mod-scratchpad.vcxproj", "{17D3CE4A-7533-4861-AE31-5ACF25BD537A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E4536B5-7943-4153-B43A-1D196B9FC220} = {4E4536B5-7943-4153-B43A-1D196B9FC220}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-ui-main", "mods\mod-ui-main\program\mod-ui-main.vcxproj", "{24C2DDB9-6B7B-4B8A-A10A-359259964794}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E4536B5-7943-4153-B43A-1D196B9FC220} = {4E4536B5-7943-4153-B43A-1D196B9FC220}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mod-uitheme-rlyeh3", "mods\mod-uitheme-rlyeh3\program\mod-uitheme-rlyeh3.vcxproj", "{37C290AD-5F29-408A-80EF-FC4837176F2E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E4536B5-7943-4153-B43A-1D196B9FC220} = {4E4536B5-7943-4153-B43A-1D196B9FC220}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

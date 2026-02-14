@@ -6,7 +6,6 @@
     <ClCompile Include="platform-specific\dllmain.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hello.h" />
     <ClInclude Include="$(SolutionDir)\lib\ui\dear_bindings_generated\dcimgui.h">
       <Filter>Internal Dependencies</Filter>
     </ClInclude>
@@ -22,6 +21,7 @@
     <ClInclude Include="$(SolutionDir)\include\app.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
+    <ClInclude Include="ui-main.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Internal Dependencies">
