@@ -36,6 +36,7 @@ APP_API Uint32 APP_USER_EVENT_FILESYSTEM;
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // Configure memory functions before the first dynamic allocation
     alloc_count_install_hooks();
+    alloc_count_set_context(APP_CONTEXT_STARTUP_SHUTDOWN);
 
     // Configure logging
 #ifdef _DEBUG
@@ -293,7 +294,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_ShowWindow(main_window);
 
     // Memory allocation statistics
-    alloc_count_dump_counters(0, "end of SDL_AppInit()");
+    alloc_count_dump_counters(0, "end of SDL_AppInit()", APP_CONTEXT_STARTUP_SHUTDOWN);
     alloc_count_set_context(APP_CONTEXT_FIRST_FRAMES);
 
     // SDL main give us the opportunity to have a *userdata-like pointer for futher callbacks
@@ -326,5 +327,5 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     ecs_fini(world);
 
     SDL_Quit(); // Also done by SDL but want do to do it before alloc_count_dump_counters()
-    alloc_count_dump_counters(app_iterate_count, "end of SDL_AppQuit()");
+    alloc_count_dump_counters(app_iterate_count, "end of SDL_AppQuit()", 0);
 }

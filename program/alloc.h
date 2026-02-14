@@ -18,15 +18,16 @@
 #include "app.h"
 
 typedef enum app_alloc_count_contexts {
+    APP_CONTEXT_INVALID = 0,
     APP_CONTEXT_STARTUP_SHUTDOWN,
     APP_CONTEXT_FIRST_FRAMES,
     APP_CONTEXT_RENDERING,
     // add here and update app_alloc_count_contexts_str[][] in alloc.c
-    APP_CONTEXT_COUNT
+    APP_CONTEXT_MAX
 } app_alloc_count_contexts_t;
 
 void alloc_count_install_hooks(void);
-void alloc_count_dump_counters(Uint32 loops, char *when);
+void alloc_count_dump_counters(Uint32 loops, char *when, int32_t contextid);
 void alloc_count_set_context(app_alloc_count_contexts_t contextid);
 
 void * SDLCALL alloc_count_malloc(size_t size);

@@ -17,14 +17,15 @@
 #include "alloc.h"
 
 // Those are global variables. All the appstate except this is on heap.
-SDL_AtomicInt alloc_count_per_context[APP_CONTEXT_COUNT][4];
-SDL_AtomicInt *alloc_count_current_context = alloc_count_per_context[0];
+SDL_AtomicInt alloc_count_per_context[APP_CONTEXT_MAX][4];
+SDL_AtomicInt *alloc_count_current_context = alloc_count_per_context[APP_CONTEXT_INVALID];
 SDL_malloc_func orig_malloc_func;
 SDL_calloc_func orig_calloc_func;
 SDL_realloc_func orig_realloc_func;
 SDL_free_func orig_free_func;
 
-const char app_alloc_count_contexts_str[APP_CONTEXT_COUNT][20] = {
+const char app_alloc_count_contexts_str[APP_CONTEXT_MAX][20] = {
+    "INVALID",
     "STARTUP_SHUTDOWN",
     "FIRST_FRAMES",
     "RENDERING"
@@ -49,26 +50,46 @@ void alloc_count_install_hooks(void) {
     ecs_os_set_api(&os_api);
 }
 
-void alloc_count_dump_counters(Uint32 loops, char *when) {
+void alloc_count_dump_counters(Uint32 loops, char *when, int32_t contextid) {
     if (when) {
         app_info("%016"PRIu64" heap allocation at %s (only SDL_*alloc/SDL_free calls)",
                 SDL_GetTicksNS(), when);
     }
     app_info("[%7"PRIu32" loops]  ctxt   malloc   calloc  realloc     free (+diff)", loops);
-    for ( int contextid = 0; contextid<APP_CONTEXT_COUNT; contextid++ ) {
-        int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][0]);
-        int calloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[contextid][1]);
-        int realloc_count = SDL_GetAtomicInt(&alloc_count_per_context[contextid][2]);
-        int free_count    = SDL_GetAtomicInt(&alloc_count_per_context[contextid][3]);
+    int malloc_total = 0;
+    int calloc_total = 0;
+    int realloc_total = 0;
+    int free_total = 0;
+    int32_t min = APP_CONTEXT_INVALID+1, max = APP_CONTEXT_MAX;
+    bool total = true;
+    if ( contextid >= min && contextid < max ) {
+        min = contextid; max = min+1;
+        total = false;
+    }
+    for ( int i=min; i<max; i++ ) {
+        int malloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[i][0]);
+        int calloc_count  = SDL_GetAtomicInt(&alloc_count_per_context[i][1]);
+        int realloc_count = SDL_GetAtomicInt(&alloc_count_per_context[i][2]);
+        int free_count    = SDL_GetAtomicInt(&alloc_count_per_context[i][3]);
 
-        app_info("%21s %8d %8d %8d %8d (%+d)", app_alloc_count_contexts_str[contextid],
+        app_info("%21s %8d %8d %8d %8d (%+d)", app_alloc_count_contexts_str[i],
                 malloc_count, calloc_count, realloc_count, free_count,
                 malloc_count + calloc_count - free_count);
+
+        malloc_total += malloc_count;
+        calloc_total += calloc_count;
+        realloc_total += realloc_count;
+        free_total += free_count;
+    }
+    if (total) {
+        app_info("%21s %8d %8d %8d %8d (%+d)", "TOTAL",
+                malloc_total, calloc_total, realloc_total, free_total,
+                malloc_total + calloc_total - free_total);
     }
 }
 
 void alloc_count_set_context(app_alloc_count_contexts_t contextid) {
-    if ( contextid >= 0 && contextid < APP_CONTEXT_COUNT ) {
+    if ( contextid >= 0 && contextid < APP_CONTEXT_MAX ) {
         SDL_SetAtomicPointer((void **)&alloc_count_current_context, alloc_count_per_context[contextid]);
     }
 }
