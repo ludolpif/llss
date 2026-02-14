@@ -1,6 +1,7 @@
 # TODO list
 
 - Licence requirement about the program distribute it's sources
+  - Needs https://github.com/SanderMertens/flecs/pull/1945
 
 - choose were seek for userdata/config and set ImGui io.IniFilename accordingly
 
