@@ -78,7 +78,6 @@ void AppSystemsModsImport(ecs_world_t *world) {
         );
 #endif
     ECS_SYSTEM(world, ModUnload, EcsOnUpdate,
-        [in] app.components.mods.ModOnDisk,
         [inout] app.components.mods.ModInRAM,
         (app.components.mods.ModState, app.components.mods.ModUnloadable)
         );
@@ -103,9 +102,10 @@ void ModPrepareFromDisk(ecs_iter_t *it) {
     ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
 
     for (int i = 0; i < it->count; i++) {
-        app_debug("%016"PRIu64" ModPrepareFromDisk(%s)", SDL_GetTicksNS(), d[i].name);
         ecs_entity_t mod = it->entities[i];
+        const char *name = ecs_get_name(it->world, mod);
         ecs_entity_t next_state;
+        app_debug("%016"PRIu64" ModPrepareFromDisk(%s)", SDL_GetTicksNS(), name);
 
         d[i].load_id++;
 
@@ -116,24 +116,24 @@ void ModPrepareFromDisk(ecs_iter_t *it) {
 
         if ( d[i].so_realpath ) {
             app_debug("%016"PRIu64" ModPrepareFromDisk(%s): removing: %s",
-                    SDL_GetTicksNS(), d[i].name, d[i].so_realpath);
+                    SDL_GetTicksNS(), name, d[i].so_realpath);
             if (!SDL_RemovePath(d[i].so_realpath)) {
                 app_warn("%016"PRIu64" ModPrepareFromDisk(%s): can't remove previous mod copy: %s",
-                        SDL_GetTicksNS(), d[i].name, SDL_GetError());
+                        SDL_GetTicksNS(), name, SDL_GetError());
             }
             SDL_free(d[i].so_realpath);
         }
         if (!SDL_asprintf(&d[i].so_realpath, "%s/"APP_MOD_SUBDIR"%03"PRIi32"-%s"APP_MOD_FILEEXT,
-                    d[i].mod_dirpath, d[i].load_id, d[i].name)) {
+                    d[i].mod_dirpath, d[i].load_id, name)) {
             app_error("%016"PRIu64" ModPrepareFromDisk(%s): SDL_asprintf(&so_realpath,...): %s",
-                    SDL_GetTicksNS(), d[i].name, SDL_GetError());
+                    SDL_GetTicksNS(), name, SDL_GetError());
             next_state = ModLoadFailed;
             goto bailout;
         }
         SDL_PathInfo info;
         if (SDL_GetPathInfo(d[i].so_realpath, &info) && !SDL_RemovePath(d[i].so_realpath)) {
             app_error("%016"PRIu64" ModPrepareFromDisk(%s): can't remove so_realpath: %s",
-                    SDL_GetTicksNS(), d[i].name, SDL_GetError());
+                    SDL_GetTicksNS(), name, SDL_GetError());
             next_state = ModLoadFailed;
             goto bailout;
         }
@@ -141,7 +141,7 @@ void ModPrepareFromDisk(ecs_iter_t *it) {
         const AppSDLContext *app_sdl_context = ecs_singleton_get(it->world, AppSDLContext);
         if (!SDL_LoadFileAsync(d[i].so_path, app_sdl_context->sdl_io_queue, (void *)mod)) {
             app_error("%016"PRIu64" ModPrepareFromDisk(%s): so_path unreadable: %s",
-                    SDL_GetTicksNS(), d[i].name, d[i].so_path);
+                    SDL_GetTicksNS(), name, d[i].so_path);
         }
 #else
         // For other OSes, nothing to do for now, .so or .dylib can be replaced freely
@@ -166,43 +166,45 @@ void ModCopy(ecs_iter_t *it) {
     const AppSDLContext *app_sdl_context = ecs_singleton_get(it->world, AppSDLContext);
     for (int i = 0; i < it->count; i++) {
         ecs_entity_t mod = it->entities[i];
+        const char *name = ecs_get_name(it->world, mod);
         switch ( o[i].type ) {
             case SDL_ASYNCIO_TASK_READ:
-                app_debug("%016"PRIu64" ModCopy(%s): read event", SDL_GetTicksNS(), d[i].name);
+                app_debug("%016"PRIu64" ModCopy(%s): read event", SDL_GetTicksNS(), name);
                 if ( o[i].bytes_transferred != o[i].bytes_requested ) {
-                    app_error("%016"PRIu64" ModCopy(%s): partial read",
-                            SDL_GetTicksNS(), d[i].name);
+                    app_error("%016"PRIu64" ModCopy(%s): partial read", SDL_GetTicksNS(), name);
                     goto bailout;
                 }
                 // No SDL_CloseAsyncIO() because we came from SDL_LoadFileAsync() here
                 SDL_AsyncIO *asyncio = SDL_AsyncIOFromFile(d[i].so_realpath, "w+");
                 if (!asyncio) {
                     app_error("%016"PRIu64" ModCopy(%s): can't open for writing: %s",
-                            SDL_GetTicksNS(), d[i].name, SDL_GetError());
+                            SDL_GetTicksNS(), name, SDL_GetError());
                     goto bailout;
                 }
                 if (!SDL_WriteAsyncIO(asyncio, o[i].buffer, 0, o[i].bytes_transferred,
                             app_sdl_context->sdl_io_queue, (void *)mod)) {
                     app_error("%016"PRIu64" ModCopy(%s): can't write: %s",
-                            SDL_GetTicksNS(), d[i].name, SDL_GetError());
+                            SDL_GetTicksNS(), name, SDL_GetError());
                     goto bailout;
                 }
                 break;
             case SDL_ASYNCIO_TASK_WRITE:
-                app_debug("%016"PRIu64" ModCopy(%s): write event", SDL_GetTicksNS(), d[i].name);
+                app_debug("%016"PRIu64" ModCopy(%s): write event", SDL_GetTicksNS(), name);
                 if ( o[i].bytes_transferred != o[i].bytes_requested ) {
-                    app_error("%016"PRIu64" ModCopy(%s): partial write",
-                            SDL_GetTicksNS(), d[i].name);
+                    app_error("%016"PRIu64" ModCopy(%s): partial write", SDL_GetTicksNS(), name);
                     goto bailout;
                 }
+                // Now, all write calls are done, we can free the originally read file buffer
+                SDL_free(o[i].buffer);
+                // But will change ModState only but close() will be done (it's also async)
                 if (!SDL_CloseAsyncIO(o[i].asyncio, false,
                             app_sdl_context->sdl_io_queue, (void *)mod)) {
                     app_info("%016"PRIu64" ModCopy(%s): can't close after write: %s",
-                            SDL_GetTicksNS(), d[i].name, SDL_GetError());
+                            SDL_GetTicksNS(), name, SDL_GetError());
                 }
                 break;
             case SDL_ASYNCIO_TASK_CLOSE:
-                app_info("%016"PRIu64" ModCopy(%s): close event", SDL_GetTicksNS(), d[i].name);
+                app_info("%016"PRIu64" ModCopy(%s): close event", SDL_GetTicksNS(), name);
                 // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
                 ecs_add_pair(it->world, mod, ModState, ModLoadable);
                 break;
@@ -216,12 +218,13 @@ bailout:
 void ModLoad(ecs_iter_t *it) {
     const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     for (int i = 0; i < it->count; i++) {
-        app_debug("%016"PRIu64" ModLoad(%s)", SDL_GetTicksNS(), d[i].name);
         ecs_entity_t mod = it->entities[i];
+        const char *name = ecs_get_name(it->world, mod);
+        app_debug("%016"PRIu64" ModLoad(%s)", SDL_GetTicksNS(), name);
         ecs_entity_t next_state;
         ModInRAM *r = ecs_ensure(it->world, mod, ModInRAM);
 
-        next_state = mod_tryload(&d[i], r);
+        next_state = mod_tryload(name, &d[i], r);
 
         ecs_remove_pair(it->world, mod, ModFlags, ModNewerOnDisk);
         // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
@@ -230,16 +233,15 @@ void ModLoad(ecs_iter_t *it) {
 }
 
 void ModUnload(ecs_iter_t *it) {
-    const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
-    ModInRAM *r = ecs_field(it, ModInRAM, 1);
+    ModInRAM *r = ecs_field(it, ModInRAM, 0);
     for (int i = 0; i < it->count; i++) {
         ecs_entity_t mod = it->entities[i];
+        const char *name = ecs_get_name(it->world, mod);
         uint32_t flags = MOD_FLAGS_NONE;
         if ( ecs_has_pair(it->world, mod, ModFlags, ModNewerOnDisk) ) {
             flags |= MOD_FLAGS_RELOADING;
         }
-        app_warn("%016"PRIu64" ModUnload(%s): calling SDL_UnloadObject()",
-                SDL_GetTicksNS(), d[i].name);
+        app_warn("%016"PRIu64" ModUnload(%s): calling SDL_UnloadObject()", SDL_GetTicksNS(), name);
         SDL_UnloadObject(r->shared_object);
 
         if ( !(flags & MOD_FLAGS_RELOADING) ) {
@@ -257,11 +259,13 @@ void ModUnload(ecs_iter_t *it) {
 // Unregistered System (not declared as ECS_SYSTEM(...), because we want to run
 // mod_init_v1() outside of ecs_progress(), see SDL_AppIterate() in sdl-app-iterate.c
 void ModInit(ecs_iter_t *it) {
-    const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM *r = ecs_field(it, ModInRAM, 1);
 
     int i = 0; // limit to 1 as mod_init_v1() can invalidate current iterator (no for-loop)
     if ( it->count > 0 ) {
+        ecs_entity_t mod = it->entities[i];
+        const char *name = ecs_get_name(it->world, mod);
+
         mod_result_t res = MOD_RESULT_INVALID;
         uint32_t flags = MOD_FLAGS_NONE;
         if ( r[i].userptr ) {
@@ -269,16 +273,15 @@ void ModInit(ecs_iter_t *it) {
         }
         if ( r[i].mod_init_v1 ) {
             app_warn("%016"PRIu64" ModInit(%s): calling mod_init_v1(world, %"PRIu32", %p)",
-                    SDL_GetTicksNS(), d[i].name, flags, r[i].userptr);
+                    SDL_GetTicksNS(), name, flags, r[i].userptr);
 
             res = r[i].mod_init_v1(it->world, flags, &r[i].userptr);
         }
         app_warn("%016"PRIu64" ModInit(%s): mod_init_v1() returned: %d",
-                SDL_GetTicksNS(), d[i].name, res);
+                SDL_GetTicksNS(), name, res);
 
         // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
         ecs_entity_t next_state = (res==MOD_RESULT_SUCCESS)?ModRunning:ModInitFailed;
-        ecs_entity_t mod = it->entities[i];
         ecs_add_pair(it->world, mod, ModState, next_state);
 
         // In case we are doing mod hot-reloading, we are done, remove the flag
@@ -288,11 +291,12 @@ void ModInit(ecs_iter_t *it) {
 
 // Unregistered System (not declared as ECS_SYSTEM(...), same reason as for ModInit
 void ModFini(ecs_iter_t *it) {
-    const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM *r = ecs_field(it, ModInRAM, 1);
     int i = 0; // limit to 1 as mod_fini_v1() can invalidate current iterator (no for-loop)
     if ( it->count > 0 ) {
         ecs_entity_t mod = it->entities[i];
+        const char *name = ecs_get_name(it->world, mod);
+
         mod_result_t res = MOD_RESULT_INVALID;
         uint32_t flags = MOD_FLAGS_NONE;
         if ( ecs_has_pair(it->world, mod, ModFlags, ModNewerOnDisk) ) {
@@ -300,11 +304,11 @@ void ModFini(ecs_iter_t *it) {
         }
         if ( r[i].mod_fini_v1 ) {
             app_warn("%016"PRIu64" ModFini(%s): calling mod_fini_v1(%"PRIu32", %p)",
-                    SDL_GetTicksNS(), d[i].name, flags, r[i].userptr);
+                    SDL_GetTicksNS(), name, flags, r[i].userptr);
             res = r[i].mod_fini_v1(flags, r[i].userptr);
         }
         app_warn("%016"PRIu64" ModFini(%s): mod_fini_v1() returned: %d",
-                SDL_GetTicksNS(), d[i].name, res);
+                SDL_GetTicksNS(), name, res);
 
         ecs_entity_t next_state = (res==MOD_RESULT_SUCCESS)?ModUnloadable:ModFiniFailed;
 
@@ -395,17 +399,16 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
     if (d) {
         load_id = d->load_id;
 #ifdef APP_MOD_COPYONLOAD
-        so_realpath = d->so_realpath;
+        so_realpath = SDL_strdup(d->so_realpath);
 #endif
     }
 #ifndef APP_MOD_COPYONLOAD
     // On all non-windows platform we directly load the shared object
     // On Windows, more steps are required as an open .dll is a locked file on disk by design
-    so_realpath = so_path;
+    so_realpath = SDL_strdup(so_path);
 #endif
     // This will call ModOnDisk copy hook, duplicating all values on heap, no ownership taken
     ecs_set(world, mod, ModOnDisk, {
-        .name = ECS_CONST_CAST(char *, fname),
         .mod_dirpath = mod_dirpath,
         .so_path = so_path,
         .so_realpath = so_realpath,
@@ -427,6 +430,7 @@ SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const cha
 
 bailout:
     SDL_free(so_path);
+    SDL_free(so_realpath);
     SDL_free(mod_dirpath);
 
     // On success and on failure path for this mod, we want to examine the next one
@@ -435,7 +439,7 @@ bailout:
 }
 
 // Bare C function, not a system
-ecs_entity_t /* ModState */ mod_tryload(const ModOnDisk *d, ModInRAM *r) {
+ecs_entity_t /* ModState */ mod_tryload(const char *name, const ModOnDisk *d, ModInRAM *r) {
     r->shared_object = SDL_LoadObject(d->so_realpath);
     if (!r->shared_object) {
         app_warn("%016"PRIu64" mod_tryload(): %s", SDL_GetTicksNS(), SDL_GetError());
@@ -456,11 +460,11 @@ ecs_entity_t /* ModState */ mod_tryload(const ModOnDisk *d, ModInRAM *r) {
     if (res != BUILD_DEP_VERSION_INT) {
         if ( res == -1 ) {
             app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update the app.",
-                    SDL_GetTicksNS(), d->name);
+                    SDL_GetTicksNS(), name);
         } else {
             app_warn("%016"PRIu64" %s: mod_handshake_v1(): Incompatible. Please update this mod. "
                     "(Need to be compiled againt BUILD_DEP_VERSION %s)",
-                    SDL_GetTicksNS(), d->name, BUILD_DEP_VERSION_STR);
+                    SDL_GetTicksNS(), name, BUILD_DEP_VERSION_STR);
         }
         //TODO add returned version to msg, it needs to be converted from int to string
         SDL_UnloadObject(r->shared_object);

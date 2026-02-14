@@ -52,7 +52,6 @@ APP_API ONCE ECS_TAG_DECLARE(ModIOAsync);
 
 /* Component definitions, with metadata for REST API */
 ECS_STRUCT(ModOnDisk, {
-    char *name;
     char *mod_dirpath;
     char *so_path;
     char *so_realpath;

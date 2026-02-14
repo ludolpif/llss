@@ -68,4 +68,4 @@ void ModLookOnDisk(ecs_iter_t *it);
 
 // mod-related utility functions
 SDL_EnumerationResult enumerate_mod_directory_callback(void *userdata, const char *dirname, const char *fname);
-ecs_entity_t mod_tryload(const ModOnDisk *d, ModInRAM *r);
+ecs_entity_t /* ModState */ mod_tryload(const char *name, const ModOnDisk *d, ModInRAM *r);

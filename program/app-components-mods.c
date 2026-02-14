@@ -19,16 +19,12 @@
 
 /* Boring but important memory management hooks */
 ECS_DTOR(ModOnDisk, ptr, {
-    //ecs_trace(__PRETTY_FUNCTION__);
-    ecs_os_free(ptr->name);
     ecs_os_free(ptr->mod_dirpath);
     ecs_os_free(ptr->so_path);
     ecs_os_free(ptr->so_realpath);
 })
 
 ECS_MOVE(ModOnDisk, dst, src, {
-    //ecs_trace(__PRETTY_FUNCTION__);
-    ecs_os_free(dst->name);
     ecs_os_free(dst->mod_dirpath);
     ecs_os_free(dst->so_path);
     ecs_os_free(dst->so_realpath);
@@ -37,12 +33,9 @@ ECS_MOVE(ModOnDisk, dst, src, {
 })
 
 ECS_COPY(ModOnDisk, dst, src, {
-    //ecs_trace(__PRETTY_FUNCTION__);
-    ecs_os_free(dst->name);
     ecs_os_free(dst->mod_dirpath);
     ecs_os_free(dst->so_path);
     ecs_os_free(dst->so_realpath);
-    dst->name = ecs_os_strdup(src->name);
     dst->mod_dirpath = ecs_os_strdup(src->mod_dirpath);
     dst->so_path = ecs_os_strdup(src->so_path);
     dst->so_realpath = ecs_os_strdup(src->so_realpath);
