@@ -19,14 +19,12 @@
 
 /* Boring but important memory management hooks */
 ECS_DTOR(AppDmonEvent, ptr, {
-    ecs_trace(__PRETTY_FUNCTION__);
     ecs_os_free(ptr->filepath);
     ecs_os_free(ptr->oldfilepath);
     ecs_os_free(ptr->rootdir);
 })
 
 ECS_MOVE(AppDmonEvent, dst, src, {
-    ecs_trace(__PRETTY_FUNCTION__);
     ecs_os_free(dst->filepath);
     ecs_os_free(dst->oldfilepath);
     ecs_os_free(dst->rootdir);
@@ -35,7 +33,6 @@ ECS_MOVE(AppDmonEvent, dst, src, {
 })
 
 ECS_COPY(AppDmonEvent, dst, src, {
-    ecs_trace(__PRETTY_FUNCTION__);
     ecs_os_free(dst->filepath);
     ecs_os_free(dst->oldfilepath);
     ecs_os_free(dst->rootdir);
