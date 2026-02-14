@@ -17,6 +17,36 @@
 #define APP_COMPONENTS_CORE_IMPL
 #include "app-components-core.h"
 
+/* Boring but important memory management hooks */
+ECS_DTOR(AppDmonEvent, ptr, {
+    ecs_trace(__PRETTY_FUNCTION__);
+    ecs_os_free(ptr->filepath);
+    ecs_os_free(ptr->oldfilepath);
+    ecs_os_free(ptr->rootdir);
+})
+
+ECS_MOVE(AppDmonEvent, dst, src, {
+    ecs_trace(__PRETTY_FUNCTION__);
+    ecs_os_free(dst->filepath);
+    ecs_os_free(dst->oldfilepath);
+    ecs_os_free(dst->rootdir);
+    SDL_copyp(dst, src);
+    SDL_zerop(src); // mandatory to not have double-free, dtor still called after move
+})
+
+ECS_COPY(AppDmonEvent, dst, src, {
+    ecs_trace(__PRETTY_FUNCTION__);
+    ecs_os_free(dst->filepath);
+    ecs_os_free(dst->oldfilepath);
+    ecs_os_free(dst->rootdir);
+    dst->watch_id = src->watch_id;
+    dst->action = src->action;
+    dst->rootdir = ecs_os_strdup(src->rootdir);
+    dst->filepath = ecs_os_strdup(src->filepath);
+    dst->oldfilepath = ecs_os_strdup(src->oldfilepath);
+    dst->user = src->user;
+})
+
 APP_API void AppComponentsCoreImport(ecs_world_t *world) {
     // https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html#registration
     // See the "modules" example
@@ -117,16 +147,13 @@ APP_API void AppComponentsCoreImport(ecs_world_t *world) {
         }
     });
 
-    ECS_COMPONENT_DEFINE(world, AppDmonEvent);
-    ecs_struct(world, {
-        .entity = ecs_id(AppDmonEvent),
-        .members = {
-            { .name = "watch_id", .type = ecs_id(ecs_u32_t) },
-            { .name = "action", .type = ecs_id(ecs_i32_t) },
-            { .name = "rootdir", .type = ecs_id(ecs_string_t) },
-            { .name = "filepath", .type = ecs_id(ecs_string_t) },
-            { .name = "oldfilepath", .type = ecs_id(ecs_string_t) },
-            { .name = "user", .type = ecs_id(ecs_uptr_t) },
-        }
+    ECS_META_COMPONENT(world, AppDmonEvent);
+
+    /* Boring but important memory management hooks */
+    ecs_set_hooks(world, AppDmonEvent, {
+        //.ctor = ecs_ctor(AppDmonEvent),
+        .move = ecs_move(AppDmonEvent),
+        .copy = ecs_copy(AppDmonEvent),
+        .dtor = ecs_dtor(AppDmonEvent),
     });
 }

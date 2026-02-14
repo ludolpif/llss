@@ -215,16 +215,13 @@ bailout:
 
 void ModLoad(ecs_iter_t *it) {
     const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
-    ModInRAM r;
     for (int i = 0; i < it->count; i++) {
         app_debug("%016"PRIu64" ModLoad(%s)", SDL_GetTicksNS(), d[i].name);
-        ecs_entity_t next_state;
-
-        SDL_zero(r);
-        next_state = mod_tryload(d+i, &r);
-
         ecs_entity_t mod = it->entities[i];
-        ecs_set_ptr(it->world, mod, ModInRAM, &r);
+        ecs_entity_t next_state;
+        ModInRAM *r = ecs_ensure(it->world, mod, ModInRAM);
+
+        next_state = mod_tryload(&d[i], r);
 
         ecs_remove_pair(it->world, mod, ModFlags, ModNewerOnDisk);
         // Set mod state. As ModState is tagged Exclusive, add_pair will replace the previous pair
@@ -263,7 +260,8 @@ void ModInit(ecs_iter_t *it) {
     const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM *r = ecs_field(it, ModInRAM, 1);
 
-    for (int i = 0; i < it->count; i++) {
+    int i = 0; // limit to 1 as mod_init_v1() can invalidate current iterator (no for-loop)
+    if ( it->count > 0 ) {
         mod_result_t res = MOD_RESULT_INVALID;
         uint32_t flags = MOD_FLAGS_NONE;
         if ( r[i].userptr ) {
@@ -292,7 +290,8 @@ void ModInit(ecs_iter_t *it) {
 void ModFini(ecs_iter_t *it) {
     const ModOnDisk *d = ecs_field(it, ModOnDisk, 0);
     ModInRAM *r = ecs_field(it, ModInRAM, 1);
-    for (int i = 0; i < it->count; i++) {
+    int i = 0; // limit to 1 as mod_fini_v1() can invalidate current iterator (no for-loop)
+    if ( it->count > 0 ) {
         ecs_entity_t mod = it->entities[i];
         mod_result_t res = MOD_RESULT_INVALID;
         uint32_t flags = MOD_FLAGS_NONE;

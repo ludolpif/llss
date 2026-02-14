@@ -110,12 +110,11 @@ APP_API ONCE ECS_COMPONENT_DECLARE(AsyncIOOutcome);
 
 
 // Elements for file an directory monitor events (inotify, ReadDirectoryChangesW(), fswatch)
-typedef struct {
+APP_API ECS_STRUCT(AppDmonEvent, {
     dmon_watch_id watch_id;
     dmon_action action;
-    const char *rootdir;
-    const char *filepath;
-    const char *oldfilepath;
+    char *rootdir;
+    char *filepath;
+    char *oldfilepath;
     void *user;
-} AppDmonEvent;
-APP_API ONCE ECS_COMPONENT_DECLARE(AppDmonEvent);
+});

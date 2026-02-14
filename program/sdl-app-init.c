@@ -224,7 +224,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     int32_t ecs_worker_threads_count = 4;
 
     // FLECS init
-    ecs_world_t *world = ecs_init();
+    // Passing in the command line arguments will allow the explorer to display
+    // the application name.
+    ecs_world_t *world = ecs_init_w_args(argc, argv);
 #ifdef NDEBUG
     // Note: valgrind memcheck can have hard time to converge if FLECS use multiple threads
     ecs_set_threads(world, ecs_worker_threads_count);
@@ -246,6 +248,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
             .entity = ecs_entity(world, { .name = "ImGuiKeyChord" }) , .kind = EcsI32 });
     ecs_primitive_init(world, &(ecs_primitive_desc_t){
             .entity = ecs_entity(world, { .name = "ImGuiInputFlags" }) , .kind = EcsI32 });
+    ecs_primitive_init(world, &(ecs_primitive_desc_t){
+            .entity = ecs_entity(world, { .name = "dmon_watch_id" }) , .kind = EcsI32 });
+    ecs_primitive_init(world, &(ecs_primitive_desc_t){
+            .entity = ecs_entity(world, { .name = "dmon_action" }) , .kind = EcsI32 });
 
     ECS_IMPORT(world, AppSystemsCore); // Will call AppSystemsCoreImport function
     ECS_IMPORT(world, AppSystemsMods);
@@ -310,6 +316,29 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     const AppSDLContext *app_sdl_context = ecs_singleton_get(world, AppSDLContext);
     const AppMainTimingContext *app_main_timing_context = ecs_singleton_get(world, AppMainTimingContext);
     Uint32 app_iterate_count = app_main_timing_context->app_iterate_count;
+
+    // Terminate all mods to let them persist some state and make memory leak checkers useful
+    // Each mod_fini_v1 / mod_init_v1 can invalidate iterator so make only one by one.
+    bool some = true;
+    while (some) {
+        ecs_iter_t it = ecs_query_iter(world, ModTerminatingQuery);
+        some = ecs_query_next(&it);
+        if (some) {
+            ModFini(&it);
+            ecs_iter_fini(&it);
+        }
+    }
+    some = true;
+    while (some) {
+        ecs_iter_t it = ecs_query_iter(world, ModRunningQuery);
+        some = ecs_query_next(&it);
+        if (some) {
+            ModFini(&it);
+            // If query iteration is stopped without the last call to ecs_query_next()
+            // returning false, iterator resources need to be cleaned up explicitly
+            ecs_iter_fini(&it);
+        }
+    }
 
     dmon_deinit();
 

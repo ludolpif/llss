@@ -102,7 +102,13 @@ bool consume_user_defined_events(ecs_world_t *world, SDL_Event *event, Uint32 ty
         // Create current event entity
         ecs_entity_t parent = ecs_new_from_path(world, 0, "events.filesystem");
         ecs_entity_t event_entity = ecs_entity(world, { .parent = parent });
-        ecs_set_ptr(world, event_entity, AppDmonEvent, event->user.data1);
+        // Set memory-managed AppDmonEvent component
+        AppDmonEvent *devent = event->user.data1;
+        ecs_set_ptr(world, event_entity, AppDmonEvent, devent);
+        SDL_free(devent->rootdir);
+        SDL_free(devent->filepath);
+        SDL_free(devent->oldfilepath);
+        SDL_free(devent);
         return true;
     }
     return false;

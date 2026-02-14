@@ -31,31 +31,29 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     // Decide to quit or continue running from ECS, allowing mods to interact with this
     if ( ecs_has_pair(world, ecs_id(AppSDLContext), AppQuitState, AppQuitStateAccepted) ) {
-        // Terminate all mods to let them persist some state and make memory leak checkers useful
-        ecs_iter_t it = ecs_query_iter(world, ModRunningQuery);
-        while (ecs_query_next(&it)) {
-            ModFini(&it);
-        }
-        it = ecs_query_iter(world, ModTerminatingQuery);
-        while (ecs_query_next(&it)) {
-            ModFini(&it);
-        }
         return SDL_APP_SUCCESS;
     }
 
     // ModInit() and ModFini() are done outside of ecs_progress() so they can ECS_IMPORT() modules
     // while the world isn't in read-only mode.
+    // Each mod_fini_v1 / mod_init_v1 can invalidate iterator so make only one by one.
+    // Bonus: it can smooth things a bit.
     ecs_iter_t it = ecs_query_iter(world, ModRunningNewerOnDiskQuery);
-    while (ecs_query_next(&it)) {
+    if (ecs_query_next(&it)) {
         ModFini(&it);
+        // If query iteration is stopped without the last call to ecs_query_next()
+        // returning false, iterator resources need to be cleaned up explicitly
+        ecs_iter_fini(&it);
     }
     it = ecs_query_iter(world, ModTerminatingQuery);
-    while (ecs_query_next(&it)) {
+    if (ecs_query_next(&it)) {
         ModFini(&it);
+        ecs_iter_fini(&it);
     }
     it = ecs_query_iter(world, ModInitializableQuery);
-    while (ecs_query_next(&it)) {
+    if (ecs_query_next(&it)) {
         ModInit(&it);
+        ecs_iter_fini(&it);
     }
 
     // Custom method for targetting desired FPS
