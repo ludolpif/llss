@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
         app_failure("SDL_RegisterEvents(1) for APP_USER_EVENT_FILESYSTEM: %s", SDL_GetError());
 
     ecs_world_t *world = ecs_init_w_args(argc, argv);
-    // ecs_set_threads(world, ecs_worker_threads_count); // this make randomly huge execution time with valgrind 
+    // ecs_set_threads(world, ecs_worker_threads_count); // this make randomly huge execution time with valgrind
     ECS_IMPORT(world, FlecsStats); // Optional, enhance for https://www.flecs.dev/explorer
     ecs_log_set_level(0); // Increase verbosity level
     ecs_singleton_set(world, EcsRest, {0}); // Creates REST server on default port (27750)
