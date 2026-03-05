@@ -2,7 +2,7 @@
 Libre Live Streaming Software (LLSS) for Streamers making live broadcasts on platforms like [twitch.tv](https://twitch.tv).
 
 ## Design goals summary
-- Be a game by itself, as many streamers enjoy spending time to *not* streaming but preparing new streaming ideas
+- Be a game by itself, as many streamers enjoy to use creativity to make their streams unique
 - Be intuitive by using streamers' known concepts: a simplified Photoshop-like composition system and UI
 - Be a [Free Software](https://www.gnu.org/philosophy/free-sw.html) that lowers the bar for streamers to be autonomous and creative
 - Be live hackable like [Hack'n'Slash](https://en.wikipedia.org/wiki/Hack_%27n%27_Slash) game by the streamer himself or a remote helping person
