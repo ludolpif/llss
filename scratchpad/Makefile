@@ -33,6 +33,7 @@ EXE = $(ODIR)scratch
 # Makefile.autodeps needs $(SRCS)
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:%.c=$(ODIR)%.o)
+EXTOBJS := ../program/$(ODIR)/app-components-core.o ../lib/ecs/$(ODIR)flecs.o
 
 GDB_BREAKFUNC ?= init_hook
 RUN_ARGS ?= 
@@ -44,7 +45,7 @@ RUN_ARGS ?=
 all: $(EXE)
 
 $(EXE): $(OBJS)
-	$(LINK.c) $(OBJS) ../lib/ecs/$(ODIR)flecs.o $(LDLIBS) -o $@
+	$(LINK.c) $(OBJS) $(EXTOBJS) $(LDLIBS) -o $@
 # LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 
 clean:
